@@ -1,0 +1,14 @@
+{
+  "dropFilesHere": "Thả file vào đây",
+  "dragDropInstructions": "Kéo & thả file video vào đây",
+  "supportedFormats": "Hỗ trợ: MP4, MOV, AVI, MKV, WMV, FLV...",
+  "or": "hoặc",
+  "selectVideoFiles": "Chọn file video",
+  "videoList": "Danh sách video",
+  "addVideo": "Thêm video",
+  "clearAll": "Xóa tất cả",
+  "noVideos": "Chưa có video nào",
+  "clearAllConfirmMessage": "Bạn có chắc muốn xóa tất cả video khỏi danh sách?",
+  "cancel": "Hủy",
+  "delete": "Xóa"
+}

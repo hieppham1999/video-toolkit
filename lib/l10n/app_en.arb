@@ -1,0 +1,14 @@
+{
+  "dropFilesHere": "Drop files here",
+  "dragDropInstructions": "Drag & drop video files here",
+  "supportedFormats": "Supported: MP4, MOV, AVI, MKV, WMV, FLV...",
+  "or": "or",
+  "selectVideoFiles": "Select video files",
+  "videoList": "Video list",
+  "addVideo": "Add video",
+  "clearAll": "Clear all",
+  "noVideos": "No videos yet",
+  "clearAllConfirmMessage": "Are you sure you want to remove all videos from the list?",
+  "cancel": "Cancel",
+  "delete": "Delete"
+}

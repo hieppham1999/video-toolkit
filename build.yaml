@@ -1,0 +1,25 @@
+targets:
+  $default:
+    builders:
+      source_gen|combining_builder:
+        generate_for:
+          - lib/**.dart
+        options:
+          build_extensions:
+            # I want this line to "work":
+            # '^lib/**/{{}}.dart': 'lib/generated/model/{{}}.g.dart'
+            'lib/{{path}}/{{file}}.dart': 'lib/{{path}}/generated/{{file}}.g.dart'
+      json_serializable:
+        generate_for:
+          # Only run `json_serializable` on source under `lib/`.
+          - lib/**.dart
+      freezed:
+        enabled: true
+        options:
+          build_extensions:
+            'lib/{{path}}/{{file}}.dart': 'lib/{{path}}/generated/{{file}}.freezed.dart'
+      flutter_gen_runner: # or flutter_gen
+        options:
+          output: lib/generated/ # Optional (default: lib/gen/)
+          integrations:
+            image: true
