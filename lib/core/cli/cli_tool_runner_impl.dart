@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:injectable/injectable.dart';
+import 'package:video_toolkit/core/cli/bundled_binary_resolver.dart';
 import 'package:video_toolkit/core/cli/cli_exception.dart';
 import 'package:video_toolkit/core/cli/cli_result.dart';
 import 'package:video_toolkit/core/cli/cli_tool_runner.dart';
@@ -9,6 +10,9 @@ import 'package:video_toolkit/core/utils/app_logger.dart';
 
 @LazySingleton(as: CliToolRunner)
 class CliToolRunnerImpl implements CliToolRunner {
+  CliToolRunnerImpl(this._bundledResolver);
+
+  final BundledBinaryResolver _bundledResolver;
   final Map<String, String?> _pathCache = {};
 
   @override
@@ -22,7 +26,7 @@ class CliToolRunnerImpl implements CliToolRunner {
       throw ToolNotFoundException(executable);
     }
 
-    appLogger.d('CLI: $executable ${args.join(' ')}');
+    appLogger.d('CLI: $resolvedPath ${args.join(' ')}');
 
     try {
       final result = await Process.run(resolvedPath, args).timeout(timeout);
@@ -53,6 +57,14 @@ class CliToolRunnerImpl implements CliToolRunner {
       return _pathCache[executable];
     }
 
+    // 1. Check bundled binary first
+    final bundledPath = await _bundledResolver.resolve(executable);
+    if (bundledPath != null) {
+      _pathCache[executable] = bundledPath;
+      return bundledPath;
+    }
+
+    // 2. Fall back to system PATH
     final whichCmd = Platform.isWindows ? 'where' : 'which';
     try {
       final result = await Process.run(whichCmd, [executable]);

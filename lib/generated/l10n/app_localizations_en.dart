@@ -44,4 +44,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delete => 'Delete';
+
+  @override
+  String get encodeSettings => 'Encode Settings';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get stop => 'Stop';
+
+  @override
+  String get videoPreview => 'Video Preview';
+
+  @override
+  String get columnName => 'Name';
+
+  @override
+  String get columnPath => 'Path';
+
+  @override
+  String get columnSize => 'Size';
+
+  @override
+  String get columnImported => 'Imported';
+
+  @override
+  String get resolution => 'Resolution';
+
+  @override
+  String get codec => 'Codec';
+
+  @override
+  String get frameRate => 'Frame Rate';
+
+  @override
+  String get aspectRatio => 'Aspect Ratio';
+
+  @override
+  String get metadataNotAvailable => 'Metadata not available';
+
+  @override
+  String get selectVideoToPreview => 'Select a video to preview info';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get burnTimestamp => 'Burn timestamp';
+
+  @override
+  String get burnTimestampDescription =>
+      'Overlay the recording date/time onto the video';
 }

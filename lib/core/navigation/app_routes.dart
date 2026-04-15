@@ -4,10 +4,14 @@ sealed class AppRoutes {
   const AppRoutes({required this.path});
 }
 
-class ImportRoute extends AppRoutes {
-  const ImportRoute() : super(path: '/import');
+class HomeRoute extends AppRoutes {
+  const HomeRoute() : super(path: '/');
 }
 
-class VideoListRoute extends AppRoutes {
-  const VideoListRoute() : super(path: '/video-list');
+class EncodeRoute extends AppRoutes {
+  const EncodeRoute({required this.filePath, required this.totalDuration})
+      : super(path: '/encode');
+
+  final String filePath;
+  final Duration totalDuration;
 }

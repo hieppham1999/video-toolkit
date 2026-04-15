@@ -10,5 +10,22 @@
   "noVideos": "Chưa có video nào",
   "clearAllConfirmMessage": "Bạn có chắc muốn xóa tất cả video khỏi danh sách?",
   "cancel": "Hủy",
-  "delete": "Xóa"
+  "delete": "Xóa",
+  "encodeSettings": "Cài đặt Encode",
+  "start": "Bắt đầu",
+  "stop": "Dừng",
+  "videoPreview": "Xem trước Video",
+  "columnName": "Tên",
+  "columnPath": "Đường dẫn",
+  "columnSize": "Kích thước",
+  "columnImported": "Đã thêm",
+  "resolution": "Độ phân giải",
+  "codec": "Codec",
+  "frameRate": "Tốc độ khung hình",
+  "aspectRatio": "Tỷ lệ khung hình",
+  "metadataNotAvailable": "Chưa có thông tin metadata",
+  "selectVideoToPreview": "Chọn video để xem thông tin",
+  "save": "Lưu",
+  "burnTimestamp": "Ghi timestamp",
+  "burnTimestampDescription": "Chèn ngày/giờ quay vào video"
 }

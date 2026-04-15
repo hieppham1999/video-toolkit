@@ -169,6 +169,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
+
+  /// No description provided for @encodeSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Encode Settings'**
+  String get encodeSettings;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stop;
+
+  /// No description provided for @videoPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Preview'**
+  String get videoPreview;
+
+  /// No description provided for @columnName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get columnName;
+
+  /// No description provided for @columnPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Path'**
+  String get columnPath;
+
+  /// No description provided for @columnSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get columnSize;
+
+  /// No description provided for @columnImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported'**
+  String get columnImported;
+
+  /// No description provided for @resolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution'**
+  String get resolution;
+
+  /// No description provided for @codec.
+  ///
+  /// In en, this message translates to:
+  /// **'Codec'**
+  String get codec;
+
+  /// No description provided for @frameRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Frame Rate'**
+  String get frameRate;
+
+  /// No description provided for @aspectRatio.
+  ///
+  /// In en, this message translates to:
+  /// **'Aspect Ratio'**
+  String get aspectRatio;
+
+  /// No description provided for @metadataNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Metadata not available'**
+  String get metadataNotAvailable;
+
+  /// No description provided for @selectVideoToPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a video to preview info'**
+  String get selectVideoToPreview;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @burnTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Burn timestamp'**
+  String get burnTimestamp;
+
+  /// No description provided for @burnTimestampDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Overlay the recording date/time onto the video'**
+  String get burnTimestampDescription;
 }
 
 class _AppLocalizationsDelegate

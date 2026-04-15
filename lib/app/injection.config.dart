@@ -13,9 +13,18 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:logger/logger.dart' as _i974;
 import 'package:video_toolkit/app/injection.dart' as _i747;
+import 'package:video_toolkit/core/cli/bundled_binary_resolver.dart' as _i753;
 import 'package:video_toolkit/core/cli/cli_tool_runner.dart' as _i297;
 import 'package:video_toolkit/core/cli/cli_tool_runner_impl.dart' as _i873;
 import 'package:video_toolkit/core/utils/app_logger.dart' as _i70;
+import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_datasource.dart'
+    as _i1066;
+import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart'
+    as _i954;
+import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository_impl.dart'
+    as _i848;
+import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart'
+    as _i987;
 import 'package:video_toolkit/features/video_metadata/data/datasources/exiftool_datasource.dart'
     as _i675;
 import 'package:video_toolkit/features/video_metadata/data/datasources/ffprobe_datasource.dart'
@@ -38,20 +47,37 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final loggerModule = _$LoggerModule();
-    gh.lazySingleton<_i297.CliToolRunner>(() => _i873.CliToolRunnerImpl());
+    gh.lazySingleton<_i753.BundledBinaryResolver>(
+      () => _i753.BundledBinaryResolver(),
+    );
     gh.lazySingleton<_i974.Logger>(
       () => loggerModule.devLogger,
       registerFor: {_dev},
     );
-    gh.lazySingleton<_i675.ExiftoolDatasource>(
-      () => _i675.ExiftoolDatasource(gh<_i297.CliToolRunner>()),
-    );
-    gh.lazySingleton<_i735.FfprobeDatasource>(
-      () => _i735.FfprobeDatasource(gh<_i297.CliToolRunner>()),
+    gh.lazySingleton<_i297.CliToolRunner>(
+      () => _i873.CliToolRunnerImpl(gh<_i753.BundledBinaryResolver>()),
     );
     gh.lazySingleton<_i974.Logger>(
       () => loggerModule.prodLogger,
       registerFor: {_prod},
+    );
+    gh.lazySingleton<_i1066.FfmpegDatasource>(
+      () => _i1066.FfmpegDatasource(
+        gh<_i297.CliToolRunner>(),
+        gh<_i753.BundledBinaryResolver>(),
+      ),
+    );
+    gh.lazySingleton<_i954.VideoEncodeRepository>(
+      () => _i848.VideoEncodeRepositoryImpl(gh<_i1066.FfmpegDatasource>()),
+    );
+    gh.factory<_i987.VideoEncodeCubit>(
+      () => _i987.VideoEncodeCubit(gh<_i954.VideoEncodeRepository>()),
+    );
+    gh.lazySingleton<_i735.FfprobeDatasource>(
+      () => _i735.FfprobeDatasource(gh<_i297.CliToolRunner>()),
+    );
+    gh.lazySingleton<_i675.ExiftoolDatasource>(
+      () => _i675.ExiftoolDatasource(gh<_i297.CliToolRunner>()),
     );
     gh.lazySingleton<_i993.VideoMetadataRepository>(
       () => _i996.VideoMetadataRepositoryImpl(

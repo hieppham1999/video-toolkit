@@ -44,4 +44,55 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get delete => 'Xóa';
+
+  @override
+  String get encodeSettings => 'Cài đặt Encode';
+
+  @override
+  String get start => 'Bắt đầu';
+
+  @override
+  String get stop => 'Dừng';
+
+  @override
+  String get videoPreview => 'Xem trước Video';
+
+  @override
+  String get columnName => 'Tên';
+
+  @override
+  String get columnPath => 'Đường dẫn';
+
+  @override
+  String get columnSize => 'Kích thước';
+
+  @override
+  String get columnImported => 'Đã thêm';
+
+  @override
+  String get resolution => 'Độ phân giải';
+
+  @override
+  String get codec => 'Codec';
+
+  @override
+  String get frameRate => 'Tốc độ khung hình';
+
+  @override
+  String get aspectRatio => 'Tỷ lệ khung hình';
+
+  @override
+  String get metadataNotAvailable => 'Chưa có thông tin metadata';
+
+  @override
+  String get selectVideoToPreview => 'Chọn video để xem thông tin';
+
+  @override
+  String get save => 'Lưu';
+
+  @override
+  String get burnTimestamp => 'Ghi timestamp';
+
+  @override
+  String get burnTimestampDescription => 'Chèn ngày/giờ quay vào video';
 }

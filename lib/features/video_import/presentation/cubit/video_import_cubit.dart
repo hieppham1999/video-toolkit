@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/presentation/base/base_cubit.dart';
 
 import '../../data/models/video_file.dart';
@@ -38,7 +39,17 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
   void removeFile(String path) {
     emitNormal(currentData.copyWith(
       files: currentData.files.where((f) => f.path != path).toList(),
+      selectedFilePath: currentData.selectedFilePath == path ? null : currentData.selectedFilePath,
     ));
+  }
+
+  void selectVideo(String path) {
+    final newPath = currentData.selectedFilePath == path ? null : path;
+    emitNormal(currentData.copyWith(selectedFilePath: newPath));
+  }
+
+  void updateEncodeSettings(EncodeSettings settings) {
+    emitNormal(currentData.copyWith(encodeSettings: settings));
   }
 
   void setDragging(bool value) {

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$VideoImportState {
 
- List<VideoFile> get files; bool get isDragging;
+ List<VideoFile> get files; bool get isDragging; String? get selectedFilePath; EncodeSettings get encodeSettings;
 /// Create a copy of VideoImportState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $VideoImportStateCopyWith<VideoImportState> get copyWith => _$VideoImportStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoImportState&&const DeepCollectionEquality().equals(other.files, files)&&(identical(other.isDragging, isDragging) || other.isDragging == isDragging));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoImportState&&const DeepCollectionEquality().equals(other.files, files)&&(identical(other.isDragging, isDragging) || other.isDragging == isDragging)&&(identical(other.selectedFilePath, selectedFilePath) || other.selectedFilePath == selectedFilePath)&&(identical(other.encodeSettings, encodeSettings) || other.encodeSettings == encodeSettings));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(files),isDragging);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(files),isDragging,selectedFilePath,encodeSettings);
 
 @override
 String toString() {
-  return 'VideoImportState(files: $files, isDragging: $isDragging)';
+  return 'VideoImportState(files: $files, isDragging: $isDragging, selectedFilePath: $selectedFilePath, encodeSettings: $encodeSettings)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $VideoImportStateCopyWith<$Res>  {
   factory $VideoImportStateCopyWith(VideoImportState value, $Res Function(VideoImportState) _then) = _$VideoImportStateCopyWithImpl;
 @useResult
 $Res call({
- List<VideoFile> files, bool isDragging
+ List<VideoFile> files, bool isDragging, String? selectedFilePath, EncodeSettings encodeSettings
 });
 
 
-
+$EncodeSettingsCopyWith<$Res> get encodeSettings;
 
 }
 /// @nodoc
@@ -62,14 +62,25 @@ class _$VideoImportStateCopyWithImpl<$Res>
 
 /// Create a copy of VideoImportState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? files = null,Object? isDragging = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? files = null,Object? isDragging = null,Object? selectedFilePath = freezed,Object? encodeSettings = null,}) {
   return _then(_self.copyWith(
 files: null == files ? _self.files : files // ignore: cast_nullable_to_non_nullable
 as List<VideoFile>,isDragging: null == isDragging ? _self.isDragging : isDragging // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,selectedFilePath: freezed == selectedFilePath ? _self.selectedFilePath : selectedFilePath // ignore: cast_nullable_to_non_nullable
+as String?,encodeSettings: null == encodeSettings ? _self.encodeSettings : encodeSettings // ignore: cast_nullable_to_non_nullable
+as EncodeSettings,
   ));
 }
-
+/// Create a copy of VideoImportState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$EncodeSettingsCopyWith<$Res> get encodeSettings {
+  
+  return $EncodeSettingsCopyWith<$Res>(_self.encodeSettings, (value) {
+    return _then(_self.copyWith(encodeSettings: value));
+  });
+}
 }
 
 
@@ -151,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<VideoFile> files,  bool isDragging)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<VideoFile> files,  bool isDragging,  String? selectedFilePath,  EncodeSettings encodeSettings)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VideoImportState() when $default != null:
-return $default(_that.files,_that.isDragging);case _:
+return $default(_that.files,_that.isDragging,_that.selectedFilePath,_that.encodeSettings);case _:
   return orElse();
 
 }
@@ -172,10 +183,10 @@ return $default(_that.files,_that.isDragging);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<VideoFile> files,  bool isDragging)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<VideoFile> files,  bool isDragging,  String? selectedFilePath,  EncodeSettings encodeSettings)  $default,) {final _that = this;
 switch (_that) {
 case _VideoImportState():
-return $default(_that.files,_that.isDragging);case _:
+return $default(_that.files,_that.isDragging,_that.selectedFilePath,_that.encodeSettings);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -192,10 +203,10 @@ return $default(_that.files,_that.isDragging);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<VideoFile> files,  bool isDragging)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<VideoFile> files,  bool isDragging,  String? selectedFilePath,  EncodeSettings encodeSettings)?  $default,) {final _that = this;
 switch (_that) {
 case _VideoImportState() when $default != null:
-return $default(_that.files,_that.isDragging);case _:
+return $default(_that.files,_that.isDragging,_that.selectedFilePath,_that.encodeSettings);case _:
   return null;
 
 }
@@ -207,7 +218,7 @@ return $default(_that.files,_that.isDragging);case _:
 
 
 class _VideoImportState implements VideoImportState {
-  const _VideoImportState({final  List<VideoFile> files = const [], this.isDragging = false}): _files = files;
+  const _VideoImportState({final  List<VideoFile> files = const [], this.isDragging = false, this.selectedFilePath = null, this.encodeSettings = const EncodeSettings()}): _files = files;
   
 
  final  List<VideoFile> _files;
@@ -218,6 +229,8 @@ class _VideoImportState implements VideoImportState {
 }
 
 @override@JsonKey() final  bool isDragging;
+@override@JsonKey() final  String? selectedFilePath;
+@override@JsonKey() final  EncodeSettings encodeSettings;
 
 /// Create a copy of VideoImportState
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +242,16 @@ _$VideoImportStateCopyWith<_VideoImportState> get copyWith => __$VideoImportStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoImportState&&const DeepCollectionEquality().equals(other._files, _files)&&(identical(other.isDragging, isDragging) || other.isDragging == isDragging));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoImportState&&const DeepCollectionEquality().equals(other._files, _files)&&(identical(other.isDragging, isDragging) || other.isDragging == isDragging)&&(identical(other.selectedFilePath, selectedFilePath) || other.selectedFilePath == selectedFilePath)&&(identical(other.encodeSettings, encodeSettings) || other.encodeSettings == encodeSettings));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_files),isDragging);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_files),isDragging,selectedFilePath,encodeSettings);
 
 @override
 String toString() {
-  return 'VideoImportState(files: $files, isDragging: $isDragging)';
+  return 'VideoImportState(files: $files, isDragging: $isDragging, selectedFilePath: $selectedFilePath, encodeSettings: $encodeSettings)';
 }
 
 
@@ -249,11 +262,11 @@ abstract mixin class _$VideoImportStateCopyWith<$Res> implements $VideoImportSta
   factory _$VideoImportStateCopyWith(_VideoImportState value, $Res Function(_VideoImportState) _then) = __$VideoImportStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<VideoFile> files, bool isDragging
+ List<VideoFile> files, bool isDragging, String? selectedFilePath, EncodeSettings encodeSettings
 });
 
 
-
+@override $EncodeSettingsCopyWith<$Res> get encodeSettings;
 
 }
 /// @nodoc
@@ -266,15 +279,26 @@ class __$VideoImportStateCopyWithImpl<$Res>
 
 /// Create a copy of VideoImportState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? files = null,Object? isDragging = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? files = null,Object? isDragging = null,Object? selectedFilePath = freezed,Object? encodeSettings = null,}) {
   return _then(_VideoImportState(
 files: null == files ? _self._files : files // ignore: cast_nullable_to_non_nullable
 as List<VideoFile>,isDragging: null == isDragging ? _self.isDragging : isDragging // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,selectedFilePath: freezed == selectedFilePath ? _self.selectedFilePath : selectedFilePath // ignore: cast_nullable_to_non_nullable
+as String?,encodeSettings: null == encodeSettings ? _self.encodeSettings : encodeSettings // ignore: cast_nullable_to_non_nullable
+as EncodeSettings,
   ));
 }
 
-
+/// Create a copy of VideoImportState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$EncodeSettingsCopyWith<$Res> get encodeSettings {
+  
+  return $EncodeSettingsCopyWith<$Res>(_self.encodeSettings, (value) {
+    return _then(_self.copyWith(encodeSettings: value));
+  });
+}
 }
 
 // dart format on

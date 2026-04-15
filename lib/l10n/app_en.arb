@@ -10,5 +10,22 @@
   "noVideos": "No videos yet",
   "clearAllConfirmMessage": "Are you sure you want to remove all videos from the list?",
   "cancel": "Cancel",
-  "delete": "Delete"
+  "delete": "Delete",
+  "encodeSettings": "Encode Settings",
+  "start": "Start",
+  "stop": "Stop",
+  "videoPreview": "Video Preview",
+  "columnName": "Name",
+  "columnPath": "Path",
+  "columnSize": "Size",
+  "columnImported": "Imported",
+  "resolution": "Resolution",
+  "codec": "Codec",
+  "frameRate": "Frame Rate",
+  "aspectRatio": "Aspect Ratio",
+  "metadataNotAvailable": "Metadata not available",
+  "selectVideoToPreview": "Select a video to preview info",
+  "save": "Save",
+  "burnTimestamp": "Burn timestamp",
+  "burnTimestampDescription": "Overlay the recording date/time onto the video"
 }

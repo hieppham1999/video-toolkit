@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  cupertino_icons: ^1.0.8
 
   flutter_easyloading: ^3.0.5
 
@@ -45,3 +46,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+
+assets:
+  - assets/bin/ffmpeg/windows/
+  - assets/bin/ffmpeg/macos/
