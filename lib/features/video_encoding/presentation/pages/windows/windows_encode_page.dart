@@ -1,8 +1,8 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:video_toolkit/features/video_encoding/data/models/encode_preset.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
+import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/presentation/base/bloc_state_builder.dart';
 import 'package:path/path.dart' as p;
@@ -44,24 +44,13 @@ class WindowsEncodePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Preset selector
-                  _PresetSelector(
-                    selected: state.selectedPreset,
-                    enabled: state.status == EncodeStatus.idle,
-                    onChanged: (preset) {
-                      context.read<VideoEncodeCubit>().selectPreset(preset);
-                    },
-                  ),
-                  const SizedBox(height: 24),
-
                   // Action / Progress
                   _EncodeAction(
                     state: state,
                     onStart: () {
-                      context.read<VideoEncodeCubit>().startEncode(
-                        inputPath: filePath,
-                        totalDuration: totalDuration,
-                        settings: const EncodeSettings(),
+                      context.read<VideoEncodeCubit>().startBatchEncode(
+                        files: [VideoFile(path: filePath, name: filePath.split(r'\').last, sizeInBytes: 0, importedAt: DateTime.now())],
+                        globalSettings: const EncodeSettings(),
                       );
                     },
                     onReset: () {
@@ -121,48 +110,6 @@ class _FileInfoCard extends StatelessWidget {
     final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
     final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
     return h > 0 ? '$h:$m:$s' : '$m:$s';
-  }
-}
-
-class _PresetSelector extends StatelessWidget {
-  const _PresetSelector({
-    required this.selected,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  final EncodePreset selected;
-  final bool enabled;
-  final ValueChanged<EncodePreset> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FluentTheme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Preset', style: theme.typography.bodyStrong),
-        const SizedBox(height: 8),
-        ComboBox<EncodePreset>(
-          value: selected,
-          onChanged: enabled ? (v) { if (v != null) onChanged(v); } : null,
-          items: EncodePreset.values
-              .map((preset) => ComboBoxItem(
-                    value: preset,
-                    child: Text(preset.label),
-                  ))
-              .toList(),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Codec: ${selected.codec}  ·  CRF: ${selected.crf}${selected.preset.isNotEmpty ? '  ·  Preset: ${selected.preset}' : ''}',
-          style: theme.typography.caption?.copyWith(
-            color: theme.resources.textFillColorSecondary,
-          ),
-        ),
-      ],
-    );
   }
 }
 

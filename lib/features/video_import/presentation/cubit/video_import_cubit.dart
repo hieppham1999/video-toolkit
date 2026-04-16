@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/presentation/base/base_cubit.dart';
@@ -7,6 +8,7 @@ import 'package:video_toolkit/presentation/base/base_cubit.dart';
 import '../../data/models/video_file.dart';
 import 'video_import_state.dart';
 
+@injectable
 class VideoImportCubit extends BaseCubit<VideoImportState> {
   VideoImportCubit() : super.normal(const VideoImportState());
 
@@ -50,6 +52,15 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
 
   void updateEncodeSettings(EncodeSettings settings) {
     emitNormal(currentData.copyWith(encodeSettings: settings));
+  }
+
+  void updateFileSettings(String path, EncodeSettings? settings) {
+    emitNormal(currentData.copyWith(
+      files: currentData.files.map((f) {
+        if (f.path == path) return f.copyWith(overrideSettings: settings);
+        return f;
+      }).toList(),
+    ));
   }
 
   void setDragging(bool value) {

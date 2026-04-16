@@ -271,6 +271,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Overlay the recording date/time onto the video'**
   String get burnTimestampDescription;
+
+  /// No description provided for @overlayType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get overlayType;
+
+  /// No description provided for @overlayTypeCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get overlayTypeCustom;
+
+  /// No description provided for @overlayTypeTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Timestamp'**
+  String get overlayTypeTimestamp;
 }
 
 class _AppLocalizationsDelegate

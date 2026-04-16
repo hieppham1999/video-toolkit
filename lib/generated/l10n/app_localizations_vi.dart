@@ -95,4 +95,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get burnTimestampDescription => 'Chèn ngày/giờ quay vào video';
+
+  @override
+  String get overlayType => 'Loại';
+
+  @override
+  String get overlayTypeCustom => 'Tùy chỉnh';
+
+  @override
+  String get overlayTypeTimestamp => 'Dấu thời gian';
 }

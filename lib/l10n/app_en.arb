@@ -27,5 +27,8 @@
   "selectVideoToPreview": "Select a video to preview info",
   "save": "Save",
   "burnTimestamp": "Burn timestamp",
-  "burnTimestampDescription": "Overlay the recording date/time onto the video"
+  "burnTimestampDescription": "Overlay the recording date/time onto the video",
+  "overlayType": "Type",
+  "overlayTypeCustom": "Custom",
+  "overlayTypeTimestamp": "Timestamp"
 }

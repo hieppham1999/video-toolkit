@@ -1,7 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_datasource.dart';
-import 'package:video_toolkit/features/video_encoding/data/models/encode_preset.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart';
@@ -18,19 +17,15 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
   @override
   Stream<EncodeProgress> encode({
     required String inputPath,
-    required EncodePreset preset,
-    required Duration totalDuration,
     required EncodeSettings settings,
+    required Duration totalDuration,
     String? outputDir,
+    DateTime? creationDate,
   }) {
     final dir = outputDir ?? p.dirname(inputPath);
     final baseName = p.basenameWithoutExtension(inputPath);
-    final outputPath = p.join(dir, '${baseName}_encoded.${preset.extension}');
-    final args = preset.buildArgs(
-      inputPath,
-      outputPath,
-      burnTimestamp: settings.burnTimestamp,
-    );
+    final outputPath = p.join(dir, '${baseName}_encoded.${settings.outputExtension.value}');
+    final args = settings.buildArgs(inputPath, outputPath, creationDate: creationDate);
 
     return _ffmpeg.encode(
       inputPath: inputPath,

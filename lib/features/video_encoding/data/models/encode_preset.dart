@@ -1,80 +1,46 @@
-enum EncodePreset {
+import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+
+/// Predefined encode configurations — each is a named [EncodeSettings].
+enum PredefinedPreset {
   h264Fast(
     label: 'H.264 (Fast)',
-    codec: 'libx264',
-    preset: 'veryfast',
-    crf: '23',
-    extension: 'mp4',
+    settings: EncodeSettings(
+      codec: VideoEncoder.h264,
+      preset: EncodePreset.veryfast,
+      crf: 23,
+      outputExtension: OutputExtension.mp4,
+    ),
   ),
   h264Quality(
     label: 'H.264 (Quality)',
-    codec: 'libx264',
-    preset: 'slow',
-    crf: '18',
-    extension: 'mp4',
+    settings: EncodeSettings(
+      codec: VideoEncoder.h264,
+      preset: EncodePreset.slow,
+      crf: 18,
+      outputExtension: OutputExtension.mp4,
+    ),
   ),
   h265(
     label: 'H.265 / HEVC',
-    codec: 'libx265',
-    preset: 'medium',
-    crf: '28',
-    extension: 'mp4',
+    settings: EncodeSettings(
+      codec: VideoEncoder.h265,
+      preset: EncodePreset.medium,
+      crf: 28,
+      outputExtension: OutputExtension.mp4,
+    ),
   ),
   webm(
     label: 'VP9 WebM',
-    codec: 'libvpx-vp9',
-    preset: '',
-    crf: '30',
-    extension: 'webm',
+    settings: EncodeSettings(
+      codec: VideoEncoder.vp9,
+      preset: EncodePreset.medium,
+      crf: 30,
+      outputExtension: OutputExtension.mkv,
+    ),
   );
 
-  const EncodePreset({
-    required this.label,
-    required this.codec,
-    required this.preset,
-    required this.crf,
-    required this.extension,
-  });
+  const PredefinedPreset({required this.label, required this.settings});
 
   final String label;
-  final String codec;
-  final String preset;
-  final String crf;
-  final String extension;
-
-  List<String> buildArgs(
-    String inputPath,
-    String outputPath, {
-    bool burnTimestamp = false,
-  }) {
-    final filters = <String>[];
-
-    if (burnTimestamp) {
-      // drawtext filter: renders the frame timestamp (pts) as HH:MM:SS
-      // at the bottom-right corner with a semi-transparent background box.
-      filters.add(
-        "drawtext="
-        "text='%{pts\\:hms}':"
-        "fontsize=24:"
-        "fontcolor=white:"
-        "x=(w-text_w-16):"
-        "y=(h-text_h-16):"
-        "box=1:"
-        "boxcolor=black@0.5:"
-        "boxborderw=6",
-      );
-    }
-
-    return [
-      '-i', inputPath,
-      '-c:v', codec,
-      if (preset.isNotEmpty) ...['-preset', preset],
-      '-crf', crf,
-      if (filters.isNotEmpty) ...['-vf', filters.join(',')],
-      '-c:a', 'aac',
-      '-b:a', '128k',
-      '-y',
-      outputPath,
-    ];
-  }
+  final EncodeSettings settings;
 }

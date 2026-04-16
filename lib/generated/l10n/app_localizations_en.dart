@@ -96,4 +96,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get burnTimestampDescription =>
       'Overlay the recording date/time onto the video';
+
+  @override
+  String get overlayType => 'Type';
+
+  @override
+  String get overlayTypeCustom => 'Custom';
+
+  @override
+  String get overlayTypeTimestamp => 'Timestamp';
 }

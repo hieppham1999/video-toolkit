@@ -25,6 +25,8 @@ import 'package:video_toolkit/features/video_encoding/data/repositories/video_en
     as _i848;
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart'
     as _i987;
+import 'package:video_toolkit/features/video_import/presentation/cubit/video_import_cubit.dart'
+    as _i1027;
 import 'package:video_toolkit/features/video_metadata/data/datasources/exiftool_datasource.dart'
     as _i675;
 import 'package:video_toolkit/features/video_metadata/data/datasources/ffprobe_datasource.dart'
@@ -47,6 +49,7 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final loggerModule = _$LoggerModule();
+    gh.factory<_i1027.VideoImportCubit>(() => _i1027.VideoImportCubit());
     gh.lazySingleton<_i753.BundledBinaryResolver>(
       () => _i753.BundledBinaryResolver(),
     );

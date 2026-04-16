@@ -4,6 +4,7 @@ import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/utils/file_size_formatter.dart';
 import 'package:video_toolkit/core/utils/video_utils.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
 
 import '../home_view_data.dart';
@@ -93,7 +94,6 @@ class WindowsHomeRenderer extends StatelessWidget {
           builder: (context, constraints) {
             final totalHeight = constraints.maxHeight;
             final previewH = totalHeight * data.previewFraction;
-            final tableH = (totalHeight - previewH - 6).clamp(0.0, double.infinity);
 
             return Column(
               children: [
@@ -107,15 +107,18 @@ class WindowsHomeRenderer extends StatelessWidget {
                 _ResizableDivider(
                   onDrag: (dy) => data.onDividerDrag(dy / totalHeight),
                 ),
-                SizedBox(
-                  height: tableH,
+                Expanded(
                   child: _VideoTableSection(
                     files: data.files,
+                    globalSettings: data.encodeSettings,
                     selectedFilePath: data.selectedFile?.path,
+                    encodeState: data.encodeState,
                     onSelect: data.onSelectVideo,
                     onRemove: data.onRemoveFile,
+                    onUpdateFileSettings: data.onUpdateFileSettings,
                   ),
                 ),
+                _OverallProgressBar(encodeState: data.encodeState),
               ],
             );
           },
@@ -343,15 +346,21 @@ class _MetadataRow extends StatelessWidget {
 class _VideoTableSection extends StatefulWidget {
   const _VideoTableSection({
     required this.files,
+    required this.globalSettings,
     required this.selectedFilePath,
+    required this.encodeState,
     required this.onSelect,
     required this.onRemove,
+    required this.onUpdateFileSettings,
   });
 
   final List<VideoFile> files;
+  final EncodeSettings globalSettings;
   final String? selectedFilePath;
+  final VideoEncodeState encodeState;
   final ValueChanged<String> onSelect;
   final ValueChanged<String> onRemove;
+  final void Function(String path, EncodeSettings? settings) onUpdateFileSettings;
 
   @override
   State<_VideoTableSection> createState() => _VideoTableSectionState();
@@ -359,27 +368,24 @@ class _VideoTableSection extends StatefulWidget {
 
 class _VideoTableSectionState extends State<_VideoTableSection> {
   static const _minColWidth = 60.0;
-  List<double>? _colWidths;
+  static const _gapWidth = 8.0;
+  static const _actionWidth = 72.0; // settings + delete buttons
+  static const _headerHeight = 32.0;
+  static const _proportions = [0.25, 0.35, 0.15, 0.25];
 
-  List<double> _initWidths(double available) {
-    return [
-      available * 0.25,
-      available * 0.35,
-      available * 0.15,
-      available * 0.25,
-    ];
+  final List<double> _dragOffsets = [0, 0, 0, 0];
+
+  List<double> _computeWidths(double viewportWidth) {
+    final available = viewportWidth - _actionWidth - 32 - (_gapWidth * 3);
+    return List.generate(4, (i) {
+      return (available * _proportions[i] + _dragOffsets[i]).clamp(_minColWidth, double.infinity);
+    });
   }
 
-  void _onResizeColumn(int index, double dx, double available) {
+  void _onResizeColumn(int index, double dx) {
     setState(() {
-      _colWidths ??= _initWidths(available);
-      final w = _colWidths!;
-      final newLeft = (w[index] + dx).clamp(_minColWidth, available);
-      final newRight = (w[index + 1] - dx).clamp(_minColWidth, available);
-      if (newLeft >= _minColWidth && newRight >= _minColWidth) {
-        w[index] = newLeft;
-        w[index + 1] = newRight;
-      }
+      _dragOffsets[index] += dx;
+      _dragOffsets[index + 1] -= dx;
     });
   }
 
@@ -389,6 +395,9 @@ class _VideoTableSectionState extends State<_VideoTableSection> {
     final l10n = Languages.translate;
     final isDark = theme.brightness == Brightness.dark;
     final selectedBg = isDark ? const Color(0xFF0A3A6B) : const Color(0xFFD0E4F7);
+    final altRowBg = theme.cardColor.withValues(alpha: 0.4);
+    final dividerColor = theme.resources.controlStrokeColorDefault;
+    final isEncoding = widget.encodeState.status == EncodeStatus.encoding;
 
     if (widget.files.isEmpty) {
       return Center(
@@ -403,75 +412,199 @@ class _VideoTableSectionState extends State<_VideoTableSection> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        const fixedWidth = 40.0 + 40.0;
-        final available = constraints.maxWidth - fixedWidth - 32;
-        _colWidths ??= _initWidths(available);
-        final w = _colWidths!;
+        final colWidths = _computeWidths(constraints.maxWidth);
+        final contentWidth = colWidths.fold(0.0, (s, w) => s + w) + (_gapWidth * 3) + _actionWidth + 32;
+        final effectiveWidth = contentWidth.clamp(constraints.maxWidth, double.infinity);
         final headerLabels = [l10n.columnName, l10n.columnPath, l10n.columnSize, l10n.columnImported];
 
-        return Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                border: Border(
-                  bottom: BorderSide(color: theme.resources.controlStrokeColorDefault),
-                ),
-              ),
-              child: SizedBox(
-                height: 32,
-                child: Row(
-                  children: [
-                    const SizedBox(width: 40),
-                    for (int i = 0; i < 4; i++) ...[
-                      SizedBox(
-                        width: w[i],
-                        child: Align(
-                          alignment: i >= 2 ? Alignment.centerRight : Alignment.centerLeft,
-                          child: Text(
-                            headerLabels[i],
-                            style: (theme.typography.caption ?? const TextStyle()).copyWith(
-                              color: theme.resources.textFillColorSecondary,
-                              fontWeight: FontWeight.w600,
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: effectiveWidth,
+            height: constraints.maxHeight,
+            child: Column(
+              children: [
+                Container(
+                  height: _headerHeight,
+                  decoration: BoxDecoration(
+                    color: theme.cardColor,
+                    border: Border(bottom: BorderSide(color: dividerColor)),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      for (int i = 0; i < 4; i++) ...[
+                        SizedBox(
+                          width: colWidths[i],
+                          child: Align(
+                            alignment: i >= 2 ? Alignment.centerRight : Alignment.centerLeft,
+                            child: Text(
+                              headerLabels[i],
+                              style: (theme.typography.caption ?? const TextStyle()).copyWith(
+                                color: theme.resources.textFillColorSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      ),
-                      if (i < 3)
-                        _ColumnResizeHandle(
-                          dividerColor: theme.resources.controlStrokeColorDefault,
-                          onDrag: (dx) => _onResizeColumn(i, dx, available),
-                        ),
+                        if (i < 3)
+                          _ColumnResizeHandle(
+                            dividerColor: dividerColor,
+                            onDrag: (dx) => _onResizeColumn(i, dx),
+                          ),
+                      ],
+                      const SizedBox(width: _actionWidth),
                     ],
-                    const SizedBox(width: 40),
-                  ],
+                  ),
                 ),
-              ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: widget.files.length,
+                    itemBuilder: (context, index) {
+                      final file = widget.files[index];
+                      final isSelected = file.path == widget.selectedFilePath;
+                      final isCurrentFile = isEncoding && widget.encodeState.currentFilePath == file.path;
+                      final isDone = isEncoding && widget.encodeState.currentIndex > index;
+
+                      Color? bgColor;
+                      if (isSelected) {
+                        bgColor = selectedBg;
+                      } else if (index.isEven) {
+                        bgColor = altRowBg;
+                      }
+
+                      return GestureDetector(
+                        onTap: () => widget.onSelect(file.path),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: bgColor,
+                            border: Border(bottom: BorderSide(color: dividerColor, width: 0.5)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: colWidths[0],
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          isDone ? FluentIcons.check_mark : FluentIcons.video,
+                                          size: 16,
+                                          color: isDone ? const Color(0xFF34C759) : theme.accentColor,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(file.name, style: theme.typography.body, overflow: TextOverflow.ellipsis),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: _gapWidth),
+                                  SizedBox(
+                                    width: colWidths[1],
+                                    child: Text(
+                                      file.path,
+                                      style: theme.typography.caption?.copyWith(color: theme.resources.textFillColorSecondary),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: _gapWidth),
+                                  SizedBox(
+                                    width: colWidths[2],
+                                    child: Text(FileSizeFormatter.format(file.sizeInBytes), style: theme.typography.caption, textAlign: TextAlign.end),
+                                  ),
+                                  const SizedBox(width: _gapWidth),
+                                  SizedBox(
+                                    width: colWidths[3],
+                                    child: Text(
+                                      _formatDate(file.importedAt),
+                                      style: theme.typography.caption?.copyWith(color: theme.resources.textFillColorSecondary),
+                                      textAlign: TextAlign.end,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: _actionWidth,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(
+                                            FluentIcons.settings,
+                                            size: 12,
+                                            color: file.overrideSettings != null
+                                                ? theme.accentColor
+                                                : theme.resources.textFillColorSecondary,
+                                          ),
+                                          onPressed: () => _openFileSettings(
+                                            context,
+                                            file,
+                                            widget.globalSettings,
+                                            widget.onUpdateFileSettings,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(FluentIcons.chrome_close, size: 12),
+                                          onPressed: () => widget.onRemove(file.path),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (isCurrentFile)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: ProgressBar(value: widget.encodeState.progress.percent * 100),
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.files.length,
-                itemBuilder: (context, index) {
-                  final file = widget.files[index];
-                  final isSelected = file.path == widget.selectedFilePath;
-                  return _VideoTableRow(
-                    file: file,
-                    colWidths: w,
-                    isEven: index.isEven,
-                    isSelected: isSelected,
-                    selectedBg: selectedBg,
-                    onTap: () => widget.onSelect(file.path),
-                    onRemove: () => widget.onRemove(file.path),
-                  );
-                },
-              ),
-            ),
-          ],
+          ),
         );
       },
     );
+  }
+
+  void _openFileSettings(
+    BuildContext context,
+    VideoFile file,
+    EncodeSettings globalSettings,
+    void Function(String path, EncodeSettings? settings) onUpdate,
+  ) {
+    final effective = file.overrideSettings ?? globalSettings;
+    showDialog<void>(
+      context: context,
+      builder: (_) => _EncodeSettingsDialog(
+        settings: effective,
+        onSave: (settings) {
+          onUpdate(file.path, settings);
+          Navigator.of(context).pop();
+        },
+        onCancel: () => Navigator.of(context).pop(),
+        onReset: file.overrideSettings != null
+            ? () {
+                onUpdate(file.path, null);
+                Navigator.of(context).pop();
+              }
+            : null,
+      ),
+    );
+  }
+
+  String _formatDate(DateTime dt) {
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    return '${dt.day}/${dt.month}/${dt.year} $h:$m';
   }
 }
 
@@ -488,7 +621,7 @@ class _ColumnResizeHandle extends StatelessWidget {
       child: MouseRegion(
         cursor: SystemMouseCursors.resizeColumn,
         child: SizedBox(
-          width: 8,
+          width: _VideoTableSectionState._gapWidth,
           height: double.infinity,
           child: Center(
             child: Container(
@@ -503,108 +636,70 @@ class _ColumnResizeHandle extends StatelessWidget {
   }
 }
 
-class _VideoTableRow extends StatelessWidget {
-  const _VideoTableRow({
-    required this.file,
-    required this.colWidths,
-    required this.isEven,
-    required this.isSelected,
-    required this.selectedBg,
-    required this.onTap,
-    required this.onRemove,
-  });
+// ─── Overall Progress Bar ───────────────────────────────────────
 
-  final VideoFile file;
-  final List<double> colWidths;
-  final bool isEven;
-  final bool isSelected;
-  final Color selectedBg;
-  final VoidCallback onTap;
-  final VoidCallback onRemove;
+class _OverallProgressBar extends StatelessWidget {
+  const _OverallProgressBar({required this.encodeState});
+
+  final VideoEncodeState encodeState;
 
   @override
   Widget build(BuildContext context) {
-    final theme = FluentTheme.of(context);
+    final status = encodeState.status;
+    if (status == EncodeStatus.idle) return const SizedBox.shrink();
 
-    Color? bgColor;
-    if (isSelected) {
-      bgColor = selectedBg;
-    } else if (isEven) {
-      bgColor = theme.cardColor.withValues(alpha: 0.4);
+    final theme = FluentTheme.of(context);
+    final total = encodeState.totalFiles;
+    final current = encodeState.currentIndex;
+    final completed = encodeState.completedCount;
+    final failed = encodeState.failedFiles;
+    final overallPercent = total > 0 ? current / total : 0.0;
+
+    String statusText;
+    Color statusColor;
+    switch (status) {
+      case EncodeStatus.encoding:
+        statusText = 'Encoding $current / $total'
+            '${encodeState.progress.speed > 0 ? '  ·  ${encodeState.progress.speed.toStringAsFixed(1)}x' : ''}';
+        statusColor = theme.resources.textFillColorSecondary;
+      case EncodeStatus.done:
+        statusText = 'Done — $completed / $total completed';
+        statusColor = const Color(0xFF34C759);
+      case EncodeStatus.error:
+        statusText = '$completed completed, ${failed.length} failed';
+        statusColor = const Color(0xFFFF3B30);
+      case EncodeStatus.idle:
+        return const SizedBox.shrink();
     }
 
-    const colGap = SizedBox(width: 8);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        decoration: BoxDecoration(
-          color: bgColor,
-          border: Border(
-            bottom: BorderSide(color: theme.resources.controlStrokeColorDefault, width: 0.5),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        border: Border(top: BorderSide(color: theme.resources.controlStrokeColorDefault)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  statusText,
+                  style: (theme.typography.caption ?? const TextStyle()).copyWith(color: statusColor),
+                ),
+              ),
+              Text(
+                '${(overallPercent * 100).toStringAsFixed(0)}%',
+                style: theme.typography.caption?.copyWith(color: theme.resources.textFillColorSecondary),
+              ),
+            ],
           ),
-        ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 40,
-              child: Icon(FluentIcons.video, size: 16, color: theme.accentColor),
-            ),
-            SizedBox(
-              width: colWidths[0],
-              child: Text(file.name, style: theme.typography.body, overflow: TextOverflow.ellipsis),
-            ),
-            colGap,
-            SizedBox(
-              width: colWidths[1],
-              child: Text(
-                file.path,
-                style: theme.typography.caption?.copyWith(
-                  color: theme.resources.textFillColorSecondary,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            colGap,
-            SizedBox(
-              width: colWidths[2],
-              child: Text(
-                FileSizeFormatter.format(file.sizeInBytes),
-                style: theme.typography.caption,
-                textAlign: TextAlign.end,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            colGap,
-            SizedBox(
-              width: colWidths[3],
-              child: Text(
-                _formatDate(file.importedAt),
-                style: theme.typography.caption?.copyWith(
-                  color: theme.resources.textFillColorSecondary,
-                ),
-                textAlign: TextAlign.end,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            SizedBox(
-              width: 40,
-              child: IconButton(
-                icon: const Icon(FluentIcons.chrome_close, size: 12),
-                onPressed: onRemove,
-              ),
-            ),
-          ],
-        ),
+          const SizedBox(height: 4),
+          ProgressBar(value: overallPercent * 100),
+        ],
       ),
     );
-  }
-
-  String _formatDate(DateTime dt) {
-    final h = dt.hour.toString().padLeft(2, '0');
-    final m = dt.minute.toString().padLeft(2, '0');
-    return '${dt.day}/${dt.month}/${dt.year} $h:$m';
   }
 }
 
@@ -615,23 +710,54 @@ class _EncodeSettingsDialog extends StatefulWidget {
     required this.settings,
     required this.onSave,
     required this.onCancel,
+    this.onReset,
   });
 
   final EncodeSettings settings;
   final ValueChanged<EncodeSettings> onSave;
   final VoidCallback onCancel;
+  final VoidCallback? onReset;
 
   @override
   State<_EncodeSettingsDialog> createState() => _EncodeSettingsDialogState();
 }
 
 class _EncodeSettingsDialogState extends State<_EncodeSettingsDialog> {
-  late bool _burnTimestamp;
+  late VideoEncoder _codec;
+  late EncodePreset _preset;
+  late int _crf;
+  late OutputExtension _outputExtension;
+  late String _resolution;
+  late AudioCodec _audioCodec;
+  late AudioBitrate _audioBitrate;
+  late List<TextOverlay> _textOverlays;
+  int _selectedTab = 0;
 
   @override
   void initState() {
     super.initState();
-    _burnTimestamp = widget.settings.burnTimestamp;
+    final s = widget.settings;
+    _codec = s.codec;
+    _preset = s.preset;
+    _crf = s.crf;
+    _outputExtension = s.outputExtension;
+    _resolution = s.resolution ?? '';
+    _audioCodec = s.audioCodec;
+    _audioBitrate = s.audioBitrate;
+    _textOverlays = List.of(s.textOverlays);
+  }
+
+  EncodeSettings _buildSettings() {
+    return EncodeSettings(
+      codec: _codec,
+      preset: _preset,
+      crf: _crf,
+      outputExtension: _outputExtension,
+      resolution: _resolution.isEmpty ? null : _resolution,
+      audioCodec: _audioCodec,
+      audioBitrate: _audioBitrate,
+      textOverlays: _textOverlays,
+    );
   }
 
   @override
@@ -639,7 +765,10 @@ class _EncodeSettingsDialogState extends State<_EncodeSettingsDialog> {
     final theme = FluentTheme.of(context);
     final l10n = Languages.translate;
 
+    final tabs = ['Container', 'Sizing', 'Filter', 'Audio'];
+
     return ContentDialog(
+      constraints: const BoxConstraints(maxWidth: 520, maxHeight: 480),
       title: Text(l10n.encodeSettings),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -647,40 +776,243 @@ class _EncodeSettingsDialogState extends State<_EncodeSettingsDialog> {
         children: [
           Row(
             children: [
-              Checkbox(
-                checked: _burnTimestamp,
-                onChanged: (v) => setState(() => _burnTimestamp = v ?? false),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.burnTimestamp, style: theme.typography.body),
-                    const SizedBox(height: 2),
-                    Text(
-                      l10n.burnTimestampDescription,
-                      style: theme.typography.caption?.copyWith(
-                        color: theme.resources.textFillColorSecondary,
-                      ),
-                    ),
-                  ],
+              for (int i = 0; i < tabs.length; i++) ...[
+                if (i > 0) const SizedBox(width: 4),
+                Button(
+                  onPressed: () => setState(() => _selectedTab = i),
+                  child: Text(
+                    tabs[i],
+                    style: i == _selectedTab
+                        ? theme.typography.body?.copyWith(fontWeight: FontWeight.w600)
+                        : theme.typography.body,
+                  ),
                 ),
-              ),
+              ],
             ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: switch (_selectedTab) {
+              0 => _buildContainerTab(theme),
+              1 => _buildSizingTab(theme),
+              2 => _buildFilterTab(theme, l10n),
+              3 => _buildAudioTab(theme),
+              _ => const SizedBox.shrink(),
+            },
           ),
         ],
       ),
       actions: [
-        Button(
-          onPressed: widget.onCancel,
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(
-          onPressed: () => widget.onSave(
-            EncodeSettings(burnTimestamp: _burnTimestamp),
+        if (widget.onReset != null)
+          Button(onPressed: widget.onReset, child: const Text('Reset to Global')),
+        Button(onPressed: widget.onCancel, child: Text(l10n.cancel)),
+        FilledButton(onPressed: () => widget.onSave(_buildSettings()), child: Text(l10n.save)),
+      ],
+    );
+  }
+
+  Widget _buildContainerTab(FluentThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _FluentDropdown<OutputExtension>(label: 'Extension', value: _outputExtension, items: OutputExtension.values, itemLabel: (e) => e.value, onChanged: (v) => setState(() => _outputExtension = v)),
+        const SizedBox(height: 12),
+        _FluentDropdown<VideoEncoder>(label: 'Video Codec', value: _codec, items: VideoEncoder.values, itemLabel: (e) => e.value, onChanged: (v) => setState(() => _codec = v)),
+        const SizedBox(height: 12),
+        _FluentDropdown<EncodePreset>(label: 'Preset', value: _preset, items: EncodePreset.values, itemLabel: (e) => e.value, onChanged: (v) => setState(() => _preset = v)),
+        const SizedBox(height: 12),
+        _FluentField(label: 'CRF', value: '$_crf', onChanged: (v) => setState(() => _crf = int.tryParse(v) ?? _crf)),
+      ],
+    );
+  }
+
+  Widget _buildSizingTab(FluentThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _FluentField(label: 'Resolution', value: _resolution, onChanged: (v) => setState(() => _resolution = v), hint: '1920:1080 (empty = original)'),
+      ],
+    );
+  }
+
+  Widget _buildFilterTab(FluentThemeData theme, dynamic l10n) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text('Text Overlays', style: theme.typography.bodyStrong),
+              const Spacer(),
+              Button(
+                onPressed: () => setState(() {
+                  _textOverlays = [..._textOverlays, const TextOverlay(text: 'Text')];
+                }),
+                child: const Text('+ Add Text'),
+              ),
+            ],
           ),
-          child: Text(l10n.save),
+          const SizedBox(height: 12),
+          for (int i = 0; i < _textOverlays.length; i++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text('Text ${i + 1}', style: theme.typography.body),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(FluentIcons.chrome_close, size: 12),
+                            onPressed: () => setState(() {
+                              _textOverlays = [..._textOverlays]..removeAt(i);
+                            }),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      _FluentDropdown<TextOverlayType>(
+                        label: l10n.overlayType,
+                        value: _textOverlays[i].type,
+                        items: TextOverlayType.values,
+                        itemLabel: (e) => switch (e) {
+                          TextOverlayType.custom => l10n.overlayTypeCustom,
+                          TextOverlayType.timestamp => l10n.overlayTypeTimestamp,
+                        },
+                        onChanged: (v) => setState(() {
+                          _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(
+                            type: v,
+                            text: v == TextOverlayType.timestamp ? '' : _textOverlays[i].text,
+                          );
+                        }),
+                      ),
+                      const SizedBox(height: 8),
+                      if (_textOverlays[i].type == TextOverlayType.custom) ...[
+                        _FluentField(
+                          label: 'Text',
+                          value: _textOverlays[i].text,
+                          onChanged: (v) => setState(() {
+                            _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(text: v);
+                          }),
+                          hint: r"%{pts\:hms} for timestamp",
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                      Row(
+                        children: [
+                          Expanded(child: _FluentField(
+                            label: 'Size',
+                            value: '${_textOverlays[i].fontSize}',
+                            onChanged: (v) => setState(() {
+                              _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(fontSize: int.tryParse(v) ?? 24);
+                            }),
+                          )),
+                          const SizedBox(width: 12),
+                          Expanded(child: _FluentField(
+                            label: 'Color',
+                            value: _textOverlays[i].fontColor,
+                            onChanged: (v) => setState(() {
+                              _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(fontColor: v);
+                            }),
+                          )),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      _FluentDropdown<TextOverlayPosition>(
+                        label: 'Position',
+                        value: _textOverlays[i].position,
+                        items: TextOverlayPosition.values,
+                        itemLabel: (e) => e.name,
+                        onChanged: (v) => setState(() {
+                          _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(position: v);
+                        }),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAudioTab(FluentThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _FluentDropdown<AudioCodec>(label: 'Audio Codec', value: _audioCodec, items: AudioCodec.values, itemLabel: (e) => e.value, onChanged: (v) => setState(() => _audioCodec = v)),
+        const SizedBox(height: 12),
+        _FluentDropdown<AudioBitrate>(label: 'Bitrate', value: _audioBitrate, items: AudioBitrate.values, itemLabel: (e) => e.value, onChanged: (v) => setState(() => _audioBitrate = v)),
+      ],
+    );
+  }
+}
+
+class _FluentField extends StatelessWidget {
+  const _FluentField({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.hint,
+  });
+
+  final String label;
+  final String value;
+  final ValueChanged<String> onChanged;
+  final String? hint;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    return Row(
+      children: [
+        SizedBox(width: 100, child: Text(label, style: theme.typography.body)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: TextBox(
+            controller: TextEditingController(text: value),
+            placeholder: hint,
+            onChanged: onChanged,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FluentDropdown<T> extends StatelessWidget {
+  const _FluentDropdown({
+    required this.label,
+    required this.value,
+    required this.items,
+    required this.itemLabel,
+    required this.onChanged,
+  });
+
+  final String label;
+  final T value;
+  final List<T> items;
+  final String Function(T) itemLabel;
+  final ValueChanged<T> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    return Row(
+      children: [
+        SizedBox(width: 100, child: Text(label, style: theme.typography.body)),
+        const SizedBox(width: 8),
+        ComboBox<T>(
+          value: value,
+          onChanged: (v) { if (v != null) onChanged(v); },
+          items: items
+              .map((e) => ComboBoxItem(value: e, child: Text(itemLabel(e))))
+              .toList(),
         ),
       ],
     );

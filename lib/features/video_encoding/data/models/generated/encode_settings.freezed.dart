@@ -12,9 +12,296 @@ part of '../encode_settings.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
+mixin _$TextOverlay {
+
+/// The text content. Ignored when [type] is [TextOverlayType.timestamp].
+ String get text; TextOverlayType get type; int get fontSize; String get fontColor; TextOverlayPosition get position; int get offsetX; int get offsetY; String? get fontFile; bool get showBackground; String get backgroundColor;
+/// Create a copy of TextOverlay
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TextOverlayCopyWith<TextOverlay> get copyWith => _$TextOverlayCopyWithImpl<TextOverlay>(this as TextOverlay, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TextOverlay&&(identical(other.text, text) || other.text == text)&&(identical(other.type, type) || other.type == type)&&(identical(other.fontSize, fontSize) || other.fontSize == fontSize)&&(identical(other.fontColor, fontColor) || other.fontColor == fontColor)&&(identical(other.position, position) || other.position == position)&&(identical(other.offsetX, offsetX) || other.offsetX == offsetX)&&(identical(other.offsetY, offsetY) || other.offsetY == offsetY)&&(identical(other.fontFile, fontFile) || other.fontFile == fontFile)&&(identical(other.showBackground, showBackground) || other.showBackground == showBackground)&&(identical(other.backgroundColor, backgroundColor) || other.backgroundColor == backgroundColor));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,text,type,fontSize,fontColor,position,offsetX,offsetY,fontFile,showBackground,backgroundColor);
+
+@override
+String toString() {
+  return 'TextOverlay(text: $text, type: $type, fontSize: $fontSize, fontColor: $fontColor, position: $position, offsetX: $offsetX, offsetY: $offsetY, fontFile: $fontFile, showBackground: $showBackground, backgroundColor: $backgroundColor)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TextOverlayCopyWith<$Res>  {
+  factory $TextOverlayCopyWith(TextOverlay value, $Res Function(TextOverlay) _then) = _$TextOverlayCopyWithImpl;
+@useResult
+$Res call({
+ String text, TextOverlayType type, int fontSize, String fontColor, TextOverlayPosition position, int offsetX, int offsetY, String? fontFile, bool showBackground, String backgroundColor
+});
+
+
+
+
+}
+/// @nodoc
+class _$TextOverlayCopyWithImpl<$Res>
+    implements $TextOverlayCopyWith<$Res> {
+  _$TextOverlayCopyWithImpl(this._self, this._then);
+
+  final TextOverlay _self;
+  final $Res Function(TextOverlay) _then;
+
+/// Create a copy of TextOverlay
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? text = null,Object? type = null,Object? fontSize = null,Object? fontColor = null,Object? position = null,Object? offsetX = null,Object? offsetY = null,Object? fontFile = freezed,Object? showBackground = null,Object? backgroundColor = null,}) {
+  return _then(_self.copyWith(
+text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as TextOverlayType,fontSize: null == fontSize ? _self.fontSize : fontSize // ignore: cast_nullable_to_non_nullable
+as int,fontColor: null == fontColor ? _self.fontColor : fontColor // ignore: cast_nullable_to_non_nullable
+as String,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
+as TextOverlayPosition,offsetX: null == offsetX ? _self.offsetX : offsetX // ignore: cast_nullable_to_non_nullable
+as int,offsetY: null == offsetY ? _self.offsetY : offsetY // ignore: cast_nullable_to_non_nullable
+as int,fontFile: freezed == fontFile ? _self.fontFile : fontFile // ignore: cast_nullable_to_non_nullable
+as String?,showBackground: null == showBackground ? _self.showBackground : showBackground // ignore: cast_nullable_to_non_nullable
+as bool,backgroundColor: null == backgroundColor ? _self.backgroundColor : backgroundColor // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [TextOverlay].
+extension TextOverlayPatterns on TextOverlay {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TextOverlay value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _TextOverlay() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TextOverlay value)  $default,){
+final _that = this;
+switch (_that) {
+case _TextOverlay():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TextOverlay value)?  $default,){
+final _that = this;
+switch (_that) {
+case _TextOverlay() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String text,  TextOverlayType type,  int fontSize,  String fontColor,  TextOverlayPosition position,  int offsetX,  int offsetY,  String? fontFile,  bool showBackground,  String backgroundColor)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _TextOverlay() when $default != null:
+return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.position,_that.offsetX,_that.offsetY,_that.fontFile,_that.showBackground,_that.backgroundColor);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String text,  TextOverlayType type,  int fontSize,  String fontColor,  TextOverlayPosition position,  int offsetX,  int offsetY,  String? fontFile,  bool showBackground,  String backgroundColor)  $default,) {final _that = this;
+switch (_that) {
+case _TextOverlay():
+return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.position,_that.offsetX,_that.offsetY,_that.fontFile,_that.showBackground,_that.backgroundColor);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String text,  TextOverlayType type,  int fontSize,  String fontColor,  TextOverlayPosition position,  int offsetX,  int offsetY,  String? fontFile,  bool showBackground,  String backgroundColor)?  $default,) {final _that = this;
+switch (_that) {
+case _TextOverlay() when $default != null:
+return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.position,_that.offsetX,_that.offsetY,_that.fontFile,_that.showBackground,_that.backgroundColor);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _TextOverlay implements TextOverlay {
+  const _TextOverlay({required this.text, this.type = TextOverlayType.custom, this.fontSize = 24, this.fontColor = 'white', this.position = TextOverlayPosition.bottomRight, this.offsetX = 16, this.offsetY = 16, this.fontFile, this.showBackground = true, this.backgroundColor = 'black@0.5'});
+  
+
+/// The text content. Ignored when [type] is [TextOverlayType.timestamp].
+@override final  String text;
+@override@JsonKey() final  TextOverlayType type;
+@override@JsonKey() final  int fontSize;
+@override@JsonKey() final  String fontColor;
+@override@JsonKey() final  TextOverlayPosition position;
+@override@JsonKey() final  int offsetX;
+@override@JsonKey() final  int offsetY;
+@override final  String? fontFile;
+@override@JsonKey() final  bool showBackground;
+@override@JsonKey() final  String backgroundColor;
+
+/// Create a copy of TextOverlay
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TextOverlayCopyWith<_TextOverlay> get copyWith => __$TextOverlayCopyWithImpl<_TextOverlay>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TextOverlay&&(identical(other.text, text) || other.text == text)&&(identical(other.type, type) || other.type == type)&&(identical(other.fontSize, fontSize) || other.fontSize == fontSize)&&(identical(other.fontColor, fontColor) || other.fontColor == fontColor)&&(identical(other.position, position) || other.position == position)&&(identical(other.offsetX, offsetX) || other.offsetX == offsetX)&&(identical(other.offsetY, offsetY) || other.offsetY == offsetY)&&(identical(other.fontFile, fontFile) || other.fontFile == fontFile)&&(identical(other.showBackground, showBackground) || other.showBackground == showBackground)&&(identical(other.backgroundColor, backgroundColor) || other.backgroundColor == backgroundColor));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,text,type,fontSize,fontColor,position,offsetX,offsetY,fontFile,showBackground,backgroundColor);
+
+@override
+String toString() {
+  return 'TextOverlay(text: $text, type: $type, fontSize: $fontSize, fontColor: $fontColor, position: $position, offsetX: $offsetX, offsetY: $offsetY, fontFile: $fontFile, showBackground: $showBackground, backgroundColor: $backgroundColor)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$TextOverlayCopyWith<$Res> implements $TextOverlayCopyWith<$Res> {
+  factory _$TextOverlayCopyWith(_TextOverlay value, $Res Function(_TextOverlay) _then) = __$TextOverlayCopyWithImpl;
+@override @useResult
+$Res call({
+ String text, TextOverlayType type, int fontSize, String fontColor, TextOverlayPosition position, int offsetX, int offsetY, String? fontFile, bool showBackground, String backgroundColor
+});
+
+
+
+
+}
+/// @nodoc
+class __$TextOverlayCopyWithImpl<$Res>
+    implements _$TextOverlayCopyWith<$Res> {
+  __$TextOverlayCopyWithImpl(this._self, this._then);
+
+  final _TextOverlay _self;
+  final $Res Function(_TextOverlay) _then;
+
+/// Create a copy of TextOverlay
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? text = null,Object? type = null,Object? fontSize = null,Object? fontColor = null,Object? position = null,Object? offsetX = null,Object? offsetY = null,Object? fontFile = freezed,Object? showBackground = null,Object? backgroundColor = null,}) {
+  return _then(_TextOverlay(
+text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as TextOverlayType,fontSize: null == fontSize ? _self.fontSize : fontSize // ignore: cast_nullable_to_non_nullable
+as int,fontColor: null == fontColor ? _self.fontColor : fontColor // ignore: cast_nullable_to_non_nullable
+as String,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
+as TextOverlayPosition,offsetX: null == offsetX ? _self.offsetX : offsetX // ignore: cast_nullable_to_non_nullable
+as int,offsetY: null == offsetY ? _self.offsetY : offsetY // ignore: cast_nullable_to_non_nullable
+as int,fontFile: freezed == fontFile ? _self.fontFile : fontFile // ignore: cast_nullable_to_non_nullable
+as String?,showBackground: null == showBackground ? _self.showBackground : showBackground // ignore: cast_nullable_to_non_nullable
+as bool,backgroundColor: null == backgroundColor ? _self.backgroundColor : backgroundColor // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$EncodeSettings {
 
- bool get burnTimestamp;
+ VideoEncoder get codec; EncodePreset get preset; int get crf; OutputExtension get outputExtension;/// Null = keep original resolution. Format: "1920:1080".
+ String? get resolution; AudioCodec get audioCodec; AudioBitrate get audioBitrate; List<TextOverlay> get textOverlays;
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +312,16 @@ $EncodeSettingsCopyWith<EncodeSettings> get copyWith => _$EncodeSettingsCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EncodeSettings&&(identical(other.burnTimestamp, burnTimestamp) || other.burnTimestamp == burnTimestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EncodeSettings&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.preset, preset) || other.preset == preset)&&(identical(other.crf, crf) || other.crf == crf)&&(identical(other.outputExtension, outputExtension) || other.outputExtension == outputExtension)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.audioBitrate, audioBitrate) || other.audioBitrate == audioBitrate)&&const DeepCollectionEquality().equals(other.textOverlays, textOverlays));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,burnTimestamp);
+int get hashCode => Object.hash(runtimeType,codec,preset,crf,outputExtension,resolution,audioCodec,audioBitrate,const DeepCollectionEquality().hash(textOverlays));
 
 @override
 String toString() {
-  return 'EncodeSettings(burnTimestamp: $burnTimestamp)';
+  return 'EncodeSettings(codec: $codec, preset: $preset, crf: $crf, outputExtension: $outputExtension, resolution: $resolution, audioCodec: $audioCodec, audioBitrate: $audioBitrate, textOverlays: $textOverlays)';
 }
 
 
@@ -45,7 +332,7 @@ abstract mixin class $EncodeSettingsCopyWith<$Res>  {
   factory $EncodeSettingsCopyWith(EncodeSettings value, $Res Function(EncodeSettings) _then) = _$EncodeSettingsCopyWithImpl;
 @useResult
 $Res call({
- bool burnTimestamp
+ VideoEncoder codec, EncodePreset preset, int crf, OutputExtension outputExtension, String? resolution, AudioCodec audioCodec, AudioBitrate audioBitrate, List<TextOverlay> textOverlays
 });
 
 
@@ -62,10 +349,17 @@ class _$EncodeSettingsCopyWithImpl<$Res>
 
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? burnTimestamp = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? codec = null,Object? preset = null,Object? crf = null,Object? outputExtension = null,Object? resolution = freezed,Object? audioCodec = null,Object? audioBitrate = null,Object? textOverlays = null,}) {
   return _then(_self.copyWith(
-burnTimestamp: null == burnTimestamp ? _self.burnTimestamp : burnTimestamp // ignore: cast_nullable_to_non_nullable
-as bool,
+codec: null == codec ? _self.codec : codec // ignore: cast_nullable_to_non_nullable
+as VideoEncoder,preset: null == preset ? _self.preset : preset // ignore: cast_nullable_to_non_nullable
+as EncodePreset,crf: null == crf ? _self.crf : crf // ignore: cast_nullable_to_non_nullable
+as int,outputExtension: null == outputExtension ? _self.outputExtension : outputExtension // ignore: cast_nullable_to_non_nullable
+as OutputExtension,resolution: freezed == resolution ? _self.resolution : resolution // ignore: cast_nullable_to_non_nullable
+as String?,audioCodec: null == audioCodec ? _self.audioCodec : audioCodec // ignore: cast_nullable_to_non_nullable
+as AudioCodec,audioBitrate: null == audioBitrate ? _self.audioBitrate : audioBitrate // ignore: cast_nullable_to_non_nullable
+as AudioBitrate,textOverlays: null == textOverlays ? _self.textOverlays : textOverlays // ignore: cast_nullable_to_non_nullable
+as List<TextOverlay>,
   ));
 }
 
@@ -150,10 +444,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool burnTimestamp)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EncodeSettings() when $default != null:
-return $default(_that.burnTimestamp);case _:
+return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays);case _:
   return orElse();
 
 }
@@ -171,10 +465,10 @@ return $default(_that.burnTimestamp);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool burnTimestamp)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays)  $default,) {final _that = this;
 switch (_that) {
 case _EncodeSettings():
-return $default(_that.burnTimestamp);case _:
+return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -191,10 +485,10 @@ return $default(_that.burnTimestamp);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool burnTimestamp)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays)?  $default,) {final _that = this;
 switch (_that) {
 case _EncodeSettings() when $default != null:
-return $default(_that.burnTimestamp);case _:
+return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays);case _:
   return null;
 
 }
@@ -205,11 +499,25 @@ return $default(_that.burnTimestamp);case _:
 /// @nodoc
 
 
-class _EncodeSettings implements EncodeSettings {
-  const _EncodeSettings({this.burnTimestamp = false});
+class _EncodeSettings extends EncodeSettings {
+  const _EncodeSettings({this.codec = VideoEncoder.h264, this.preset = EncodePreset.veryfast, this.crf = 23, this.outputExtension = OutputExtension.mp4, this.resolution, this.audioCodec = AudioCodec.passthrough, this.audioBitrate = AudioBitrate.k128, final  List<TextOverlay> textOverlays = const []}): _textOverlays = textOverlays,super._();
   
 
-@override@JsonKey() final  bool burnTimestamp;
+@override@JsonKey() final  VideoEncoder codec;
+@override@JsonKey() final  EncodePreset preset;
+@override@JsonKey() final  int crf;
+@override@JsonKey() final  OutputExtension outputExtension;
+/// Null = keep original resolution. Format: "1920:1080".
+@override final  String? resolution;
+@override@JsonKey() final  AudioCodec audioCodec;
+@override@JsonKey() final  AudioBitrate audioBitrate;
+ final  List<TextOverlay> _textOverlays;
+@override@JsonKey() List<TextOverlay> get textOverlays {
+  if (_textOverlays is EqualUnmodifiableListView) return _textOverlays;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_textOverlays);
+}
+
 
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -221,16 +529,16 @@ _$EncodeSettingsCopyWith<_EncodeSettings> get copyWith => __$EncodeSettingsCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EncodeSettings&&(identical(other.burnTimestamp, burnTimestamp) || other.burnTimestamp == burnTimestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EncodeSettings&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.preset, preset) || other.preset == preset)&&(identical(other.crf, crf) || other.crf == crf)&&(identical(other.outputExtension, outputExtension) || other.outputExtension == outputExtension)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.audioBitrate, audioBitrate) || other.audioBitrate == audioBitrate)&&const DeepCollectionEquality().equals(other._textOverlays, _textOverlays));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,burnTimestamp);
+int get hashCode => Object.hash(runtimeType,codec,preset,crf,outputExtension,resolution,audioCodec,audioBitrate,const DeepCollectionEquality().hash(_textOverlays));
 
 @override
 String toString() {
-  return 'EncodeSettings(burnTimestamp: $burnTimestamp)';
+  return 'EncodeSettings(codec: $codec, preset: $preset, crf: $crf, outputExtension: $outputExtension, resolution: $resolution, audioCodec: $audioCodec, audioBitrate: $audioBitrate, textOverlays: $textOverlays)';
 }
 
 
@@ -241,7 +549,7 @@ abstract mixin class _$EncodeSettingsCopyWith<$Res> implements $EncodeSettingsCo
   factory _$EncodeSettingsCopyWith(_EncodeSettings value, $Res Function(_EncodeSettings) _then) = __$EncodeSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- bool burnTimestamp
+ VideoEncoder codec, EncodePreset preset, int crf, OutputExtension outputExtension, String? resolution, AudioCodec audioCodec, AudioBitrate audioBitrate, List<TextOverlay> textOverlays
 });
 
 
@@ -258,10 +566,17 @@ class __$EncodeSettingsCopyWithImpl<$Res>
 
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? burnTimestamp = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? codec = null,Object? preset = null,Object? crf = null,Object? outputExtension = null,Object? resolution = freezed,Object? audioCodec = null,Object? audioBitrate = null,Object? textOverlays = null,}) {
   return _then(_EncodeSettings(
-burnTimestamp: null == burnTimestamp ? _self.burnTimestamp : burnTimestamp // ignore: cast_nullable_to_non_nullable
-as bool,
+codec: null == codec ? _self.codec : codec // ignore: cast_nullable_to_non_nullable
+as VideoEncoder,preset: null == preset ? _self.preset : preset // ignore: cast_nullable_to_non_nullable
+as EncodePreset,crf: null == crf ? _self.crf : crf // ignore: cast_nullable_to_non_nullable
+as int,outputExtension: null == outputExtension ? _self.outputExtension : outputExtension // ignore: cast_nullable_to_non_nullable
+as OutputExtension,resolution: freezed == resolution ? _self.resolution : resolution // ignore: cast_nullable_to_non_nullable
+as String?,audioCodec: null == audioCodec ? _self.audioCodec : audioCodec // ignore: cast_nullable_to_non_nullable
+as AudioCodec,audioBitrate: null == audioBitrate ? _self.audioBitrate : audioBitrate // ignore: cast_nullable_to_non_nullable
+as AudioBitrate,textOverlays: null == textOverlays ? _self._textOverlays : textOverlays // ignore: cast_nullable_to_non_nullable
+as List<TextOverlay>,
   ));
 }
 

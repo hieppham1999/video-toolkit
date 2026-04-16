@@ -1,4 +1,3 @@
-import 'package:video_toolkit/features/video_encoding/data/models/encode_preset.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 
@@ -7,9 +6,9 @@ abstract class VideoEncodeRepository {
 
   Stream<EncodeProgress> encode({
     required String inputPath,
-    required EncodePreset preset,
-    required Duration totalDuration,
     required EncodeSettings settings,
+    required Duration totalDuration,
     String? outputDir,
+    DateTime? creationDate,
   });
 }

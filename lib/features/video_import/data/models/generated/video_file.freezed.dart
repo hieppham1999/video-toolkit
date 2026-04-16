@@ -14,7 +14,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$VideoFile {
 
- String get path; String get name; int get sizeInBytes; DateTime get importedAt; VideoMetadata? get metadata;
+ String get path; String get name; int get sizeInBytes; DateTime get importedAt; VideoMetadata? get metadata;/// Per-file encode settings override. Null = use global settings.
+ EncodeSettings? get overrideSettings;
 /// Create a copy of VideoFile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +26,16 @@ $VideoFileCopyWith<VideoFile> get copyWith => _$VideoFileCopyWithImpl<VideoFile>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoFile&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.sizeInBytes, sizeInBytes) || other.sizeInBytes == sizeInBytes)&&(identical(other.importedAt, importedAt) || other.importedAt == importedAt)&&(identical(other.metadata, metadata) || other.metadata == metadata));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoFile&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.sizeInBytes, sizeInBytes) || other.sizeInBytes == sizeInBytes)&&(identical(other.importedAt, importedAt) || other.importedAt == importedAt)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.overrideSettings, overrideSettings) || other.overrideSettings == overrideSettings));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,name,sizeInBytes,importedAt,metadata);
+int get hashCode => Object.hash(runtimeType,path,name,sizeInBytes,importedAt,metadata,overrideSettings);
 
 @override
 String toString() {
-  return 'VideoFile(path: $path, name: $name, sizeInBytes: $sizeInBytes, importedAt: $importedAt, metadata: $metadata)';
+  return 'VideoFile(path: $path, name: $name, sizeInBytes: $sizeInBytes, importedAt: $importedAt, metadata: $metadata, overrideSettings: $overrideSettings)';
 }
 
 
@@ -45,11 +46,11 @@ abstract mixin class $VideoFileCopyWith<$Res>  {
   factory $VideoFileCopyWith(VideoFile value, $Res Function(VideoFile) _then) = _$VideoFileCopyWithImpl;
 @useResult
 $Res call({
- String path, String name, int sizeInBytes, DateTime importedAt, VideoMetadata? metadata
+ String path, String name, int sizeInBytes, DateTime importedAt, VideoMetadata? metadata, EncodeSettings? overrideSettings
 });
 
 
-$VideoMetadataCopyWith<$Res>? get metadata;
+$VideoMetadataCopyWith<$Res>? get metadata;$EncodeSettingsCopyWith<$Res>? get overrideSettings;
 
 }
 /// @nodoc
@@ -62,14 +63,15 @@ class _$VideoFileCopyWithImpl<$Res>
 
 /// Create a copy of VideoFile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? path = null,Object? name = null,Object? sizeInBytes = null,Object? importedAt = null,Object? metadata = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? path = null,Object? name = null,Object? sizeInBytes = null,Object? importedAt = null,Object? metadata = freezed,Object? overrideSettings = freezed,}) {
   return _then(_self.copyWith(
 path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,sizeInBytes: null == sizeInBytes ? _self.sizeInBytes : sizeInBytes // ignore: cast_nullable_to_non_nullable
 as int,importedAt: null == importedAt ? _self.importedAt : importedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,metadata: freezed == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
-as VideoMetadata?,
+as VideoMetadata?,overrideSettings: freezed == overrideSettings ? _self.overrideSettings : overrideSettings // ignore: cast_nullable_to_non_nullable
+as EncodeSettings?,
   ));
 }
 /// Create a copy of VideoFile
@@ -83,6 +85,18 @@ $VideoMetadataCopyWith<$Res>? get metadata {
 
   return $VideoMetadataCopyWith<$Res>(_self.metadata!, (value) {
     return _then(_self.copyWith(metadata: value));
+  });
+}/// Create a copy of VideoFile
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$EncodeSettingsCopyWith<$Res>? get overrideSettings {
+    if (_self.overrideSettings == null) {
+    return null;
+  }
+
+  return $EncodeSettingsCopyWith<$Res>(_self.overrideSettings!, (value) {
+    return _then(_self.copyWith(overrideSettings: value));
   });
 }
 }
@@ -166,10 +180,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata,  EncodeSettings? overrideSettings)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VideoFile() when $default != null:
-return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata);case _:
+return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata,_that.overrideSettings);case _:
   return orElse();
 
 }
@@ -187,10 +201,10 @@ return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.m
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata,  EncodeSettings? overrideSettings)  $default,) {final _that = this;
 switch (_that) {
 case _VideoFile():
-return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata);case _:
+return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata,_that.overrideSettings);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -207,10 +221,10 @@ return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.m
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata,  EncodeSettings? overrideSettings)?  $default,) {final _that = this;
 switch (_that) {
 case _VideoFile() when $default != null:
-return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata);case _:
+return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata,_that.overrideSettings);case _:
   return null;
 
 }
@@ -222,7 +236,7 @@ return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.m
 
 
 class _VideoFile implements VideoFile {
-  const _VideoFile({required this.path, required this.name, required this.sizeInBytes, required this.importedAt, this.metadata});
+  const _VideoFile({required this.path, required this.name, required this.sizeInBytes, required this.importedAt, this.metadata, this.overrideSettings});
   
 
 @override final  String path;
@@ -230,6 +244,8 @@ class _VideoFile implements VideoFile {
 @override final  int sizeInBytes;
 @override final  DateTime importedAt;
 @override final  VideoMetadata? metadata;
+/// Per-file encode settings override. Null = use global settings.
+@override final  EncodeSettings? overrideSettings;
 
 /// Create a copy of VideoFile
 /// with the given fields replaced by the non-null parameter values.
@@ -241,16 +257,16 @@ _$VideoFileCopyWith<_VideoFile> get copyWith => __$VideoFileCopyWithImpl<_VideoF
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoFile&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.sizeInBytes, sizeInBytes) || other.sizeInBytes == sizeInBytes)&&(identical(other.importedAt, importedAt) || other.importedAt == importedAt)&&(identical(other.metadata, metadata) || other.metadata == metadata));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoFile&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.sizeInBytes, sizeInBytes) || other.sizeInBytes == sizeInBytes)&&(identical(other.importedAt, importedAt) || other.importedAt == importedAt)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.overrideSettings, overrideSettings) || other.overrideSettings == overrideSettings));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,name,sizeInBytes,importedAt,metadata);
+int get hashCode => Object.hash(runtimeType,path,name,sizeInBytes,importedAt,metadata,overrideSettings);
 
 @override
 String toString() {
-  return 'VideoFile(path: $path, name: $name, sizeInBytes: $sizeInBytes, importedAt: $importedAt, metadata: $metadata)';
+  return 'VideoFile(path: $path, name: $name, sizeInBytes: $sizeInBytes, importedAt: $importedAt, metadata: $metadata, overrideSettings: $overrideSettings)';
 }
 
 
@@ -261,11 +277,11 @@ abstract mixin class _$VideoFileCopyWith<$Res> implements $VideoFileCopyWith<$Re
   factory _$VideoFileCopyWith(_VideoFile value, $Res Function(_VideoFile) _then) = __$VideoFileCopyWithImpl;
 @override @useResult
 $Res call({
- String path, String name, int sizeInBytes, DateTime importedAt, VideoMetadata? metadata
+ String path, String name, int sizeInBytes, DateTime importedAt, VideoMetadata? metadata, EncodeSettings? overrideSettings
 });
 
 
-@override $VideoMetadataCopyWith<$Res>? get metadata;
+@override $VideoMetadataCopyWith<$Res>? get metadata;@override $EncodeSettingsCopyWith<$Res>? get overrideSettings;
 
 }
 /// @nodoc
@@ -278,14 +294,15 @@ class __$VideoFileCopyWithImpl<$Res>
 
 /// Create a copy of VideoFile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,Object? sizeInBytes = null,Object? importedAt = null,Object? metadata = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,Object? sizeInBytes = null,Object? importedAt = null,Object? metadata = freezed,Object? overrideSettings = freezed,}) {
   return _then(_VideoFile(
 path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,sizeInBytes: null == sizeInBytes ? _self.sizeInBytes : sizeInBytes // ignore: cast_nullable_to_non_nullable
 as int,importedAt: null == importedAt ? _self.importedAt : importedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,metadata: freezed == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
-as VideoMetadata?,
+as VideoMetadata?,overrideSettings: freezed == overrideSettings ? _self.overrideSettings : overrideSettings // ignore: cast_nullable_to_non_nullable
+as EncodeSettings?,
   ));
 }
 
@@ -300,6 +317,18 @@ $VideoMetadataCopyWith<$Res>? get metadata {
 
   return $VideoMetadataCopyWith<$Res>(_self.metadata!, (value) {
     return _then(_self.copyWith(metadata: value));
+  });
+}/// Create a copy of VideoFile
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$EncodeSettingsCopyWith<$Res>? get overrideSettings {
+    if (_self.overrideSettings == null) {
+    return null;
+  }
+
+  return $EncodeSettingsCopyWith<$Res>(_self.overrideSettings!, (value) {
+    return _then(_self.copyWith(overrideSettings: value));
   });
 }
 }

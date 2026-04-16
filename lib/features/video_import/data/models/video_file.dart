@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_metadata/data/models/video_metadata.dart';
 
 part 'generated/video_file.freezed.dart';
@@ -11,5 +12,7 @@ abstract class VideoFile with _$VideoFile {
     required int sizeInBytes,
     required DateTime importedAt,
     VideoMetadata? metadata,
+    /// Per-file encode settings override. Null = use global settings.
+    EncodeSettings? overrideSettings,
   }) = _VideoFile;
 }

@@ -27,5 +27,8 @@
   "selectVideoToPreview": "Chọn video để xem thông tin",
   "save": "Lưu",
   "burnTimestamp": "Ghi timestamp",
-  "burnTimestampDescription": "Chèn ngày/giờ quay vào video"
+  "burnTimestampDescription": "Chèn ngày/giờ quay vào video",
+  "overlayType": "Loại",
+  "overlayTypeCustom": "Tùy chỉnh",
+  "overlayTypeTimestamp": "Dấu thời gian"
 }

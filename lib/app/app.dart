@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
 import 'package:video_toolkit/generated/l10n/app_localizations.dart';
 
 import '../core/navigation/app_navigator.dart';
@@ -15,8 +17,11 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => VideoImportCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => GetIt.I<VideoImportCubit>()),
+        BlocProvider(create: (_) => GetIt.I<VideoEncodeCubit>()),
+      ],
       child: Platform.isWindows ? const _WindowsApp() : const _MacosApp(),
     );
   }
