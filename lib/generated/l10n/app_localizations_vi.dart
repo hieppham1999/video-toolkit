@@ -104,4 +104,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get overlayTypeTimestamp => 'Dấu thời gian';
+
+  @override
+  String get font => 'Phông chữ';
+
+  @override
+  String get fontDefault => 'Mặc định';
+
+  @override
+  String get fontBundled => 'App';
+
+  @override
+  String get dateTaken => 'Ngày quay';
+
+  @override
+  String get duration => 'Thời lượng';
 }

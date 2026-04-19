@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
+import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/features/video_metadata/data/repositories/video_metadata_repository.dart';
 import 'package:video_toolkit/presentation/base/base_cubit.dart';
 
 import '../../data/models/video_file.dart';
@@ -10,7 +12,9 @@ import 'video_import_state.dart';
 
 @injectable
 class VideoImportCubit extends BaseCubit<VideoImportState> {
-  VideoImportCubit() : super.normal(const VideoImportState());
+  VideoImportCubit(this._metadataRepository) : super.normal(const VideoImportState());
+
+  final VideoMetadataRepository _metadataRepository;
 
   static const _videoExtensions = {
     '.mp4', '.mov', '.avi', '.mkv', '.wmv',
@@ -36,6 +40,24 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
 
     if (newFiles.isEmpty) return;
     emitNormal(currentData.copyWith(files: [...currentData.files, ...newFiles]));
+
+    for (final f in newFiles) {
+      _loadMetadata(f.path);
+    }
+  }
+
+  Future<void> _loadMetadata(String path) async {
+    try {
+      final metadata = await _metadataRepository.extractMetadata(path);
+      final idx = currentData.files.indexWhere((f) => f.path == path);
+      if (idx == -1) return;
+      final updated = [...currentData.files];
+      updated[idx] = updated[idx].copyWith(metadata: metadata);
+      emitNormal(currentData.copyWith(files: updated));
+      appLogger.i('VideoImportCubit: loaded metadata for $path (creationDate: ${metadata.creationDate})');
+    } catch (e) {
+      appLogger.w('VideoImportCubit: metadata extraction failed for $path: $e');
+    }
   }
 
   void removeFile(String path) {

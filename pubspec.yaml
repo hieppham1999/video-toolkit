@@ -31,6 +31,9 @@ dependencies:
   desktop_drop: ^0.4.4
   path: ^1.9.0
 
+  # Color picker
+  flutter_colorpicker: ^1.1.0
+
   logger: ^2.5.0
 
 dev_dependencies:
@@ -50,3 +53,4 @@ flutter:
 assets:
   - assets/bin/ffmpeg/windows/
   - assets/bin/ffmpeg/macos/
+  - assets/fonts/

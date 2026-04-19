@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 mixin _$TextOverlay {
 
 /// The text content. Ignored when [type] is [TextOverlayType.timestamp].
- String get text; TextOverlayType get type; int get fontSize; String get fontColor; TextOverlayPosition get position; int get offsetX; int get offsetY; String? get fontFile; bool get showBackground; String get backgroundColor;
+ String get text; TextOverlayType get type; int get fontSize; String get fontColor; TextOverlayPosition get position; int get offsetX; int get offsetY; String? get fontFile; bool get showBackground; String get backgroundColor;/// Border (stroke) width in pixels around each character. 0 disables.
+ int get borderWidth; String get borderColor;
 /// Create a copy of TextOverlay
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +27,16 @@ $TextOverlayCopyWith<TextOverlay> get copyWith => _$TextOverlayCopyWithImpl<Text
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TextOverlay&&(identical(other.text, text) || other.text == text)&&(identical(other.type, type) || other.type == type)&&(identical(other.fontSize, fontSize) || other.fontSize == fontSize)&&(identical(other.fontColor, fontColor) || other.fontColor == fontColor)&&(identical(other.position, position) || other.position == position)&&(identical(other.offsetX, offsetX) || other.offsetX == offsetX)&&(identical(other.offsetY, offsetY) || other.offsetY == offsetY)&&(identical(other.fontFile, fontFile) || other.fontFile == fontFile)&&(identical(other.showBackground, showBackground) || other.showBackground == showBackground)&&(identical(other.backgroundColor, backgroundColor) || other.backgroundColor == backgroundColor));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TextOverlay&&(identical(other.text, text) || other.text == text)&&(identical(other.type, type) || other.type == type)&&(identical(other.fontSize, fontSize) || other.fontSize == fontSize)&&(identical(other.fontColor, fontColor) || other.fontColor == fontColor)&&(identical(other.position, position) || other.position == position)&&(identical(other.offsetX, offsetX) || other.offsetX == offsetX)&&(identical(other.offsetY, offsetY) || other.offsetY == offsetY)&&(identical(other.fontFile, fontFile) || other.fontFile == fontFile)&&(identical(other.showBackground, showBackground) || other.showBackground == showBackground)&&(identical(other.backgroundColor, backgroundColor) || other.backgroundColor == backgroundColor)&&(identical(other.borderWidth, borderWidth) || other.borderWidth == borderWidth)&&(identical(other.borderColor, borderColor) || other.borderColor == borderColor));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,text,type,fontSize,fontColor,position,offsetX,offsetY,fontFile,showBackground,backgroundColor);
+int get hashCode => Object.hash(runtimeType,text,type,fontSize,fontColor,position,offsetX,offsetY,fontFile,showBackground,backgroundColor,borderWidth,borderColor);
 
 @override
 String toString() {
-  return 'TextOverlay(text: $text, type: $type, fontSize: $fontSize, fontColor: $fontColor, position: $position, offsetX: $offsetX, offsetY: $offsetY, fontFile: $fontFile, showBackground: $showBackground, backgroundColor: $backgroundColor)';
+  return 'TextOverlay(text: $text, type: $type, fontSize: $fontSize, fontColor: $fontColor, position: $position, offsetX: $offsetX, offsetY: $offsetY, fontFile: $fontFile, showBackground: $showBackground, backgroundColor: $backgroundColor, borderWidth: $borderWidth, borderColor: $borderColor)';
 }
 
 
@@ -46,7 +47,7 @@ abstract mixin class $TextOverlayCopyWith<$Res>  {
   factory $TextOverlayCopyWith(TextOverlay value, $Res Function(TextOverlay) _then) = _$TextOverlayCopyWithImpl;
 @useResult
 $Res call({
- String text, TextOverlayType type, int fontSize, String fontColor, TextOverlayPosition position, int offsetX, int offsetY, String? fontFile, bool showBackground, String backgroundColor
+ String text, TextOverlayType type, int fontSize, String fontColor, TextOverlayPosition position, int offsetX, int offsetY, String? fontFile, bool showBackground, String backgroundColor, int borderWidth, String borderColor
 });
 
 
@@ -63,7 +64,7 @@ class _$TextOverlayCopyWithImpl<$Res>
 
 /// Create a copy of TextOverlay
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? text = null,Object? type = null,Object? fontSize = null,Object? fontColor = null,Object? position = null,Object? offsetX = null,Object? offsetY = null,Object? fontFile = freezed,Object? showBackground = null,Object? backgroundColor = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? text = null,Object? type = null,Object? fontSize = null,Object? fontColor = null,Object? position = null,Object? offsetX = null,Object? offsetY = null,Object? fontFile = freezed,Object? showBackground = null,Object? backgroundColor = null,Object? borderWidth = null,Object? borderColor = null,}) {
   return _then(_self.copyWith(
 text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -75,6 +76,8 @@ as int,offsetY: null == offsetY ? _self.offsetY : offsetY // ignore: cast_nullab
 as int,fontFile: freezed == fontFile ? _self.fontFile : fontFile // ignore: cast_nullable_to_non_nullable
 as String?,showBackground: null == showBackground ? _self.showBackground : showBackground // ignore: cast_nullable_to_non_nullable
 as bool,backgroundColor: null == backgroundColor ? _self.backgroundColor : backgroundColor // ignore: cast_nullable_to_non_nullable
+as String,borderWidth: null == borderWidth ? _self.borderWidth : borderWidth // ignore: cast_nullable_to_non_nullable
+as int,borderColor: null == borderColor ? _self.borderColor : borderColor // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -160,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String text,  TextOverlayType type,  int fontSize,  String fontColor,  TextOverlayPosition position,  int offsetX,  int offsetY,  String? fontFile,  bool showBackground,  String backgroundColor)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String text,  TextOverlayType type,  int fontSize,  String fontColor,  TextOverlayPosition position,  int offsetX,  int offsetY,  String? fontFile,  bool showBackground,  String backgroundColor,  int borderWidth,  String borderColor)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TextOverlay() when $default != null:
-return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.position,_that.offsetX,_that.offsetY,_that.fontFile,_that.showBackground,_that.backgroundColor);case _:
+return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.position,_that.offsetX,_that.offsetY,_that.fontFile,_that.showBackground,_that.backgroundColor,_that.borderWidth,_that.borderColor);case _:
   return orElse();
 
 }
@@ -181,10 +184,10 @@ return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.posit
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String text,  TextOverlayType type,  int fontSize,  String fontColor,  TextOverlayPosition position,  int offsetX,  int offsetY,  String? fontFile,  bool showBackground,  String backgroundColor)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String text,  TextOverlayType type,  int fontSize,  String fontColor,  TextOverlayPosition position,  int offsetX,  int offsetY,  String? fontFile,  bool showBackground,  String backgroundColor,  int borderWidth,  String borderColor)  $default,) {final _that = this;
 switch (_that) {
 case _TextOverlay():
-return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.position,_that.offsetX,_that.offsetY,_that.fontFile,_that.showBackground,_that.backgroundColor);case _:
+return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.position,_that.offsetX,_that.offsetY,_that.fontFile,_that.showBackground,_that.backgroundColor,_that.borderWidth,_that.borderColor);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +204,10 @@ return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.posit
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String text,  TextOverlayType type,  int fontSize,  String fontColor,  TextOverlayPosition position,  int offsetX,  int offsetY,  String? fontFile,  bool showBackground,  String backgroundColor)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String text,  TextOverlayType type,  int fontSize,  String fontColor,  TextOverlayPosition position,  int offsetX,  int offsetY,  String? fontFile,  bool showBackground,  String backgroundColor,  int borderWidth,  String borderColor)?  $default,) {final _that = this;
 switch (_that) {
 case _TextOverlay() when $default != null:
-return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.position,_that.offsetX,_that.offsetY,_that.fontFile,_that.showBackground,_that.backgroundColor);case _:
+return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.position,_that.offsetX,_that.offsetY,_that.fontFile,_that.showBackground,_that.backgroundColor,_that.borderWidth,_that.borderColor);case _:
   return null;
 
 }
@@ -216,7 +219,7 @@ return $default(_that.text,_that.type,_that.fontSize,_that.fontColor,_that.posit
 
 
 class _TextOverlay implements TextOverlay {
-  const _TextOverlay({required this.text, this.type = TextOverlayType.custom, this.fontSize = 24, this.fontColor = 'white', this.position = TextOverlayPosition.bottomRight, this.offsetX = 16, this.offsetY = 16, this.fontFile, this.showBackground = true, this.backgroundColor = 'black@0.5'});
+  const _TextOverlay({required this.text, this.type = TextOverlayType.custom, this.fontSize = 24, this.fontColor = 'white', this.position = TextOverlayPosition.bottomRight, this.offsetX = 16, this.offsetY = 16, this.fontFile, this.showBackground = true, this.backgroundColor = 'black@0.5', this.borderWidth = 0, this.borderColor = 'black'});
   
 
 /// The text content. Ignored when [type] is [TextOverlayType.timestamp].
@@ -230,6 +233,9 @@ class _TextOverlay implements TextOverlay {
 @override final  String? fontFile;
 @override@JsonKey() final  bool showBackground;
 @override@JsonKey() final  String backgroundColor;
+/// Border (stroke) width in pixels around each character. 0 disables.
+@override@JsonKey() final  int borderWidth;
+@override@JsonKey() final  String borderColor;
 
 /// Create a copy of TextOverlay
 /// with the given fields replaced by the non-null parameter values.
@@ -241,16 +247,16 @@ _$TextOverlayCopyWith<_TextOverlay> get copyWith => __$TextOverlayCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TextOverlay&&(identical(other.text, text) || other.text == text)&&(identical(other.type, type) || other.type == type)&&(identical(other.fontSize, fontSize) || other.fontSize == fontSize)&&(identical(other.fontColor, fontColor) || other.fontColor == fontColor)&&(identical(other.position, position) || other.position == position)&&(identical(other.offsetX, offsetX) || other.offsetX == offsetX)&&(identical(other.offsetY, offsetY) || other.offsetY == offsetY)&&(identical(other.fontFile, fontFile) || other.fontFile == fontFile)&&(identical(other.showBackground, showBackground) || other.showBackground == showBackground)&&(identical(other.backgroundColor, backgroundColor) || other.backgroundColor == backgroundColor));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TextOverlay&&(identical(other.text, text) || other.text == text)&&(identical(other.type, type) || other.type == type)&&(identical(other.fontSize, fontSize) || other.fontSize == fontSize)&&(identical(other.fontColor, fontColor) || other.fontColor == fontColor)&&(identical(other.position, position) || other.position == position)&&(identical(other.offsetX, offsetX) || other.offsetX == offsetX)&&(identical(other.offsetY, offsetY) || other.offsetY == offsetY)&&(identical(other.fontFile, fontFile) || other.fontFile == fontFile)&&(identical(other.showBackground, showBackground) || other.showBackground == showBackground)&&(identical(other.backgroundColor, backgroundColor) || other.backgroundColor == backgroundColor)&&(identical(other.borderWidth, borderWidth) || other.borderWidth == borderWidth)&&(identical(other.borderColor, borderColor) || other.borderColor == borderColor));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,text,type,fontSize,fontColor,position,offsetX,offsetY,fontFile,showBackground,backgroundColor);
+int get hashCode => Object.hash(runtimeType,text,type,fontSize,fontColor,position,offsetX,offsetY,fontFile,showBackground,backgroundColor,borderWidth,borderColor);
 
 @override
 String toString() {
-  return 'TextOverlay(text: $text, type: $type, fontSize: $fontSize, fontColor: $fontColor, position: $position, offsetX: $offsetX, offsetY: $offsetY, fontFile: $fontFile, showBackground: $showBackground, backgroundColor: $backgroundColor)';
+  return 'TextOverlay(text: $text, type: $type, fontSize: $fontSize, fontColor: $fontColor, position: $position, offsetX: $offsetX, offsetY: $offsetY, fontFile: $fontFile, showBackground: $showBackground, backgroundColor: $backgroundColor, borderWidth: $borderWidth, borderColor: $borderColor)';
 }
 
 
@@ -261,7 +267,7 @@ abstract mixin class _$TextOverlayCopyWith<$Res> implements $TextOverlayCopyWith
   factory _$TextOverlayCopyWith(_TextOverlay value, $Res Function(_TextOverlay) _then) = __$TextOverlayCopyWithImpl;
 @override @useResult
 $Res call({
- String text, TextOverlayType type, int fontSize, String fontColor, TextOverlayPosition position, int offsetX, int offsetY, String? fontFile, bool showBackground, String backgroundColor
+ String text, TextOverlayType type, int fontSize, String fontColor, TextOverlayPosition position, int offsetX, int offsetY, String? fontFile, bool showBackground, String backgroundColor, int borderWidth, String borderColor
 });
 
 
@@ -278,7 +284,7 @@ class __$TextOverlayCopyWithImpl<$Res>
 
 /// Create a copy of TextOverlay
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? text = null,Object? type = null,Object? fontSize = null,Object? fontColor = null,Object? position = null,Object? offsetX = null,Object? offsetY = null,Object? fontFile = freezed,Object? showBackground = null,Object? backgroundColor = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? text = null,Object? type = null,Object? fontSize = null,Object? fontColor = null,Object? position = null,Object? offsetX = null,Object? offsetY = null,Object? fontFile = freezed,Object? showBackground = null,Object? backgroundColor = null,Object? borderWidth = null,Object? borderColor = null,}) {
   return _then(_TextOverlay(
 text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -290,6 +296,8 @@ as int,offsetY: null == offsetY ? _self.offsetY : offsetY // ignore: cast_nullab
 as int,fontFile: freezed == fontFile ? _self.fontFile : fontFile // ignore: cast_nullable_to_non_nullable
 as String?,showBackground: null == showBackground ? _self.showBackground : showBackground // ignore: cast_nullable_to_non_nullable
 as bool,backgroundColor: null == backgroundColor ? _self.backgroundColor : backgroundColor // ignore: cast_nullable_to_non_nullable
+as String,borderWidth: null == borderWidth ? _self.borderWidth : borderWidth // ignore: cast_nullable_to_non_nullable
+as int,borderColor: null == borderColor ? _self.borderColor : borderColor // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

@@ -289,6 +289,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Timestamp'**
   String get overlayTypeTimestamp;
+
+  /// No description provided for @font.
+  ///
+  /// In en, this message translates to:
+  /// **'Font'**
+  String get font;
+
+  /// No description provided for @fontDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get fontDefault;
+
+  /// No description provided for @fontBundled.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get fontBundled;
+
+  /// No description provided for @dateTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Taken'**
+  String get dateTaken;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
 }
 
 class _AppLocalizationsDelegate

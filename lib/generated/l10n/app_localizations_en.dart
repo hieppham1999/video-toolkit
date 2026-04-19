@@ -105,4 +105,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get overlayTypeTimestamp => 'Timestamp';
+
+  @override
+  String get font => 'Font';
+
+  @override
+  String get fontDefault => 'Default';
+
+  @override
+  String get fontBundled => 'App';
+
+  @override
+  String get dateTaken => 'Date Taken';
+
+  @override
+  String get duration => 'Duration';
 }

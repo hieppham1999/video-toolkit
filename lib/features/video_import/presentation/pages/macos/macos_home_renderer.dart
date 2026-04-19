@@ -1,12 +1,18 @@
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/utils/file_size_formatter.dart';
 import 'package:video_toolkit/core/utils/video_utils.dart';
+import 'package:video_toolkit/features/fonts/data/models/font_info.dart';
+import 'package:video_toolkit/features/fonts/presentation/cubit/font_cubit.dart';
+import 'package:video_toolkit/features/fonts/presentation/cubit/font_state.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
+import 'package:video_toolkit/presentation/base/app_state.dart';
+import 'package:video_toolkit/presentation/widgets/color_picker_button.dart';
 
 import '../home_view_data.dart';
 
@@ -23,11 +29,17 @@ class MacosHomeRenderer extends StatelessWidget {
     final iconColor = isDark ? const Color(0xFFE5E5EA) : const Color(0xFF3A3A3C);
     final l10n = Languages.translate;
     const iconSize = 30.0;
-
     return MacosScaffold(
+      backgroundColor: CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
+                theme.canvasColor,
       toolBar: ToolBar(
         title: const Text('Video Toolkit'),
         titleWidth: 150,
+        decoration: BoxDecoration(
+          color: CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
+                theme.canvasColor,
+        ),
+          
         actions: [
           ToolBarIconButton(
             label: l10n.addVideo,
@@ -68,44 +80,52 @@ class MacosHomeRenderer extends StatelessWidget {
       children: [
         ContentArea(
           builder: (context, _) {
-            return DropTarget(
-              onDragDone: (details) {
-                data.onFilesDropped(details.files.map((f) => f.path).toList());
-              },
-              onDragEntered: (_) => data.onDragStateChanged(true),
-              onDragExited: (_) => data.onDragStateChanged(false),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final totalHeight = constraints.maxHeight;
-                  final previewH = totalHeight * data.previewFraction;
-
-                  return Column(
-                    children: [
-                      SizedBox(
-                        height: previewH,
-                        child: _PreviewSection(
-                          isDragging: data.isDragging,
-                          selectedFile: data.selectedFile,
-                        ),
-                      ),
-                      _ResizableDivider(
-                        onDrag: (dy) => data.onDividerDrag(dy / totalHeight),
-                      ),
-                      Expanded(
-                        child: _VideoTableSection(
-                          files: data.files,
-                          globalSettings: data.encodeSettings,
-                          selectedFilePath: data.selectedFile?.path,
-                          encodeState: data.encodeState,
-                          onSelect: data.onSelectVideo,
-                          onRemove: data.onRemoveFile,
-                          onUpdateFileSettings: data.onUpdateFileSettings,
-                        ),
-                      ),
-                      _OverallProgressBar(encodeState: data.encodeState),
-                    ],
-                  );
+            // Paint the entire body with canvas color so unpainted gaps
+            // (below table rows, around divider) don't show the Flutter
+            // default black bg through.
+            final canvas = CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
+                theme.canvasColor;
+            return ColoredBox(
+              color: canvas,
+              child: DropTarget(
+                onDragDone: (details) {
+                  data.onFilesDropped(details.files.map((f) => f.path).toList());
                 },
+                onDragEntered: (_) => data.onDragStateChanged(true),
+                onDragExited: (_) => data.onDragStateChanged(false),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final totalHeight = constraints.maxHeight;
+                    final previewH = totalHeight * data.previewFraction;
+
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: previewH,
+                          child: _PreviewSection(
+                            isDragging: data.isDragging,
+                            selectedFile: data.selectedFile,
+                          ),
+                        ),
+                        _ResizableDivider(
+                          onDrag: (dy) => data.onDividerDrag(dy / totalHeight),
+                        ),
+                        Expanded(
+                          child: _VideoTableSection(
+                            files: data.files,
+                            globalSettings: data.encodeSettings,
+                            selectedFilePath: data.selectedFile?.path,
+                            encodeState: data.encodeState,
+                            onSelect: data.onSelectVideo,
+                            onRemove: data.onRemoveFile,
+                            onUpdateFileSettings: data.onUpdateFileSettings,
+                          ),
+                        ),
+                        _OverallProgressBar(encodeState: data.encodeState),
+                      ],
+                    );
+                  },
+                ),
               ),
             );
           },
@@ -202,11 +222,18 @@ class _PreviewSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = MacosTheme.of(context);
     final accent = theme.primaryColor;
-    final isDark = theme.brightness == Brightness.dark;
-    final subtleText = isDark ? const Color(0xFF8E8E93) : const Color(0xFF6E6E73);
-    final faintText = isDark ? const Color(0xFF636366) : const Color(0xFF8E8E93);
+    // Trust multiple sources — whichever detects dark wins. This covers the
+    // case where system brightness, canvas luminance, and theme.brightness
+    // may disagree (e.g., MacosApp themeMode lag, native chrome override).
+    final resolvedCanvas =
+        CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
+            theme.canvasColor;
+    final isDark = theme.brightness == Brightness.dark ||
+        MediaQuery.platformBrightnessOf(context) == Brightness.dark ||
+        resolvedCanvas.computeLuminance() < 0.5;
+    final subtleText = isDark ? const Color(0xFFAEAEB2) : const Color(0xFF6E6E73);
+    final faintText = isDark ? const Color(0xFF8E8E93) : const Color(0xFF8E8E93);
     final l10n = Languages.translate;
-
     // Drag overlay always takes priority
     if (isDragging) {
       return AnimatedContainer(
@@ -255,11 +282,19 @@ class _PreviewSection extends StatelessWidget {
 
     // Video selected — show metadata
     final metadata = selectedFile!.metadata;
-    final labelStyle = theme.typography.caption1.copyWith(color: subtleText);
-    final valueStyle = theme.typography.body;
+    final primaryText = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
+    // Build TextStyles from scratch — theme.typography can carry
+    // CupertinoDynamicColor that copyWith fails to replace cleanly.
+    final labelStyle = TextStyle(color: subtleText, fontSize: 11);
+    final valueStyle = TextStyle(color: primaryText, fontSize: 13);
+    final titleStyle = TextStyle(color: primaryText, fontSize: 15, fontWeight: FontWeight.w600);
 
-    return Padding(
-      padding: const EdgeInsets.all(24),
+    // Paint our own background so text contrast is guaranteed even when
+    // outer macos_ui widgets paint a different color than theme.canvasColor.
+    return ColoredBox(
+      color: resolvedCanvas,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -270,13 +305,13 @@ class _PreviewSection extends StatelessWidget {
               children: [
                 Text(
                   selectedFile!.name,
-                  style: theme.typography.title3,
+                  style: titleStyle,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   selectedFile!.path,
-                  style: theme.typography.caption1.copyWith(color: subtleText),
+                  style: labelStyle,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -315,6 +350,20 @@ class _PreviewSection extends StatelessWidget {
                     labelStyle: labelStyle,
                     valueStyle: valueStyle,
                   ),
+                  const SizedBox(height: 6),
+                  _MetadataRow(
+                    label: l10n.duration,
+                    value: _formatDuration(metadata.duration),
+                    labelStyle: labelStyle,
+                    valueStyle: valueStyle,
+                  ),
+                  const SizedBox(height: 6),
+                  _MetadataRow(
+                    label: l10n.dateTaken,
+                    value: _formatDate(metadata.creationDate),
+                    labelStyle: labelStyle,
+                    valueStyle: valueStyle,
+                  ),
                 ],
               ],
             ),
@@ -331,7 +380,26 @@ class _PreviewSection extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
+  }
+
+  String _formatDuration(Duration? d) {
+    if (d == null) return '-';
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return h > 0 ? '$h:$m:$s' : '$m:$s';
+  }
+
+  String _formatDate(DateTime? dt) {
+    if (dt == null) return '-';
+    final y = dt.year.toString().padLeft(4, '0');
+    final mo = dt.month.toString().padLeft(2, '0');
+    final d = dt.day.toString().padLeft(2, '0');
+    final h = dt.hour.toString().padLeft(2, '0');
+    final mi = dt.minute.toString().padLeft(2, '0');
+    return '$y-$mo-$d $h:$mi';
   }
 }
 
@@ -910,6 +978,10 @@ class _EncodeSettingsSheetState extends State<_EncodeSettingsSheet> {
     final isDark = theme.brightness == Brightness.dark;
     final subtleText = isDark ? const Color(0xFF8E8E93) : const Color(0xFF6E6E73);
 
+    final fonts = context.watch<FontCubit>().state is NormalState<FontState>
+        ? (context.watch<FontCubit>().state as NormalState<FontState>).data.fonts
+        : const <FontInfo>[];
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -996,12 +1068,47 @@ class _EncodeSettingsSheetState extends State<_EncodeSettingsSheet> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
+                          child: Row(
+                            children: [
+                              SizedBox(width: 100, child: Text('Color', style: theme.typography.body)),
+                              const SizedBox(width: 8),
+                              ColorPickerButton(
+                                value: _textOverlays[i].fontColor,
+                                onChanged: (v) => setState(() {
+                                  _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(fontColor: v);
+                                }),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
                           child: _MacosField(
-                            label: 'Color',
-                            value: _textOverlays[i].fontColor,
+                            label: 'Border',
+                            value: '${_textOverlays[i].borderWidth}',
                             onChanged: (v) => setState(() {
-                              _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(fontColor: v);
+                              _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(borderWidth: int.tryParse(v) ?? 0);
                             }),
+                            hint: '0 = no border',
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              SizedBox(width: 100, child: Text('Border Color', style: theme.typography.body)),
+                              const SizedBox(width: 8),
+                              ColorPickerButton(
+                                value: _textOverlays[i].borderColor,
+                                onChanged: (v) => setState(() {
+                                  _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(borderColor: v);
+                                }),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -1014,6 +1121,21 @@ class _EncodeSettingsSheetState extends State<_EncodeSettingsSheet> {
                       itemLabel: (e) => e.name,
                       onChanged: (v) => setState(() {
                         _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(position: v);
+                      }),
+                    ),
+                    const SizedBox(height: 8),
+                    _MacosDropdown<String>(
+                      label: l10n.font,
+                      value: _textOverlays[i].fontFile ?? '',
+                      items: ['', ...fonts.map((f) => f.path)],
+                      itemLabel: (v) {
+                        if (v.isEmpty) return l10n.fontDefault;
+                        final match = fonts.where((e) => e.path == v).firstOrNull;
+                        if (match == null) return v;
+                        return match.isBundled ? '${match.name} (${l10n.fontBundled})' : match.name;
+                      },
+                      onChanged: (v) => setState(() {
+                        _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(fontFile: v.isEmpty ? null : v);
                       }),
                     ),
                   ],

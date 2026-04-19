@@ -30,5 +30,10 @@
   "burnTimestampDescription": "Overlay the recording date/time onto the video",
   "overlayType": "Type",
   "overlayTypeCustom": "Custom",
-  "overlayTypeTimestamp": "Timestamp"
+  "overlayTypeTimestamp": "Timestamp",
+  "font": "Font",
+  "fontDefault": "Default",
+  "fontBundled": "App",
+  "dateTaken": "Date Taken",
+  "duration": "Duration"
 }

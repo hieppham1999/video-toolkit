@@ -17,6 +17,16 @@ import 'package:video_toolkit/core/cli/bundled_binary_resolver.dart' as _i753;
 import 'package:video_toolkit/core/cli/cli_tool_runner.dart' as _i297;
 import 'package:video_toolkit/core/cli/cli_tool_runner_impl.dart' as _i873;
 import 'package:video_toolkit/core/utils/app_logger.dart' as _i70;
+import 'package:video_toolkit/features/fonts/data/datasources/bundled_font_datasource.dart'
+    as _i465;
+import 'package:video_toolkit/features/fonts/data/datasources/system_font_datasource.dart'
+    as _i894;
+import 'package:video_toolkit/features/fonts/data/repositories/font_repository.dart'
+    as _i234;
+import 'package:video_toolkit/features/fonts/data/repositories/font_repository_impl.dart'
+    as _i710;
+import 'package:video_toolkit/features/fonts/presentation/cubit/font_cubit.dart'
+    as _i739;
 import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_datasource.dart'
     as _i1066;
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart'
@@ -49,9 +59,14 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final loggerModule = _$LoggerModule();
-    gh.factory<_i1027.VideoImportCubit>(() => _i1027.VideoImportCubit());
     gh.lazySingleton<_i753.BundledBinaryResolver>(
       () => _i753.BundledBinaryResolver(),
+    );
+    gh.lazySingleton<_i894.SystemFontDatasource>(
+      () => _i894.SystemFontDatasource(),
+    );
+    gh.lazySingleton<_i465.BundledFontDatasource>(
+      () => _i465.BundledFontDatasource(),
     );
     gh.lazySingleton<_i974.Logger>(
       () => loggerModule.devLogger,
@@ -70,6 +85,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i753.BundledBinaryResolver>(),
       ),
     );
+    gh.lazySingleton<_i234.FontRepository>(
+      () => _i710.FontRepositoryImpl(
+        gh<_i894.SystemFontDatasource>(),
+        gh<_i465.BundledFontDatasource>(),
+      ),
+    );
     gh.lazySingleton<_i954.VideoEncodeRepository>(
       () => _i848.VideoEncodeRepositoryImpl(gh<_i1066.FfmpegDatasource>()),
     );
@@ -82,11 +103,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i675.ExiftoolDatasource>(
       () => _i675.ExiftoolDatasource(gh<_i297.CliToolRunner>()),
     );
+    gh.factory<_i739.FontCubit>(
+      () => _i739.FontCubit(gh<_i234.FontRepository>()),
+    );
     gh.lazySingleton<_i993.VideoMetadataRepository>(
       () => _i996.VideoMetadataRepositoryImpl(
         gh<_i675.ExiftoolDatasource>(),
         gh<_i735.FfprobeDatasource>(),
       ),
+    );
+    gh.factory<_i1027.VideoImportCubit>(
+      () => _i1027.VideoImportCubit(gh<_i993.VideoMetadataRepository>()),
     );
     gh.factory<_i19.VideoMetadataCubit>(
       () => _i19.VideoMetadataCubit(gh<_i993.VideoMetadataRepository>()),

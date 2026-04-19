@@ -1,11 +1,17 @@
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/utils/file_size_formatter.dart';
 import 'package:video_toolkit/core/utils/video_utils.dart';
+import 'package:video_toolkit/features/fonts/data/models/font_info.dart';
+import 'package:video_toolkit/features/fonts/presentation/cubit/font_cubit.dart';
+import 'package:video_toolkit/features/fonts/presentation/cubit/font_state.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
+import 'package:video_toolkit/presentation/base/app_state.dart';
+import 'package:video_toolkit/presentation/widgets/color_picker_button.dart';
 
 import '../home_view_data.dart';
 
@@ -18,6 +24,7 @@ class WindowsHomeRenderer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = Languages.translate;
+    final theme = FluentTheme.of(context);
 
     return ScaffoldPage(
       header: PageHeader(
@@ -84,7 +91,9 @@ class WindowsHomeRenderer extends StatelessWidget {
           ],
         ),
       ),
-      content: DropTarget(
+      content: ColoredBox(
+        color: theme.micaBackgroundColor,
+        child: DropTarget(
         onDragDone: (details) {
           data.onFilesDropped(details.files.map((f) => f.path).toList());
         },
@@ -123,6 +132,7 @@ class WindowsHomeRenderer extends StatelessWidget {
             );
           },
         ),
+      ),
       ),
     );
   }
@@ -262,10 +272,14 @@ class _PreviewSection extends StatelessWidget {
 
     // Video selected — show metadata
     final metadata = selectedFile!.metadata;
-    final labelStyle = theme.typography.caption?.copyWith(
-      color: theme.resources.textFillColorSecondary,
-    );
-    final valueStyle = theme.typography.body;
+    // Derive from the actual rendered mica background — system brightness
+    // can differ from the app's effective canvas.
+    final isDark = theme.micaBackgroundColor.computeLuminance() < 0.5;
+    final primaryText = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
+    final secondaryText = isDark ? const Color(0xFFAEAEB2) : const Color(0xFF6E6E73);
+    final labelStyle = TextStyle(color: secondaryText, fontSize: 12);
+    final valueStyle = TextStyle(color: primaryText, fontSize: 14);
+    final titleStyle = TextStyle(color: primaryText, fontSize: 16, fontWeight: FontWeight.w600);
 
     return Container(
       color: theme.micaBackgroundColor,
@@ -280,7 +294,7 @@ class _PreviewSection extends StatelessWidget {
               children: [
                 Text(
                   selectedFile!.name,
-                  style: theme.typography.subtitle,
+                  style: titleStyle,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
@@ -301,6 +315,10 @@ class _PreviewSection extends StatelessWidget {
                   _MetadataRow(label: l10n.aspectRatio, value: computeAspectRatio(metadata.width, metadata.height) ?? '-', labelStyle: labelStyle, valueStyle: valueStyle),
                   const SizedBox(height: 6),
                   _MetadataRow(label: l10n.frameRate, value: metadata.frameRate != null ? '${metadata.frameRate!.toStringAsFixed(2)} fps' : '-', labelStyle: labelStyle, valueStyle: valueStyle),
+                  const SizedBox(height: 6),
+                  _MetadataRow(label: l10n.duration, value: _formatDuration(metadata.duration), labelStyle: labelStyle, valueStyle: valueStyle),
+                  const SizedBox(height: 6),
+                  _MetadataRow(label: l10n.dateTaken, value: _formatDate(metadata.creationDate), labelStyle: labelStyle, valueStyle: valueStyle),
                 ],
               ],
             ),
@@ -314,6 +332,24 @@ class _PreviewSection extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _formatDuration(Duration? d) {
+    if (d == null) return '-';
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return h > 0 ? '$h:$m:$s' : '$m:$s';
+  }
+
+  String _formatDate(DateTime? dt) {
+    if (dt == null) return '-';
+    final y = dt.year.toString().padLeft(4, '0');
+    final mo = dt.month.toString().padLeft(2, '0');
+    final d = dt.day.toString().padLeft(2, '0');
+    final h = dt.hour.toString().padLeft(2, '0');
+    final mi = dt.minute.toString().padLeft(2, '0');
+    return '$y-$mo-$d $h:$mi';
   }
 }
 
@@ -836,6 +872,11 @@ class _EncodeSettingsDialogState extends State<_EncodeSettingsDialog> {
   }
 
   Widget _buildFilterTab(FluentThemeData theme, dynamic l10n) {
+    final fontState = context.watch<FontCubit>().state;
+    final fonts = fontState is NormalState<FontState>
+        ? fontState.data.fonts
+        : const <FontInfo>[];
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -912,13 +953,48 @@ class _EncodeSettingsDialogState extends State<_EncodeSettingsDialog> {
                             }),
                           )),
                           const SizedBox(width: 12),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                SizedBox(width: 100, child: Text('Color', style: theme.typography.body)),
+                                const SizedBox(width: 8),
+                                ColorPickerButton(
+                                  value: _textOverlays[i].fontColor,
+                                  onChanged: (v) => setState(() {
+                                    _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(fontColor: v);
+                                  }),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
                           Expanded(child: _FluentField(
-                            label: 'Color',
-                            value: _textOverlays[i].fontColor,
+                            label: 'Border',
+                            value: '${_textOverlays[i].borderWidth}',
                             onChanged: (v) => setState(() {
-                              _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(fontColor: v);
+                              _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(borderWidth: int.tryParse(v) ?? 0);
                             }),
+                            hint: '0 = no border',
                           )),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                SizedBox(width: 100, child: Text('Border Color', style: theme.typography.body)),
+                                const SizedBox(width: 8),
+                                ColorPickerButton(
+                                  value: _textOverlays[i].borderColor,
+                                  onChanged: (v) => setState(() {
+                                    _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(borderColor: v);
+                                  }),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -929,6 +1005,21 @@ class _EncodeSettingsDialogState extends State<_EncodeSettingsDialog> {
                         itemLabel: (e) => e.name,
                         onChanged: (v) => setState(() {
                           _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(position: v);
+                        }),
+                      ),
+                      const SizedBox(height: 8),
+                      _FluentDropdown<String>(
+                        label: l10n.font,
+                        value: _textOverlays[i].fontFile ?? '',
+                        items: ['', ...fonts.map((f) => f.path)],
+                        itemLabel: (v) {
+                          if (v.isEmpty) return l10n.fontDefault;
+                          final match = fonts.where((e) => e.path == v).firstOrNull;
+                          if (match == null) return v;
+                          return match.isBundled ? '${match.name} (${l10n.fontBundled})' : match.name;
+                        },
+                        onChanged: (v) => setState(() {
+                          _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(fontFile: v.isEmpty ? null : v);
                         }),
                       ),
                     ],

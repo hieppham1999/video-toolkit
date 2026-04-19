@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:video_toolkit/features/fonts/presentation/cubit/font_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
 import 'package:video_toolkit/generated/l10n/app_localizations.dart';
 
@@ -21,6 +22,7 @@ class App extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => GetIt.I<VideoImportCubit>()),
         BlocProvider(create: (_) => GetIt.I<VideoEncodeCubit>()),
+        BlocProvider(create: (_) => GetIt.I<FontCubit>()),
       ],
       child: Platform.isWindows ? const _WindowsApp() : const _MacosApp(),
     );
@@ -39,6 +41,7 @@ class _WindowsApp extends StatelessWidget {
       onGenerateRoute: AppRouter.onGenerateRoute,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      themeMode: ThemeMode.system,
       theme: fluent.FluentThemeData(
         accentColor: fluent.Colors.blue,
         brightness: Brightness.light,
@@ -63,6 +66,7 @@ class _MacosApp extends StatelessWidget {
       onGenerateRoute: AppRouter.onGenerateRoute,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      themeMode: ThemeMode.system,
       theme: MacosThemeData.light(),
       darkTheme: MacosThemeData.dark(),
     );

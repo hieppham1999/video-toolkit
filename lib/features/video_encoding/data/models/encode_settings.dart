@@ -29,6 +29,9 @@ abstract class TextOverlay with _$TextOverlay {
     String? fontFile,
     @Default(true) bool showBackground,
     @Default('black@0.5') String backgroundColor,
+    /// Border (stroke) width in pixels around each character. 0 disables.
+    @Default(0) int borderWidth,
+    @Default('black') String borderColor,
   }) = _TextOverlay;
 }
 
@@ -55,6 +58,10 @@ String _customFilter(TextOverlay t) {
     'y=$y',
   ];
   if (t.fontFile != null) parts.add("fontfile='${t.fontFile}'");
+  if (t.borderWidth > 0) {
+    parts.add('borderw=${t.borderWidth}');
+    parts.add('bordercolor=${t.borderColor}');
+  }
   if (t.showBackground) {
     parts.add('box=1');
     parts.add('boxcolor=${t.backgroundColor}');
@@ -75,11 +82,13 @@ List<String> _timestampFilters(TextOverlay t, DateTime? creationDate) {
       "text='$textExpr'",
       'fontsize=${t.fontSize}',
       'fontcolor=${t.fontColor}',
-      'borderw=2',
-      'bordercolor=black',
       'x=$x',
       'y=$y',
     ];
+    if (t.borderWidth > 0) {
+      parts.add('borderw=${t.borderWidth}');
+      parts.add('bordercolor=${t.borderColor}');
+    }
     if (t.fontFile != null) parts.add("fontfile='${t.fontFile}'");
     return parts;
   }

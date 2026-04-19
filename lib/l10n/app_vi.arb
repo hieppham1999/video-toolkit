@@ -30,5 +30,10 @@
   "burnTimestampDescription": "Chèn ngày/giờ quay vào video",
   "overlayType": "Loại",
   "overlayTypeCustom": "Tùy chỉnh",
-  "overlayTypeTimestamp": "Dấu thời gian"
+  "overlayTypeTimestamp": "Dấu thời gian",
+  "font": "Phông chữ",
+  "fontDefault": "Mặc định",
+  "fontBundled": "App",
+  "dateTaken": "Ngày quay",
+  "duration": "Thời lượng"
 }
