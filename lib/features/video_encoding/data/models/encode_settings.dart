@@ -60,7 +60,7 @@ String _customFilter(TextOverlay t) {
     'x=$x',
     'y=$y',
   ];
-  if (t.fontFile != null) parts.add("fontfile='${t.fontFile}'");
+  if (t.fontFile != null) parts.add("fontfile='${t.fontFile?.escapedForWindowsCmd}'");
   if (t.borderWidth > 0) {
     parts.add('borderw=${t.borderWidth}');
     parts.add('bordercolor=${t.borderColor}');
@@ -82,7 +82,7 @@ List<String> _timestampFilters(TextOverlay t, DateTime? creationDate) {
 
   List<String> buildParts(String textExpr, String y) {
     final parts = <String>[
-      "text='$textExpr'",
+      "text='${textExpr.escapedForWindowsCmd}'",
       'fontsize=${t.fontSize}',
       'fontcolor=${t.fontColor}',
       'x=$x',
@@ -92,16 +92,16 @@ List<String> _timestampFilters(TextOverlay t, DateTime? creationDate) {
       parts.add('borderw=${t.borderWidth}');
       parts.add('bordercolor=${t.borderColor}');
     }
-    if (t.fontFile != null) parts.add("fontfile='${t.fontFile}'");
+    if (t.fontFile != null) parts.add("fontfile='${t.fontFile?.escapedForWindowsCmd}'");
     return parts;
   }
 
   final timeParts = buildParts(
-    '%{pts\\:localtime\\:$unixTs\\:%H\\\\\\:%M\\\\\\:%S}',
+    '%{pts:localtime:$unixTs:%H\\:%M\\:%S}',
     yTime,
   );
   final dateParts = buildParts(
-    '%{pts\\:localtime\\:$unixTs\\:%b.%d %Y}',
+    '%{pts:localtime:$unixTs:%b.%d %Y}',
     yBase,
   );
 
@@ -188,6 +188,14 @@ abstract class EncodeSettings with _$EncodeSettings {
       '-y',
       outputPath,
     ];
+  }
+}
+
+extension StringOnWindows on String {
+  /// Escapes special characters in a string for safe use in Windows cmd.exe.
+  /// Specifically, it doubles backslashes and escapes colons.
+  String get escapedForWindowsCmd {
+    return replaceAll('\\', '\\\\').replaceAll(':', r'\:');
   }
 }
 

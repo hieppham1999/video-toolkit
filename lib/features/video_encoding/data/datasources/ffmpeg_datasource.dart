@@ -36,36 +36,13 @@ class FfmpegDatasource {
       throw const ToolNotFoundException(_executable);
     }
 
-    appLogger.i('FfmpegDatasource: encoding $inputPath');
     appLogger.d('FfmpegDatasource: $ffmpegPath ${args.join(' ')}');
 
     final stopwatch = Stopwatch()..start();
 
     final Process process;
-    if (Platform.isWindows) {
-      // On Windows, Process.start doesn't quote args that lack spaces, causing
-      // issues with special chars (`,`, `%`) in complex -vf filter strings.
-      // Use cmd.exe /c with explicit quoting: wrap -vf value in "..." and
-      // escape % as %% so cmd.exe doesn't expand environment variables.
-      final cmdParts = ['"$ffmpegPath"'];
-      for (var i = 0; i < args.length; i++) {
-        if (args[i] == '-vf' && i + 1 < args.length) {
-          cmdParts.add(args[i]);
-          final filterValue = args[i + 1].replaceAll('%', '%%');
-          cmdParts.add('"$filterValue"');
-          i++;
-        } else if (args[i].contains(' ')) {
-          cmdParts.add('"${args[i]}"');
-        } else {
-          cmdParts.add(args[i]);
-        }
-      }
-      final cmdLine = cmdParts.join(' ');
-      appLogger.d('FfmpegDatasource (Windows cmd): $cmdLine');
-      process = await Process.start('cmd', ['/c', cmdLine]);
-    } else {
-      process = await Process.start(ffmpegPath, args);
-    }
+          process = await Process.start(ffmpegPath, args);
+
 
     // ffmpeg writes progress to stderr
     await for (final chunk in process.stderr.transform(const SystemEncoding().decoder)) {
