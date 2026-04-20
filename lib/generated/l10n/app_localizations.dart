@@ -218,6 +218,12 @@ abstract class AppLocalizations {
   /// **'Imported'**
   String get columnImported;
 
+  /// No description provided for @columnOutput.
+  ///
+  /// In en, this message translates to:
+  /// **'Output'**
+  String get columnOutput;
+
   /// No description provided for @resolution.
   ///
   /// In en, this message translates to:
@@ -319,6 +325,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Duration'**
   String get duration;
+
+  /// No description provided for @tabFile.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get tabFile;
+
+  /// No description provided for @tabContainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Container'**
+  String get tabContainer;
+
+  /// No description provided for @tabSizing.
+  ///
+  /// In en, this message translates to:
+  /// **'Sizing'**
+  String get tabSizing;
+
+  /// No description provided for @tabFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get tabFilter;
+
+  /// No description provided for @tabAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get tabAudio;
+
+  /// No description provided for @outputName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name template'**
+  String get outputName;
+
+  /// No description provided for @outputNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty for default (_encoded suffix)'**
+  String get outputNameHint;
+
+  /// No description provided for @outputNamePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get outputNamePreview;
+
+  /// No description provided for @availableTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Available tags'**
+  String get availableTags;
+
+  /// No description provided for @resetToGlobal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to Global'**
+  String get resetToGlobal;
+
+  /// No description provided for @fileExtension.
+  ///
+  /// In en, this message translates to:
+  /// **'Extension'**
+  String get fileExtension;
+
+  /// No description provided for @videoCodec.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Codec'**
+  String get videoCodec;
+
+  /// No description provided for @encodePreset.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset'**
+  String get encodePreset;
+
+  /// No description provided for @crf.
+  ///
+  /// In en, this message translates to:
+  /// **'CRF'**
+  String get crf;
+
+  /// No description provided for @original.
+  ///
+  /// In en, this message translates to:
+  /// **'Original'**
+  String get original;
+
+  /// No description provided for @sourceSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get sourceSize;
+
+  /// No description provided for @afterCrop.
+  ///
+  /// In en, this message translates to:
+  /// **'After crop'**
+  String get afterCrop;
+
+  /// No description provided for @textOverlays.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Overlays'**
+  String get textOverlays;
+
+  /// No description provided for @addText.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add Text'**
+  String get addText;
+
+  /// No description provided for @textOverlayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Text {n}'**
+  String textOverlayLabel(int n);
+
+  /// No description provided for @textLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get textLabel;
+
+  /// No description provided for @textHintTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Plain text or ffmpeg expression'**
+  String get textHintTimestamp;
+
+  /// No description provided for @fontSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get fontSize;
+
+  /// No description provided for @color.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get color;
+
+  /// No description provided for @border.
+  ///
+  /// In en, this message translates to:
+  /// **'Border'**
+  String get border;
+
+  /// No description provided for @noBorderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'0 = no border'**
+  String get noBorderHint;
+
+  /// No description provided for @borderColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Border Color'**
+  String get borderColor;
+
+  /// No description provided for @position.
+  ///
+  /// In en, this message translates to:
+  /// **'Position'**
+  String get position;
+
+  /// No description provided for @audioCodec.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Codec'**
+  String get audioCodec;
+
+  /// No description provided for @bitrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Bitrate'**
+  String get bitrate;
+
+  /// No description provided for @presets.
+  ///
+  /// In en, this message translates to:
+  /// **'Presets'**
+  String get presets;
+
+  /// No description provided for @builtIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in'**
+  String get builtIn;
+
+  /// No description provided for @saveAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as…'**
+  String get saveAs;
+
+  /// No description provided for @deletePreset.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deletePreset;
+
+  /// No description provided for @newPresetName.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset name'**
+  String get newPresetName;
+
+  /// No description provided for @presetNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'My preset'**
+  String get presetNameHint;
+
+  /// No description provided for @confirmDeletePreset.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete preset \'{name}\'?'**
+  String confirmDeletePreset(String name);
+
+  /// No description provided for @noPresetSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No preset selected'**
+  String get noPresetSelected;
 }
 
 class _AppLocalizationsDelegate

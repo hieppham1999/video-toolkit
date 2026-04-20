@@ -70,6 +70,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get columnImported => 'Đã thêm';
 
   @override
+  String get columnOutput => 'Tên output';
+
+  @override
   String get resolution => 'Độ phân giải';
 
   @override
@@ -119,4 +122,122 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get duration => 'Thời lượng';
+
+  @override
+  String get tabFile => 'File';
+
+  @override
+  String get tabContainer => 'Container';
+
+  @override
+  String get tabSizing => 'Kích thước';
+
+  @override
+  String get tabFilter => 'Bộ lọc';
+
+  @override
+  String get tabAudio => 'Âm thanh';
+
+  @override
+  String get outputName => 'Mẫu tên file';
+
+  @override
+  String get outputNameHint => 'Để trống sẽ dùng mặc định (hậu tố _encoded)';
+
+  @override
+  String get outputNamePreview => 'Xem trước';
+
+  @override
+  String get availableTags => 'Tag có sẵn';
+
+  @override
+  String get resetToGlobal => 'Khôi phục mặc định';
+
+  @override
+  String get fileExtension => 'Phần mở rộng';
+
+  @override
+  String get videoCodec => 'Codec video';
+
+  @override
+  String get encodePreset => 'Preset';
+
+  @override
+  String get crf => 'CRF';
+
+  @override
+  String get original => 'Gốc';
+
+  @override
+  String get sourceSize => 'Nguồn';
+
+  @override
+  String get afterCrop => 'Sau khi crop';
+
+  @override
+  String get textOverlays => 'Lớp văn bản';
+
+  @override
+  String get addText => '+ Thêm văn bản';
+
+  @override
+  String textOverlayLabel(int n) {
+    return 'Văn bản $n';
+  }
+
+  @override
+  String get textLabel => 'Văn bản';
+
+  @override
+  String get textHintTimestamp => 'Văn bản tự do hoặc expression ffmpeg';
+
+  @override
+  String get fontSize => 'Cỡ chữ';
+
+  @override
+  String get color => 'Màu';
+
+  @override
+  String get border => 'Viền';
+
+  @override
+  String get noBorderHint => '0 = không viền';
+
+  @override
+  String get borderColor => 'Màu viền';
+
+  @override
+  String get position => 'Vị trí';
+
+  @override
+  String get audioCodec => 'Codec âm thanh';
+
+  @override
+  String get bitrate => 'Bitrate';
+
+  @override
+  String get presets => 'Bộ cài đặt';
+
+  @override
+  String get builtIn => 'Mặc định';
+
+  @override
+  String get saveAs => 'Lưu dưới tên…';
+
+  @override
+  String get deletePreset => 'Xóa';
+
+  @override
+  String get newPresetName => 'Tên preset';
+
+  @override
+  String get presetNameHint => 'Preset của tôi';
+
+  @override
+  String confirmDeletePreset(String name) {
+    return 'Xóa preset \'$name\'?';
+  }
+
+  @override
+  String get noPresetSelected => 'Chưa chọn preset';
 }

@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'generated/encode_settings.freezed.dart';
+part 'generated/encode_settings.g.dart';
 
 /// Position anchor for text overlay placement.
 enum TextOverlayPosition {
@@ -33,6 +34,8 @@ abstract class TextOverlay with _$TextOverlay {
     @Default(0) int borderWidth,
     @Default('black') String borderColor,
   }) = _TextOverlay;
+
+  factory TextOverlay.fromJson(Map<String, dynamic> json) => _$TextOverlayFromJson(json);
 }
 
 /// Builds ffmpeg drawtext filter string(s) for a [TextOverlay].
@@ -142,7 +145,15 @@ abstract class EncodeSettings with _$EncodeSettings {
     @Default(AudioCodec.passthrough) AudioCodec audioCodec,
     @Default(AudioBitrate.k128) AudioBitrate audioBitrate,
     @Default([]) List<TextOverlay> textOverlays,
+    /// Template for output file name (without extension). Empty = default
+    /// `<name>_encoded`. See [FilenameTemplate] for supported tags.
+    @Default('') String outputNameTemplate,
+    /// Target aspect ratio `num:den` (e.g. "16:9", "9:16", "1:1"). Null or
+    /// empty = keep original, no crop.
+    String? cropAspectRatio,
   }) = _EncodeSettings;
+
+  factory EncodeSettings.fromJson(Map<String, dynamic> json) => _$EncodeSettingsFromJson(json);
 
   /// Builds ffmpeg arguments from these settings.
   List<String> buildArgs(String inputPath, String outputPath, {DateTime? creationDate}) {
@@ -152,6 +163,18 @@ abstract class EncodeSettings with _$EncodeSettings {
 
     if (resolution != null) {
       filters.insert(0, 'scale=$resolution');
+    }
+
+    // Crop to target aspect ratio (center crop). Runs before scale so scale
+    // operates on the cropped image. Commas inside the expressions must be
+    // escaped (`\,`) — otherwise they'd be parsed as filter-graph separators.
+    if (cropAspectRatio != null && cropAspectRatio!.isNotEmpty) {
+      final parts = cropAspectRatio!.split(':');
+      if (parts.length == 2) {
+        final num = parts[0].trim();
+        final den = parts[1].trim();
+        filters.insert(0, 'crop=min(iw\\,ih*$num/$den):min(ih\\,iw*$den/$num)');
+      }
     }
 
     return [

@@ -1,17 +1,19 @@
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path/path.dart' as p;
 import 'package:video_toolkit/app/languages.dart';
+import 'package:video_toolkit/core/utils/date_formatter.dart';
 import 'package:video_toolkit/core/utils/file_size_formatter.dart';
+import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/core/utils/video_utils.dart';
-import 'package:video_toolkit/features/fonts/data/models/font_info.dart';
-import 'package:video_toolkit/features/fonts/presentation/cubit/font_cubit.dart';
-import 'package:video_toolkit/features/fonts/presentation/cubit/font_state.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
-import 'package:video_toolkit/presentation/base/app_state.dart';
-import 'package:video_toolkit/presentation/widgets/color_picker_button.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_column_resize_handle.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_metadata_row.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_overall_progress_bar.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_resizable_divider.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/windows/windows_encode_settings_dialog.dart';
 
 import '../home_view_data.dart';
 
@@ -113,7 +115,7 @@ class WindowsHomeRenderer extends StatelessWidget {
                     selectedFile: data.selectedFile,
                   ),
                 ),
-                _ResizableDivider(
+                AppResizableDivider(
                   onDrag: (dy) => data.onDividerDrag(dy / totalHeight),
                 ),
                 Expanded(
@@ -127,7 +129,7 @@ class WindowsHomeRenderer extends StatelessWidget {
                     onUpdateFileSettings: data.onUpdateFileSettings,
                   ),
                 ),
-                _OverallProgressBar(encodeState: data.encodeState),
+                AppOverallProgressBar(encodeState: data.encodeState),
               ],
             );
           },
@@ -140,7 +142,7 @@ class WindowsHomeRenderer extends StatelessWidget {
   void _openEncodeSettings(BuildContext context) {
     showDialog<void>(
       context: context,
-      builder: (_) => _EncodeSettingsDialog(
+      builder: (_) => WindowsEncodeSettingsDialog(
         settings: data.encodeSettings,
         onSave: (settings) {
           data.onSaveEncodeSettings(settings);
@@ -171,41 +173,6 @@ class WindowsHomeRenderer extends StatelessWidget {
             child: Text(l10n.delete),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ─── Resizable Divider ──────────────────────────────────────────
-
-class _ResizableDivider extends StatelessWidget {
-  const _ResizableDivider({required this.onDrag});
-
-  final ValueChanged<double> onDrag;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FluentTheme.of(context);
-    final dividerColor = theme.resources.controlStrokeColorDefault;
-
-    return GestureDetector(
-      onVerticalDragUpdate: (details) => onDrag(details.delta.dy),
-      child: MouseRegion(
-        cursor: SystemMouseCursors.resizeRow,
-        child: Container(
-          height: 6,
-          color: dividerColor.withValues(alpha: 0.3),
-          child: Center(
-            child: Container(
-              width: 36,
-              height: 3,
-              decoration: BoxDecoration(
-                color: dividerColor,
-                borderRadius: BorderRadius.circular(1.5),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -308,17 +275,17 @@ class _PreviewSection extends StatelessWidget {
                 if (metadata == null)
                   Text(l10n.metadataNotAvailable, style: labelStyle)
                 else ...[
-                  _MetadataRow(label: l10n.resolution, value: metadata.width != null && metadata.height != null ? '${metadata.width}x${metadata.height}' : '-', labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(label: l10n.resolution, value: metadata.width != null && metadata.height != null ? '${metadata.width}x${metadata.height}' : '-', labelStyle: labelStyle, valueStyle: valueStyle),
                   const SizedBox(height: 6),
-                  _MetadataRow(label: l10n.codec, value: metadata.videoCodec ?? '-', labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(label: l10n.codec, value: metadata.videoCodec ?? '-', labelStyle: labelStyle, valueStyle: valueStyle),
                   const SizedBox(height: 6),
-                  _MetadataRow(label: l10n.aspectRatio, value: computeAspectRatio(metadata.width, metadata.height) ?? '-', labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(label: l10n.aspectRatio, value: computeAspectRatio(metadata.width, metadata.height) ?? '-', labelStyle: labelStyle, valueStyle: valueStyle),
                   const SizedBox(height: 6),
-                  _MetadataRow(label: l10n.frameRate, value: metadata.frameRate != null ? '${metadata.frameRate!.toStringAsFixed(2)} fps' : '-', labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(label: l10n.frameRate, value: metadata.frameRate != null ? '${metadata.frameRate!.toStringAsFixed(2)} fps' : '-', labelStyle: labelStyle, valueStyle: valueStyle),
                   const SizedBox(height: 6),
-                  _MetadataRow(label: l10n.duration, value: _formatDuration(metadata.duration), labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(label: l10n.duration, value: DateFormatter.formatDuration(metadata.duration), labelStyle: labelStyle, valueStyle: valueStyle),
                   const SizedBox(height: 6),
-                  _MetadataRow(label: l10n.dateTaken, value: _formatDate(metadata.creationDate), labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(label: l10n.dateTaken, value: DateFormatter.format(metadata.creationDate), labelStyle: labelStyle, valueStyle: valueStyle),
                 ],
               ],
             ),
@@ -334,47 +301,6 @@ class _PreviewSection extends StatelessWidget {
     );
   }
 
-  String _formatDuration(Duration? d) {
-    if (d == null) return '-';
-    final h = d.inHours;
-    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return h > 0 ? '$h:$m:$s' : '$m:$s';
-  }
-
-  String _formatDate(DateTime? dt) {
-    if (dt == null) return '-';
-    final y = dt.year.toString().padLeft(4, '0');
-    final mo = dt.month.toString().padLeft(2, '0');
-    final d = dt.day.toString().padLeft(2, '0');
-    final h = dt.hour.toString().padLeft(2, '0');
-    final mi = dt.minute.toString().padLeft(2, '0');
-    return '$y-$mo-$d $h:$mi';
-  }
-}
-
-class _MetadataRow extends StatelessWidget {
-  const _MetadataRow({
-    required this.label,
-    required this.value,
-    required this.labelStyle,
-    required this.valueStyle,
-  });
-
-  final String label;
-  final String value;
-  final TextStyle? labelStyle;
-  final TextStyle? valueStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(width: 120, child: Text(label, style: labelStyle)),
-        Expanded(child: Text(value, style: valueStyle, overflow: TextOverflow.ellipsis)),
-      ],
-    );
-  }
 }
 
 // ─── Video Table Section ────────────────────────────────────────
@@ -407,7 +333,7 @@ class _VideoTableSectionState extends State<_VideoTableSection> {
   static const _gapWidth = 8.0;
   static const _actionWidth = 72.0; // settings + delete buttons
   static const _headerHeight = 32.0;
-  static const _proportions = [0.25, 0.35, 0.15, 0.25];
+  static const _proportions = [0.22, 0.33, 0.15, 0.3];
 
   final List<double> _dragOffsets = [0, 0, 0, 0];
 
@@ -451,7 +377,7 @@ class _VideoTableSectionState extends State<_VideoTableSection> {
         final colWidths = _computeWidths(constraints.maxWidth);
         final contentWidth = colWidths.fold(0.0, (s, w) => s + w) + (_gapWidth * 3) + _actionWidth + 32;
         final effectiveWidth = contentWidth.clamp(constraints.maxWidth, double.infinity);
-        final headerLabels = [l10n.columnName, l10n.columnPath, l10n.columnSize, l10n.columnImported];
+        final headerLabels = [l10n.columnName, l10n.columnPath, l10n.columnSize, l10n.columnOutput];
 
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -473,7 +399,7 @@ class _VideoTableSectionState extends State<_VideoTableSection> {
                         SizedBox(
                           width: colWidths[i],
                           child: Align(
-                            alignment: i >= 2 ? Alignment.centerRight : Alignment.centerLeft,
+                            alignment: i == 2 ? Alignment.centerRight : Alignment.centerLeft,
                             child: Text(
                               headerLabels[i],
                               style: (theme.typography.caption ?? const TextStyle()).copyWith(
@@ -485,7 +411,7 @@ class _VideoTableSectionState extends State<_VideoTableSection> {
                           ),
                         ),
                         if (i < 3)
-                          _ColumnResizeHandle(
+                          AppColumnResizeHandle(
                             dividerColor: dividerColor,
                             onDrag: (dx) => _onResizeColumn(i, dx),
                           ),
@@ -509,6 +435,15 @@ class _VideoTableSectionState extends State<_VideoTableSection> {
                       } else if (index.isEven) {
                         bgColor = altRowBg;
                       }
+
+                      final effectiveSettings = file.overrideSettings ?? widget.globalSettings;
+                      final baseName = p.basenameWithoutExtension(file.path);
+                      final outName = FilenameTemplate.apply(
+                        effectiveSettings.outputNameTemplate,
+                        originalName: baseName,
+                        creationDate: file.metadata?.creationDate,
+                      );
+                      final outputDisplay = '$outName.${effectiveSettings.outputExtension.value}';
 
                       return GestureDetector(
                         onTap: () => widget.onSelect(file.path),
@@ -543,7 +478,7 @@ class _VideoTableSectionState extends State<_VideoTableSection> {
                                   SizedBox(
                                     width: colWidths[1],
                                     child: Text(
-                                      file.path,
+                                      p.dirname(file.path),
                                       style: theme.typography.caption?.copyWith(color: theme.resources.textFillColorSecondary),
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -556,11 +491,7 @@ class _VideoTableSectionState extends State<_VideoTableSection> {
                                   const SizedBox(width: _gapWidth),
                                   SizedBox(
                                     width: colWidths[3],
-                                    child: Text(
-                                      _formatDate(file.importedAt),
-                                      style: theme.typography.caption?.copyWith(color: theme.resources.textFillColorSecondary),
-                                      textAlign: TextAlign.end,
-                                    ),
+                                    child: Text(outputDisplay, style: theme.typography.caption, overflow: TextOverflow.ellipsis),
                                   ),
                                   SizedBox(
                                     width: _actionWidth,
@@ -620,8 +551,12 @@ class _VideoTableSectionState extends State<_VideoTableSection> {
     final effective = file.overrideSettings ?? globalSettings;
     showDialog<void>(
       context: context,
-      builder: (_) => _EncodeSettingsDialog(
+      builder: (_) => WindowsEncodeSettingsDialog(
         settings: effective,
+        sampleFileName: p.basenameWithoutExtension(file.path),
+        sampleCreationDate: file.metadata?.creationDate,
+        sampleWidth: file.metadata?.width,
+        sampleHeight: file.metadata?.height,
         onSave: (settings) {
           onUpdate(file.path, settings);
           Navigator.of(context).pop();
@@ -636,476 +571,5 @@ class _VideoTableSectionState extends State<_VideoTableSection> {
       ),
     );
   }
-
-  String _formatDate(DateTime dt) {
-    final h = dt.hour.toString().padLeft(2, '0');
-    final m = dt.minute.toString().padLeft(2, '0');
-    return '${dt.day}/${dt.month}/${dt.year} $h:$m';
-  }
 }
 
-class _ColumnResizeHandle extends StatelessWidget {
-  const _ColumnResizeHandle({required this.dividerColor, required this.onDrag});
-
-  final Color dividerColor;
-  final ValueChanged<double> onDrag;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onHorizontalDragUpdate: (details) => onDrag(details.delta.dx),
-      child: MouseRegion(
-        cursor: SystemMouseCursors.resizeColumn,
-        child: SizedBox(
-          width: _VideoTableSectionState._gapWidth,
-          height: double.infinity,
-          child: Center(
-            child: Container(
-              width: 1,
-              height: 16,
-              color: dividerColor,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Overall Progress Bar ───────────────────────────────────────
-
-class _OverallProgressBar extends StatelessWidget {
-  const _OverallProgressBar({required this.encodeState});
-
-  final VideoEncodeState encodeState;
-
-  @override
-  Widget build(BuildContext context) {
-    final status = encodeState.status;
-    if (status == EncodeStatus.idle) return const SizedBox.shrink();
-
-    final theme = FluentTheme.of(context);
-    final total = encodeState.totalFiles;
-    final current = encodeState.currentIndex;
-    final completed = encodeState.completedCount;
-    final failed = encodeState.failedFiles;
-    final overallPercent = total > 0 ? current / total : 0.0;
-
-    String statusText;
-    Color statusColor;
-    switch (status) {
-      case EncodeStatus.encoding:
-        statusText = 'Encoding $current / $total'
-            '${encodeState.progress.speed > 0 ? '  ·  ${encodeState.progress.speed.toStringAsFixed(1)}x' : ''}';
-        statusColor = theme.resources.textFillColorSecondary;
-      case EncodeStatus.done:
-        statusText = 'Done — $completed / $total completed';
-        statusColor = const Color(0xFF34C759);
-      case EncodeStatus.error:
-        statusText = '$completed completed, ${failed.length} failed';
-        statusColor = const Color(0xFFFF3B30);
-      case EncodeStatus.idle:
-        return const SizedBox.shrink();
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        border: Border(top: BorderSide(color: theme.resources.controlStrokeColorDefault)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  statusText,
-                  style: (theme.typography.caption ?? const TextStyle()).copyWith(color: statusColor),
-                ),
-              ),
-              Text(
-                '${(overallPercent * 100).toStringAsFixed(0)}%',
-                style: theme.typography.caption?.copyWith(color: theme.resources.textFillColorSecondary),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          ProgressBar(value: overallPercent * 100),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Encode Settings Dialog ─────────────────────────────────────
-
-class _EncodeSettingsDialog extends StatefulWidget {
-  const _EncodeSettingsDialog({
-    required this.settings,
-    required this.onSave,
-    required this.onCancel,
-    this.onReset,
-  });
-
-  final EncodeSettings settings;
-  final ValueChanged<EncodeSettings> onSave;
-  final VoidCallback onCancel;
-  final VoidCallback? onReset;
-
-  @override
-  State<_EncodeSettingsDialog> createState() => _EncodeSettingsDialogState();
-}
-
-class _EncodeSettingsDialogState extends State<_EncodeSettingsDialog> {
-  late VideoEncoder _codec;
-  late EncodePreset _preset;
-  late int _crf;
-  late OutputExtension _outputExtension;
-  late String _resolution;
-  late AudioCodec _audioCodec;
-  late AudioBitrate _audioBitrate;
-  late List<TextOverlay> _textOverlays;
-  int _selectedTab = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    final s = widget.settings;
-    _codec = s.codec;
-    _preset = s.preset;
-    _crf = s.crf;
-    _outputExtension = s.outputExtension;
-    _resolution = s.resolution ?? '';
-    _audioCodec = s.audioCodec;
-    _audioBitrate = s.audioBitrate;
-    _textOverlays = List.of(s.textOverlays);
-  }
-
-  EncodeSettings _buildSettings() {
-    return EncodeSettings(
-      codec: _codec,
-      preset: _preset,
-      crf: _crf,
-      outputExtension: _outputExtension,
-      resolution: _resolution.isEmpty ? null : _resolution,
-      audioCodec: _audioCodec,
-      audioBitrate: _audioBitrate,
-      textOverlays: _textOverlays,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FluentTheme.of(context);
-    final l10n = Languages.translate;
-
-    final tabs = ['Container', 'Sizing', 'Filter', 'Audio'];
-
-    return ContentDialog(
-      constraints: const BoxConstraints(maxWidth: 520, maxHeight: 480),
-      title: Text(l10n.encodeSettings),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              for (int i = 0; i < tabs.length; i++) ...[
-                if (i > 0) const SizedBox(width: 4),
-                Button(
-                  onPressed: () => setState(() => _selectedTab = i),
-                  child: Text(
-                    tabs[i],
-                    style: i == _selectedTab
-                        ? theme.typography.body?.copyWith(fontWeight: FontWeight.w600)
-                        : theme.typography.body,
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: switch (_selectedTab) {
-              0 => _buildContainerTab(theme),
-              1 => _buildSizingTab(theme),
-              2 => _buildFilterTab(theme, l10n),
-              3 => _buildAudioTab(theme),
-              _ => const SizedBox.shrink(),
-            },
-          ),
-        ],
-      ),
-      actions: [
-        if (widget.onReset != null)
-          Button(onPressed: widget.onReset, child: const Text('Reset to Global')),
-        Button(onPressed: widget.onCancel, child: Text(l10n.cancel)),
-        FilledButton(onPressed: () => widget.onSave(_buildSettings()), child: Text(l10n.save)),
-      ],
-    );
-  }
-
-  Widget _buildContainerTab(FluentThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _FluentDropdown<OutputExtension>(label: 'Extension', value: _outputExtension, items: OutputExtension.values, itemLabel: (e) => e.value, onChanged: (v) => setState(() => _outputExtension = v)),
-        const SizedBox(height: 12),
-        _FluentDropdown<VideoEncoder>(label: 'Video Codec', value: _codec, items: VideoEncoder.values, itemLabel: (e) => e.value, onChanged: (v) => setState(() => _codec = v)),
-        const SizedBox(height: 12),
-        _FluentDropdown<EncodePreset>(label: 'Preset', value: _preset, items: EncodePreset.values, itemLabel: (e) => e.value, onChanged: (v) => setState(() => _preset = v)),
-        const SizedBox(height: 12),
-        _FluentField(label: 'CRF', value: '$_crf', onChanged: (v) => setState(() => _crf = int.tryParse(v) ?? _crf)),
-      ],
-    );
-  }
-
-  Widget _buildSizingTab(FluentThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _FluentField(label: 'Resolution', value: _resolution, onChanged: (v) => setState(() => _resolution = v), hint: '1920:1080 (empty = original)'),
-      ],
-    );
-  }
-
-  Widget _buildFilterTab(FluentThemeData theme, dynamic l10n) {
-    final fontState = context.watch<FontCubit>().state;
-    final fonts = fontState is NormalState<FontState>
-        ? fontState.data.fonts
-        : const <FontInfo>[];
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text('Text Overlays', style: theme.typography.bodyStrong),
-              const Spacer(),
-              Button(
-                onPressed: () => setState(() {
-                  _textOverlays = [..._textOverlays, const TextOverlay(text: 'Text')];
-                }),
-                child: const Text('+ Add Text'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          for (int i = 0; i < _textOverlays.length; i++)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text('Text ${i + 1}', style: theme.typography.body),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(FluentIcons.chrome_close, size: 12),
-                            onPressed: () => setState(() {
-                              _textOverlays = [..._textOverlays]..removeAt(i);
-                            }),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      _FluentDropdown<TextOverlayType>(
-                        label: l10n.overlayType,
-                        value: _textOverlays[i].type,
-                        items: TextOverlayType.values,
-                        itemLabel: (e) => switch (e) {
-                          TextOverlayType.custom => l10n.overlayTypeCustom,
-                          TextOverlayType.timestamp => l10n.overlayTypeTimestamp,
-                        },
-                        onChanged: (v) => setState(() {
-                          _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(
-                            type: v,
-                            text: v == TextOverlayType.timestamp ? '' : _textOverlays[i].text,
-                          );
-                        }),
-                      ),
-                      const SizedBox(height: 8),
-                      if (_textOverlays[i].type == TextOverlayType.custom) ...[
-                        _FluentField(
-                          label: 'Text',
-                          value: _textOverlays[i].text,
-                          onChanged: (v) => setState(() {
-                            _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(text: v);
-                          }),
-                          hint: r"%{pts\:hms} for timestamp",
-                        ),
-                        const SizedBox(height: 8),
-                      ],
-                      Row(
-                        children: [
-                          Expanded(child: _FluentField(
-                            label: 'Size',
-                            value: '${_textOverlays[i].fontSize}',
-                            onChanged: (v) => setState(() {
-                              _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(fontSize: int.tryParse(v) ?? 24);
-                            }),
-                          )),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Row(
-                              children: [
-                                SizedBox(width: 100, child: Text('Color', style: theme.typography.body)),
-                                const SizedBox(width: 8),
-                                ColorPickerButton(
-                                  value: _textOverlays[i].fontColor,
-                                  onChanged: (v) => setState(() {
-                                    _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(fontColor: v);
-                                  }),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(child: _FluentField(
-                            label: 'Border',
-                            value: '${_textOverlays[i].borderWidth}',
-                            onChanged: (v) => setState(() {
-                              _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(borderWidth: int.tryParse(v) ?? 0);
-                            }),
-                            hint: '0 = no border',
-                          )),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Row(
-                              children: [
-                                SizedBox(width: 100, child: Text('Border Color', style: theme.typography.body)),
-                                const SizedBox(width: 8),
-                                ColorPickerButton(
-                                  value: _textOverlays[i].borderColor,
-                                  onChanged: (v) => setState(() {
-                                    _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(borderColor: v);
-                                  }),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      _FluentDropdown<TextOverlayPosition>(
-                        label: 'Position',
-                        value: _textOverlays[i].position,
-                        items: TextOverlayPosition.values,
-                        itemLabel: (e) => e.name,
-                        onChanged: (v) => setState(() {
-                          _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(position: v);
-                        }),
-                      ),
-                      const SizedBox(height: 8),
-                      _FluentDropdown<String>(
-                        label: l10n.font,
-                        value: _textOverlays[i].fontFile ?? '',
-                        items: ['', ...fonts.map((f) => f.path)],
-                        itemLabel: (v) {
-                          if (v.isEmpty) return l10n.fontDefault;
-                          final match = fonts.where((e) => e.path == v).firstOrNull;
-                          if (match == null) return v;
-                          return match.isBundled ? '${match.name} (${l10n.fontBundled})' : match.name;
-                        },
-                        onChanged: (v) => setState(() {
-                          _textOverlays = [..._textOverlays]..[i] = _textOverlays[i].copyWith(fontFile: v.isEmpty ? null : v);
-                        }),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAudioTab(FluentThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _FluentDropdown<AudioCodec>(label: 'Audio Codec', value: _audioCodec, items: AudioCodec.values, itemLabel: (e) => e.value, onChanged: (v) => setState(() => _audioCodec = v)),
-        const SizedBox(height: 12),
-        _FluentDropdown<AudioBitrate>(label: 'Bitrate', value: _audioBitrate, items: AudioBitrate.values, itemLabel: (e) => e.value, onChanged: (v) => setState(() => _audioBitrate = v)),
-      ],
-    );
-  }
-}
-
-class _FluentField extends StatelessWidget {
-  const _FluentField({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-    this.hint,
-  });
-
-  final String label;
-  final String value;
-  final ValueChanged<String> onChanged;
-  final String? hint;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FluentTheme.of(context);
-    return Row(
-      children: [
-        SizedBox(width: 100, child: Text(label, style: theme.typography.body)),
-        const SizedBox(width: 8),
-        Expanded(
-          child: TextBox(
-            controller: TextEditingController(text: value),
-            placeholder: hint,
-            onChanged: onChanged,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _FluentDropdown<T> extends StatelessWidget {
-  const _FluentDropdown({
-    required this.label,
-    required this.value,
-    required this.items,
-    required this.itemLabel,
-    required this.onChanged,
-  });
-
-  final String label;
-  final T value;
-  final List<T> items;
-  final String Function(T) itemLabel;
-  final ValueChanged<T> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FluentTheme.of(context);
-    return Row(
-      children: [
-        SizedBox(width: 100, child: Text(label, style: theme.typography.body)),
-        const SizedBox(width: 8),
-        ComboBox<T>(
-          value: value,
-          onChanged: (v) { if (v != null) onChanged(v); },
-          items: items
-              .map((e) => ComboBoxItem(value: e, child: Text(itemLabel(e))))
-              .toList(),
-        ),
-      ],
-    );
-  }
-}

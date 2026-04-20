@@ -29,10 +29,18 @@ import 'package:video_toolkit/features/fonts/presentation/cubit/font_cubit.dart'
     as _i739;
 import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_datasource.dart'
     as _i1066;
+import 'package:video_toolkit/features/video_encoding/data/datasources/preset_datasource.dart'
+    as _i1063;
+import 'package:video_toolkit/features/video_encoding/data/repositories/preset_repository.dart'
+    as _i337;
+import 'package:video_toolkit/features/video_encoding/data/repositories/preset_repository_impl.dart'
+    as _i1016;
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart'
     as _i954;
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository_impl.dart'
     as _i848;
+import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart'
+    as _i657;
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart'
     as _i987;
 import 'package:video_toolkit/features/video_import/presentation/cubit/video_import_cubit.dart'
@@ -62,6 +70,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i753.BundledBinaryResolver>(
       () => _i753.BundledBinaryResolver(),
     );
+    gh.lazySingleton<_i1063.PresetDatasource>(() => _i1063.PresetDatasource());
     gh.lazySingleton<_i894.SystemFontDatasource>(
       () => _i894.SystemFontDatasource(),
     );
@@ -78,6 +87,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i974.Logger>(
       () => loggerModule.prodLogger,
       registerFor: {_prod},
+    );
+    gh.lazySingleton<_i337.PresetRepository>(
+      () => _i1016.PresetRepositoryImpl(gh<_i1063.PresetDatasource>()),
     );
     gh.lazySingleton<_i1066.FfmpegDatasource>(
       () => _i1066.FfmpegDatasource(
@@ -105,6 +117,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i739.FontCubit>(
       () => _i739.FontCubit(gh<_i234.FontRepository>()),
+    );
+    gh.factory<_i657.PresetCubit>(
+      () => _i657.PresetCubit(gh<_i337.PresetRepository>()),
     );
     gh.lazySingleton<_i993.VideoMetadataRepository>(
       () => _i996.VideoMetadataRepositoryImpl(

@@ -13,34 +13,9 @@ class VideoMetadataRepositoryImpl implements VideoMetadataRepository {
 
   @override
   Future<VideoMetadata> extractMetadata(String filePath) async {
-    final results = await Future.wait([
-      _ffprobe.extract(filePath),
-      _exiftool.extract(filePath),
-    ]);
-
-    final ffprobeData = results[0];
-    final exifData = results[1];
-
-    if (ffprobeData == null && exifData == null) {
-      return const VideoMetadata();
-    }
-
-    // ffprobe is authoritative for A/V technical data,
-    // exiftool supplements with camera/GPS/creation date
-    return VideoMetadata(
-      duration: ffprobeData?.duration,
-      width: ffprobeData?.width,
-      height: ffprobeData?.height,
-      videoCodec: ffprobeData?.videoCodec,
-      audioCodec: ffprobeData?.audioCodec,
-      bitrate: ffprobeData?.bitrate,
-      frameRate: ffprobeData?.frameRate,
-      creationDate: exifData?.creationDate,
-      gpsLatitude: exifData?.gpsLatitude,
-      gpsLongitude: exifData?.gpsLongitude,
-      cameraModel: exifData?.cameraModel,
-      rawExif: exifData?.rawExif ?? {},
-    );
+    // Temporarily only use ffprobe — exiftool binary not bundled yet.
+    final ffprobeData = await _ffprobe.extract(filePath);
+    return ffprobeData ?? const VideoMetadata();
   }
 
   @override

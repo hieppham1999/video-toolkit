@@ -1,7 +1,8 @@
 # Video Toolkit - AI Assistant Guidelines
 
 > This file is the single source of truth for AI coding rules.
-> Symlinked/referenced by: `.cursorrules`, `.github/copilot-instructions.md`, `.windsurfrules`
+> Copies kept in sync: `.cursorrules`, `.windsurfrules`, `.github/copilot-instructions.md`, `QWEN.md`.
+> After editing this file, propagate changes to the copies above.
 
 ## Project Overview
 Flutter desktop app (macOS + Windows) for video processing. Uses `macos_ui` for macOS and `fluent_ui` for Windows.
@@ -47,6 +48,20 @@ Flutter desktop app (macOS + Windows) for video processing. Uses `macos_ui` for 
 - macOS renderers use `MacosScaffold`, `ToolBar`, `MacosIcon`, `PushButton`, etc.
 - Windows renderers use `ScaffoldPage`, `PageHeader`, `FilledButton`, `Icon(FluentIcons.*)`, etc.
 - **When changing app behavior or UI features, always update BOTH platform renderers.** A change to one renderer without the other is a bug. Check both files before considering a task complete.
+
+## Cross-Platform Widgets (App* pattern)
+- **Prefer cross-platform `App*` wrappers** over per-platform widget classes whenever structure is similar between macOS and Windows. This avoids the "sửa 1 bên quên bên kia" bug class.
+- Live under `lib/features/video_import/presentation/widgets/` (e.g. `app_field.dart`, `app_dropdown.dart`, `app_preset_chip.dart`, `app_metadata_row.dart`, `app_overall_progress_bar.dart`).
+- **When creating a new widget**, before writing `Macos*` / `Fluent*` pair, check if an `App*` wrapper fits:
+  - Widget tree is structurally identical on both platforms → use pure shared widget (no platform branch).
+  - Only theme colors / icon / tiny primitive differ → write `AppX` with an internal `Platform.isWindows` branch and private `_MacosX` / `_FluentX` classes in the same file.
+  - Truly divergent behavior → keep per-platform (e.g. `_PreviewSection`, `_VideoTableSection`).
+- Pattern for `App*` files:
+  - Single public `AppX` wrapper at top → delegates via `Platform.isWindows ? _FluentX(...) : _MacosX(...)`.
+  - Private `_MacosX` / `_FluentX` impl classes below in the same file.
+  - Import `fluent_ui` with `as fluent` prefix to avoid namespace clash (`Icon`, `TextBox`, …).
+- **Shared logic + state** that spans platforms (e.g. form controller for a dialog shown on both) goes in `widgets/shared/` as a `ChangeNotifier`/controller — UI binds via `ListenableBuilder`. Example: `EncodeSettingsController` + two thin sheet/dialog views.
+- Prefer extending an existing `App*` wrapper over adding platform-specific fallbacks.
 
 ## Freezed Models
 - Use `abstract class` with `@freezed` (freezed v3 pattern).

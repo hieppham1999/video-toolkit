@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:video_toolkit/features/fonts/presentation/cubit/font_cubit.dart';
+import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
 import 'package:video_toolkit/generated/l10n/app_localizations.dart';
 
@@ -23,6 +24,7 @@ class App extends StatelessWidget {
         BlocProvider(create: (_) => GetIt.I<VideoImportCubit>()),
         BlocProvider(create: (_) => GetIt.I<VideoEncodeCubit>()),
         BlocProvider(create: (_) => GetIt.I<FontCubit>()),
+        BlocProvider(create: (_) => GetIt.I<PresetCubit>()),
       ],
       child: Platform.isWindows ? const _WindowsApp() : const _MacosApp(),
     );

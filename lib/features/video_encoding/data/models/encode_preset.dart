@@ -1,9 +1,12 @@
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/settings_preset.dart';
 
-/// Predefined encode configurations — each is a named [EncodeSettings].
-enum PredefinedPreset {
-  h264Fast(
-    label: 'H.264 (Fast)',
+/// Built-in (non-editable) encode presets shipped with the app.
+const List<SettingsPreset> kBuiltInPresets = [
+  SettingsPreset(
+    id: 'builtin.h264_fast',
+    name: 'H.264 (Fast)',
+    isBuiltIn: true,
     settings: EncodeSettings(
       codec: VideoEncoder.h264,
       preset: EncodePreset.veryfast,
@@ -11,8 +14,10 @@ enum PredefinedPreset {
       outputExtension: OutputExtension.mp4,
     ),
   ),
-  h264Quality(
-    label: 'H.264 (Quality)',
+  SettingsPreset(
+    id: 'builtin.h264_quality',
+    name: 'H.264 (Quality)',
+    isBuiltIn: true,
     settings: EncodeSettings(
       codec: VideoEncoder.h264,
       preset: EncodePreset.slow,
@@ -20,8 +25,10 @@ enum PredefinedPreset {
       outputExtension: OutputExtension.mp4,
     ),
   ),
-  h265(
-    label: 'H.265 / HEVC',
+  SettingsPreset(
+    id: 'builtin.h265',
+    name: 'H.265 / HEVC',
+    isBuiltIn: true,
     settings: EncodeSettings(
       codec: VideoEncoder.h265,
       preset: EncodePreset.medium,
@@ -29,18 +36,15 @@ enum PredefinedPreset {
       outputExtension: OutputExtension.mp4,
     ),
   ),
-  webm(
-    label: 'VP9 WebM',
+  SettingsPreset(
+    id: 'builtin.vp9',
+    name: 'VP9 WebM',
+    isBuiltIn: true,
     settings: EncodeSettings(
       codec: VideoEncoder.vp9,
       preset: EncodePreset.medium,
       crf: 30,
       outputExtension: OutputExtension.mkv,
     ),
-  );
-
-  const PredefinedPreset({required this.label, required this.settings});
-
-  final String label;
-  final EncodeSettings settings;
-}
+  ),
+];

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/core/utils/app_logger.dart';
+import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart';
@@ -58,7 +59,12 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     final settings = file.overrideSettings ?? _globalSettings;
     final dir = p.dirname(file.path);
     final baseName = p.basenameWithoutExtension(file.path);
-    final outputPath = p.join(dir, '${baseName}_encoded.${settings.outputExtension.value}');
+    final outName = FilenameTemplate.apply(
+      settings.outputNameTemplate,
+      originalName: baseName,
+      creationDate: file.metadata?.creationDate,
+    );
+    final outputPath = p.join(dir, '$outName.${settings.outputExtension.value}');
 
     emitNormal(currentData.copyWith(
       currentFilePath: file.path,

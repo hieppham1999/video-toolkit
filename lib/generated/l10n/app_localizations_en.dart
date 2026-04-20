@@ -70,6 +70,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get columnImported => 'Imported';
 
   @override
+  String get columnOutput => 'Output';
+
+  @override
   String get resolution => 'Resolution';
 
   @override
@@ -120,4 +123,122 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get duration => 'Duration';
+
+  @override
+  String get tabFile => 'File';
+
+  @override
+  String get tabContainer => 'Container';
+
+  @override
+  String get tabSizing => 'Sizing';
+
+  @override
+  String get tabFilter => 'Filter';
+
+  @override
+  String get tabAudio => 'Audio';
+
+  @override
+  String get outputName => 'Name template';
+
+  @override
+  String get outputNameHint => 'Leave empty for default (_encoded suffix)';
+
+  @override
+  String get outputNamePreview => 'Preview';
+
+  @override
+  String get availableTags => 'Available tags';
+
+  @override
+  String get resetToGlobal => 'Reset to Global';
+
+  @override
+  String get fileExtension => 'Extension';
+
+  @override
+  String get videoCodec => 'Video Codec';
+
+  @override
+  String get encodePreset => 'Preset';
+
+  @override
+  String get crf => 'CRF';
+
+  @override
+  String get original => 'Original';
+
+  @override
+  String get sourceSize => 'Source';
+
+  @override
+  String get afterCrop => 'After crop';
+
+  @override
+  String get textOverlays => 'Text Overlays';
+
+  @override
+  String get addText => '+ Add Text';
+
+  @override
+  String textOverlayLabel(int n) {
+    return 'Text $n';
+  }
+
+  @override
+  String get textLabel => 'Text';
+
+  @override
+  String get textHintTimestamp => 'Plain text or ffmpeg expression';
+
+  @override
+  String get fontSize => 'Size';
+
+  @override
+  String get color => 'Color';
+
+  @override
+  String get border => 'Border';
+
+  @override
+  String get noBorderHint => '0 = no border';
+
+  @override
+  String get borderColor => 'Border Color';
+
+  @override
+  String get position => 'Position';
+
+  @override
+  String get audioCodec => 'Audio Codec';
+
+  @override
+  String get bitrate => 'Bitrate';
+
+  @override
+  String get presets => 'Presets';
+
+  @override
+  String get builtIn => 'Built-in';
+
+  @override
+  String get saveAs => 'Save as…';
+
+  @override
+  String get deletePreset => 'Delete';
+
+  @override
+  String get newPresetName => 'Preset name';
+
+  @override
+  String get presetNameHint => 'My preset';
+
+  @override
+  String confirmDeletePreset(String name) {
+    return 'Delete preset \'$name\'?';
+  }
+
+  @override
+  String get noPresetSelected => 'No preset selected';
 }

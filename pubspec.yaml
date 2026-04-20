@@ -30,11 +30,18 @@ dependencies:
   file_picker: ^8.1.2
   desktop_drop: ^0.4.4
   path: ^1.9.0
+  path_provider: ^2.1.4
+
+  # Serialization
+  json_annotation: ^4.9.0
 
   # Color picker
   flutter_colorpicker: ^1.1.0
 
   logger: ^2.5.0
+
+  # Date formatting
+  intl: any
 
 dev_dependencies:
   flutter_test:

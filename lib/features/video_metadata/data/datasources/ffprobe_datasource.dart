@@ -26,6 +26,11 @@ class FfprobeDatasource {
       filePath,
     ], timeout: const Duration(seconds: 15));
 
+    print(result.stdout);
+    print(result.stderr);
+    
+    
+
     if (!result.isSuccess) {
       appLogger.w('ffprobe failed for $filePath: ${result.stderr}');
       return null;
@@ -51,12 +56,37 @@ class FfprobeDatasource {
         videoCodec: videoStream?['codec_name'] as String?,
         audioCodec: audioStream?['codec_name'] as String?,
         bitrate: int.tryParse(format['bit_rate']?.toString() ?? ''),
+        creationDate: _parseCreationDate(videoStream, format),
         frameRate: _parseFrameRate(videoStream?['r_frame_rate']),
       );
     } catch (e) {
       appLogger.e('ffprobe parse error: $e');
       return null;
     }
+  }
+
+  /// Extract creation time. Priority: video stream tags > format tags.
+  /// Tag keys vary by container — try common ones in order.
+  DateTime? _parseCreationDate(
+    Map<String, dynamic>? videoStream,
+    Map<String, dynamic> format,
+  ) {
+    const candidateKeys = ['creation_time', 'date', 'DATE', 'com.apple.quicktime.creationdate'];
+    final tagSources = [
+      videoStream?['tags'] as Map?,
+      format['tags'] as Map?,
+    ];
+
+    for (final tags in tagSources) {
+      if (tags == null) continue;
+      for (final key in candidateKeys) {
+        final raw = tags[key]?.toString();
+        if (raw == null || raw.isEmpty) continue;
+        final parsed = DateTime.tryParse(raw);
+        if (parsed != null) return parsed;
+      }
+    }
+    return null;
   }
 
   Duration? _parseDuration(dynamic value) {
