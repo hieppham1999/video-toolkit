@@ -106,3 +106,12 @@ install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
 install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release
   COMPONENT Runtime)
+
+# Bundled CLI tools (exiftool) — copied to data/bin/ next to the executable.
+# The Dart BundledBinaryResolver expects Windows binaries at data/bin/<name>.exe.
+set(BUNDLED_EXIFTOOL_DIR "${CMAKE_SOURCE_DIR}/../assets/bin/exiftool/windows")
+if(EXISTS "${BUNDLED_EXIFTOOL_DIR}")
+  install(DIRECTORY "${BUNDLED_EXIFTOOL_DIR}/"
+    DESTINATION "${INSTALL_BUNDLE_DATA_DIR}/bin"
+    COMPONENT Runtime)
+endif()
