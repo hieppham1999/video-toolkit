@@ -320,7 +320,8 @@ mixin _$EncodeSettings {
 /// `<name>_encoded`. See [FilenameTemplate] for supported tags.
  String get outputNameTemplate;/// Target aspect ratio `num:den` (e.g. "16:9", "9:16", "1:1"). Null or
 /// empty = keep original, no crop.
- String? get cropAspectRatio;
+ String? get cropAspectRatio;/// Deinterlacing filter applied before text overlays.
+ Deinterlace get deinterlace;
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -333,16 +334,16 @@ $EncodeSettingsCopyWith<EncodeSettings> get copyWith => _$EncodeSettingsCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EncodeSettings&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.preset, preset) || other.preset == preset)&&(identical(other.crf, crf) || other.crf == crf)&&(identical(other.outputExtension, outputExtension) || other.outputExtension == outputExtension)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.audioBitrate, audioBitrate) || other.audioBitrate == audioBitrate)&&const DeepCollectionEquality().equals(other.textOverlays, textOverlays)&&(identical(other.outputNameTemplate, outputNameTemplate) || other.outputNameTemplate == outputNameTemplate)&&(identical(other.cropAspectRatio, cropAspectRatio) || other.cropAspectRatio == cropAspectRatio));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EncodeSettings&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.preset, preset) || other.preset == preset)&&(identical(other.crf, crf) || other.crf == crf)&&(identical(other.outputExtension, outputExtension) || other.outputExtension == outputExtension)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.audioBitrate, audioBitrate) || other.audioBitrate == audioBitrate)&&const DeepCollectionEquality().equals(other.textOverlays, textOverlays)&&(identical(other.outputNameTemplate, outputNameTemplate) || other.outputNameTemplate == outputNameTemplate)&&(identical(other.cropAspectRatio, cropAspectRatio) || other.cropAspectRatio == cropAspectRatio)&&(identical(other.deinterlace, deinterlace) || other.deinterlace == deinterlace));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,codec,preset,crf,outputExtension,resolution,audioCodec,audioBitrate,const DeepCollectionEquality().hash(textOverlays),outputNameTemplate,cropAspectRatio);
+int get hashCode => Object.hash(runtimeType,codec,preset,crf,outputExtension,resolution,audioCodec,audioBitrate,const DeepCollectionEquality().hash(textOverlays),outputNameTemplate,cropAspectRatio,deinterlace);
 
 @override
 String toString() {
-  return 'EncodeSettings(codec: $codec, preset: $preset, crf: $crf, outputExtension: $outputExtension, resolution: $resolution, audioCodec: $audioCodec, audioBitrate: $audioBitrate, textOverlays: $textOverlays, outputNameTemplate: $outputNameTemplate, cropAspectRatio: $cropAspectRatio)';
+  return 'EncodeSettings(codec: $codec, preset: $preset, crf: $crf, outputExtension: $outputExtension, resolution: $resolution, audioCodec: $audioCodec, audioBitrate: $audioBitrate, textOverlays: $textOverlays, outputNameTemplate: $outputNameTemplate, cropAspectRatio: $cropAspectRatio, deinterlace: $deinterlace)';
 }
 
 
@@ -353,7 +354,7 @@ abstract mixin class $EncodeSettingsCopyWith<$Res>  {
   factory $EncodeSettingsCopyWith(EncodeSettings value, $Res Function(EncodeSettings) _then) = _$EncodeSettingsCopyWithImpl;
 @useResult
 $Res call({
- VideoEncoder codec, EncodePreset preset, int crf, OutputExtension outputExtension, String? resolution, AudioCodec audioCodec, AudioBitrate audioBitrate, List<TextOverlay> textOverlays, String outputNameTemplate, String? cropAspectRatio
+ VideoEncoder codec, EncodePreset preset, int crf, OutputExtension outputExtension, String? resolution, AudioCodec audioCodec, AudioBitrate audioBitrate, List<TextOverlay> textOverlays, String outputNameTemplate, String? cropAspectRatio, Deinterlace deinterlace
 });
 
 
@@ -370,7 +371,7 @@ class _$EncodeSettingsCopyWithImpl<$Res>
 
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? codec = null,Object? preset = null,Object? crf = null,Object? outputExtension = null,Object? resolution = freezed,Object? audioCodec = null,Object? audioBitrate = null,Object? textOverlays = null,Object? outputNameTemplate = null,Object? cropAspectRatio = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? codec = null,Object? preset = null,Object? crf = null,Object? outputExtension = null,Object? resolution = freezed,Object? audioCodec = null,Object? audioBitrate = null,Object? textOverlays = null,Object? outputNameTemplate = null,Object? cropAspectRatio = freezed,Object? deinterlace = null,}) {
   return _then(_self.copyWith(
 codec: null == codec ? _self.codec : codec // ignore: cast_nullable_to_non_nullable
 as VideoEncoder,preset: null == preset ? _self.preset : preset // ignore: cast_nullable_to_non_nullable
@@ -382,7 +383,8 @@ as AudioCodec,audioBitrate: null == audioBitrate ? _self.audioBitrate : audioBit
 as AudioBitrate,textOverlays: null == textOverlays ? _self.textOverlays : textOverlays // ignore: cast_nullable_to_non_nullable
 as List<TextOverlay>,outputNameTemplate: null == outputNameTemplate ? _self.outputNameTemplate : outputNameTemplate // ignore: cast_nullable_to_non_nullable
 as String,cropAspectRatio: freezed == cropAspectRatio ? _self.cropAspectRatio : cropAspectRatio // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,deinterlace: null == deinterlace ? _self.deinterlace : deinterlace // ignore: cast_nullable_to_non_nullable
+as Deinterlace,
   ));
 }
 
@@ -467,10 +469,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio,  Deinterlace deinterlace)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EncodeSettings() when $default != null:
-return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio);case _:
+return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio,_that.deinterlace);case _:
   return orElse();
 
 }
@@ -488,10 +490,10 @@ return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.r
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio,  Deinterlace deinterlace)  $default,) {final _that = this;
 switch (_that) {
 case _EncodeSettings():
-return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio);case _:
+return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio,_that.deinterlace);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -508,10 +510,10 @@ return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.r
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio,  Deinterlace deinterlace)?  $default,) {final _that = this;
 switch (_that) {
 case _EncodeSettings() when $default != null:
-return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio);case _:
+return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio,_that.deinterlace);case _:
   return null;
 
 }
@@ -523,7 +525,7 @@ return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.r
 @JsonSerializable()
 
 class _EncodeSettings extends EncodeSettings {
-  const _EncodeSettings({this.codec = VideoEncoder.h264, this.preset = EncodePreset.veryfast, this.crf = 23, this.outputExtension = OutputExtension.mp4, this.resolution, this.audioCodec = AudioCodec.passthrough, this.audioBitrate = AudioBitrate.k128, final  List<TextOverlay> textOverlays = const [], this.outputNameTemplate = '', this.cropAspectRatio}): _textOverlays = textOverlays,super._();
+  const _EncodeSettings({this.codec = VideoEncoder.h264, this.preset = EncodePreset.veryfast, this.crf = 23, this.outputExtension = OutputExtension.mp4, this.resolution, this.audioCodec = AudioCodec.passthrough, this.audioBitrate = AudioBitrate.k128, final  List<TextOverlay> textOverlays = const [], this.outputNameTemplate = '', this.cropAspectRatio, this.deinterlace = Deinterlace.off}): _textOverlays = textOverlays,super._();
   factory _EncodeSettings.fromJson(Map<String, dynamic> json) => _$EncodeSettingsFromJson(json);
 
 @override@JsonKey() final  VideoEncoder codec;
@@ -547,6 +549,8 @@ class _EncodeSettings extends EncodeSettings {
 /// Target aspect ratio `num:den` (e.g. "16:9", "9:16", "1:1"). Null or
 /// empty = keep original, no crop.
 @override final  String? cropAspectRatio;
+/// Deinterlacing filter applied before text overlays.
+@override@JsonKey() final  Deinterlace deinterlace;
 
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -561,16 +565,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EncodeSettings&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.preset, preset) || other.preset == preset)&&(identical(other.crf, crf) || other.crf == crf)&&(identical(other.outputExtension, outputExtension) || other.outputExtension == outputExtension)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.audioBitrate, audioBitrate) || other.audioBitrate == audioBitrate)&&const DeepCollectionEquality().equals(other._textOverlays, _textOverlays)&&(identical(other.outputNameTemplate, outputNameTemplate) || other.outputNameTemplate == outputNameTemplate)&&(identical(other.cropAspectRatio, cropAspectRatio) || other.cropAspectRatio == cropAspectRatio));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EncodeSettings&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.preset, preset) || other.preset == preset)&&(identical(other.crf, crf) || other.crf == crf)&&(identical(other.outputExtension, outputExtension) || other.outputExtension == outputExtension)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.audioBitrate, audioBitrate) || other.audioBitrate == audioBitrate)&&const DeepCollectionEquality().equals(other._textOverlays, _textOverlays)&&(identical(other.outputNameTemplate, outputNameTemplate) || other.outputNameTemplate == outputNameTemplate)&&(identical(other.cropAspectRatio, cropAspectRatio) || other.cropAspectRatio == cropAspectRatio)&&(identical(other.deinterlace, deinterlace) || other.deinterlace == deinterlace));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,codec,preset,crf,outputExtension,resolution,audioCodec,audioBitrate,const DeepCollectionEquality().hash(_textOverlays),outputNameTemplate,cropAspectRatio);
+int get hashCode => Object.hash(runtimeType,codec,preset,crf,outputExtension,resolution,audioCodec,audioBitrate,const DeepCollectionEquality().hash(_textOverlays),outputNameTemplate,cropAspectRatio,deinterlace);
 
 @override
 String toString() {
-  return 'EncodeSettings(codec: $codec, preset: $preset, crf: $crf, outputExtension: $outputExtension, resolution: $resolution, audioCodec: $audioCodec, audioBitrate: $audioBitrate, textOverlays: $textOverlays, outputNameTemplate: $outputNameTemplate, cropAspectRatio: $cropAspectRatio)';
+  return 'EncodeSettings(codec: $codec, preset: $preset, crf: $crf, outputExtension: $outputExtension, resolution: $resolution, audioCodec: $audioCodec, audioBitrate: $audioBitrate, textOverlays: $textOverlays, outputNameTemplate: $outputNameTemplate, cropAspectRatio: $cropAspectRatio, deinterlace: $deinterlace)';
 }
 
 
@@ -581,7 +585,7 @@ abstract mixin class _$EncodeSettingsCopyWith<$Res> implements $EncodeSettingsCo
   factory _$EncodeSettingsCopyWith(_EncodeSettings value, $Res Function(_EncodeSettings) _then) = __$EncodeSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- VideoEncoder codec, EncodePreset preset, int crf, OutputExtension outputExtension, String? resolution, AudioCodec audioCodec, AudioBitrate audioBitrate, List<TextOverlay> textOverlays, String outputNameTemplate, String? cropAspectRatio
+ VideoEncoder codec, EncodePreset preset, int crf, OutputExtension outputExtension, String? resolution, AudioCodec audioCodec, AudioBitrate audioBitrate, List<TextOverlay> textOverlays, String outputNameTemplate, String? cropAspectRatio, Deinterlace deinterlace
 });
 
 
@@ -598,7 +602,7 @@ class __$EncodeSettingsCopyWithImpl<$Res>
 
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? codec = null,Object? preset = null,Object? crf = null,Object? outputExtension = null,Object? resolution = freezed,Object? audioCodec = null,Object? audioBitrate = null,Object? textOverlays = null,Object? outputNameTemplate = null,Object? cropAspectRatio = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? codec = null,Object? preset = null,Object? crf = null,Object? outputExtension = null,Object? resolution = freezed,Object? audioCodec = null,Object? audioBitrate = null,Object? textOverlays = null,Object? outputNameTemplate = null,Object? cropAspectRatio = freezed,Object? deinterlace = null,}) {
   return _then(_EncodeSettings(
 codec: null == codec ? _self.codec : codec // ignore: cast_nullable_to_non_nullable
 as VideoEncoder,preset: null == preset ? _self.preset : preset // ignore: cast_nullable_to_non_nullable
@@ -610,7 +614,8 @@ as AudioCodec,audioBitrate: null == audioBitrate ? _self.audioBitrate : audioBit
 as AudioBitrate,textOverlays: null == textOverlays ? _self._textOverlays : textOverlays // ignore: cast_nullable_to_non_nullable
 as List<TextOverlay>,outputNameTemplate: null == outputNameTemplate ? _self.outputNameTemplate : outputNameTemplate // ignore: cast_nullable_to_non_nullable
 as String,cropAspectRatio: freezed == cropAspectRatio ? _self.cropAspectRatio : cropAspectRatio // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,deinterlace: null == deinterlace ? _self.deinterlace : deinterlace // ignore: cast_nullable_to_non_nullable
+as Deinterlace,
   ));
 }
 

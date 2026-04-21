@@ -83,6 +83,9 @@ _EncodeSettings _$EncodeSettingsFromJson(Map<String, dynamic> json) =>
           const [],
       outputNameTemplate: json['outputNameTemplate'] as String? ?? '',
       cropAspectRatio: json['cropAspectRatio'] as String?,
+      deinterlace:
+          $enumDecodeNullable(_$DeinterlaceEnumMap, json['deinterlace']) ??
+          Deinterlace.off,
     );
 
 Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
@@ -97,6 +100,7 @@ Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
       'textOverlays': instance.textOverlays,
       'outputNameTemplate': instance.outputNameTemplate,
       'cropAspectRatio': instance.cropAspectRatio,
+      'deinterlace': _$DeinterlaceEnumMap[instance.deinterlace]!,
     };
 
 const _$VideoEncoderEnumMap = {
@@ -136,4 +140,12 @@ const _$AudioBitrateEnumMap = {
   AudioBitrate.k192: 'k192',
   AudioBitrate.k256: 'k256',
   AudioBitrate.k320: 'k320',
+};
+
+const _$DeinterlaceEnumMap = {
+  Deinterlace.off: 'off',
+  Deinterlace.yadifFrame: 'yadifFrame',
+  Deinterlace.yadifField: 'yadifField',
+  Deinterlace.bwdifFrame: 'bwdifFrame',
+  Deinterlace.bwdifField: 'bwdifField',
 };

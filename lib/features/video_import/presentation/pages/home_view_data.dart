@@ -13,6 +13,8 @@ class HomeViewData {
     required this.selectedFile,
     required this.encodeSettings,
     required this.encodeState,
+    required this.currentPresetName,
+    required this.isPresetModified,
     required this.onPickFiles,
     required this.onSelectVideo,
     required this.onSaveEncodeSettings,
@@ -33,6 +35,10 @@ class HomeViewData {
   final VideoFile? selectedFile;
   final EncodeSettings encodeSettings;
   final VideoEncodeState encodeState;
+  /// Name of the currently selected preset, null if no preset is selected.
+  final String? currentPresetName;
+  /// True when current [encodeSettings] differ from the selected preset's saved settings.
+  final bool isPresetModified;
 
   // ── Callbacks ──
   final VoidCallback onPickFiles;

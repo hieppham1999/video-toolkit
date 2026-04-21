@@ -30,12 +30,12 @@ class MacosHomeRenderer extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final iconColor = isDark ? const Color(0xFFE5E5EA) : const Color(0xFF3A3A3C);
     final l10n = Languages.translate;
-    const iconSize = 30.0;
     return MacosScaffold(
       backgroundColor: CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
                 theme.canvasColor,
       toolBar: ToolBar(
         title: const Text('Video Toolkit'),
+        height: 78,
         titleWidth: 150,
         decoration: BoxDecoration(
           color: CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
@@ -43,38 +43,59 @@ class MacosHomeRenderer extends StatelessWidget {
         ),
           
         actions: [
-          ToolBarIconButton(
-            label: l10n.addVideo,
-            icon: MacosIcon(CupertinoIcons.add_circled, color: iconColor, size: iconSize),
-            onPressed: data.onPickFiles,
-            showLabel: true,
+          CustomToolbarItem(
+            tooltipMessage: l10n.addVideo,
+            inToolbarBuilder: (_) => _toolbarBtn(
+              theme: theme,
+              iconColor: iconColor,
+              icon: CupertinoIcons.add_circled,
+              label: l10n.addVideo,
+              onTap: data.onPickFiles,
+            ),
           ),
           const ToolBarDivider(),
-          ToolBarIconButton(
-            label: l10n.encodeSettings,
-            icon: MacosIcon(CupertinoIcons.slider_horizontal_3, color: iconColor, size: iconSize),
-            onPressed: () => _openEncodeSettings(context),
-            showLabel: true,
+          CustomToolbarItem(
+            tooltipMessage: l10n.encodeSettings,
+            inToolbarBuilder: (_) => _toolbarBtn(
+              theme: theme,
+              iconColor: iconColor,
+              icon: CupertinoIcons.slider_horizontal_3,
+              label: l10n.encodeSettings,
+              subLabel: _presetSubLabel(),
+              onTap: () => _openEncodeSettings(context),
+            ),
           ),
-          ToolBarIconButton(
-            label: l10n.start,
-            icon: MacosIcon(CupertinoIcons.play_fill, color: iconColor, size: iconSize),
-            onPressed: data.onStart,
-            showLabel: true,
+          CustomToolbarItem(
+            tooltipMessage: l10n.start,
+            inToolbarBuilder: (_) => _toolbarBtn(
+              theme: theme,
+              iconColor: iconColor,
+              icon: CupertinoIcons.play_fill,
+              label: l10n.start,
+              onTap: data.onStart,
+            ),
           ),
-          ToolBarIconButton(
-            label: l10n.stop,
-            icon: MacosIcon(CupertinoIcons.stop_fill, color: iconColor, size: iconSize),
-            onPressed: data.onStop,
-            showLabel: true,
+          CustomToolbarItem(
+            tooltipMessage: l10n.stop,
+            inToolbarBuilder: (_) => _toolbarBtn(
+              theme: theme,
+              iconColor: iconColor,
+              icon: CupertinoIcons.stop_fill,
+              label: l10n.stop,
+              onTap: data.onStop,
+            ),
           ),
           if (data.hasFiles) ...[
             const ToolBarDivider(),
-            ToolBarIconButton(
-              label: l10n.clearAll,
-              icon: MacosIcon(CupertinoIcons.trash, color: iconColor),
-              onPressed: () => _confirmClearAll(context),
-              showLabel: true,
+            CustomToolbarItem(
+              tooltipMessage: l10n.clearAll,
+              inToolbarBuilder: (_) => _toolbarBtn(
+                theme: theme,
+                iconColor: iconColor,
+                icon: CupertinoIcons.trash,
+                label: l10n.clearAll,
+                onTap: () => _confirmClearAll(context),
+              ),
             ),
           ],
         ],
@@ -133,6 +154,63 @@ class MacosHomeRenderer extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+
+  String? _presetSubLabel() {
+    final name = data.currentPresetName;
+    if (name == null) return null;
+    return data.isPresetModified ? '$name*' : name;
+  }
+
+  /// Fixed total height for every toolbar button so that macos_ui's internal
+  /// Row (center-aligned) renders all icons at the same Y coordinate whether
+  /// or not a sublabel is present.
+  static const double _btnHeight = 68;
+
+  Widget _toolbarBtn({
+    required MacosThemeData theme,
+    required Color iconColor,
+    required IconData icon,
+    required String label,
+    String? subLabel,
+    VoidCallback? onTap,
+  }) {
+    final isDark = theme.brightness == Brightness.dark;
+    final subtleColor = isDark ? const Color(0xFF8E8E93) : const Color(0xFF6E6E73);
+    final enabled = onTap != null;
+    final effectiveIconColor =
+        enabled ? iconColor : iconColor.withValues(alpha: 0.4);
+    final effectiveLabelColor =
+        enabled ? iconColor : iconColor.withValues(alpha: 0.5);
+
+    return SizedBox(
+      height: _btnHeight,
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              MacosIcon(icon, color: effectiveIconColor, size: 30),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: theme.typography.caption1.copyWith(color: effectiveLabelColor),
+              ),
+              if (subLabel != null)
+                Text(
+                  subLabel,
+                  style: theme.typography.caption2.copyWith(color: subtleColor),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

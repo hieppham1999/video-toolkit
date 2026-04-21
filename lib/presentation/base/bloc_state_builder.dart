@@ -27,15 +27,26 @@ class CubitStateBuilder<T> extends StatefulWidget {
 }
 
 class _CubitStateBuilderState<T> extends State<CubitStateBuilder<T>> {
+  Type? _lastStateType;
+  DateTime? _lastLogAt;
+
+  static const _heartbeat = Duration(seconds: 1);
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<Cubit<CubitState<T>>, CubitState<T>>(
       bloc: widget.cubit,
       listener: (context, state) {
-        appLogger.d(
-          "${widget.cubit.runtimeType}: New state -> ${state.toString()}",
-        );
+        final now = DateTime.now();
+        final typeChanged = state.runtimeType != _lastStateType;
+        final elapsed = _lastLogAt == null ? _heartbeat : now.difference(_lastLogAt!);
+        if (typeChanged || elapsed >= _heartbeat) {
+          appLogger.d(
+            "${widget.cubit.runtimeType}: New state -> ${state.toString()}",
+          );
+          _lastStateType = state.runtimeType;
+          _lastLogAt = now;
+        }
       },
       builder: (context, state) {
         switch (state) {

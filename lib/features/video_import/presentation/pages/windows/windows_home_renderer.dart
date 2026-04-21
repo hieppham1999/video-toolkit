@@ -10,6 +10,7 @@ import 'package:video_toolkit/features/video_encoding/data/models/encode_setting
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_column_resize_handle.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_encode_settings_button.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_metadata_row.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_overall_progress_bar.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_resizable_divider.dart';
@@ -45,15 +46,10 @@ class WindowsHomeRenderer extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Button(
-              onPressed: () => _openEncodeSettings(context),
-              child: Row(
-                children: [
-                  const Icon(FluentIcons.settings, size: 14),
-                  const SizedBox(width: 6),
-                  Text(l10n.encodeSettings),
-                ],
-              ),
+            AppEncodeSettingsButton(
+              onTap: () => _openEncodeSettings(context),
+              presetName: data.currentPresetName,
+              modified: data.isPresetModified,
             ),
             const SizedBox(width: 8),
             FilledButton(

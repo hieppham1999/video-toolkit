@@ -49,6 +49,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get encodeSettings => 'Encode Settings';
 
   @override
+  String get noPresetSelected => 'No preset selected';
+
+  @override
   String get start => 'Start';
 
   @override
@@ -167,6 +170,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get crf => 'CRF';
 
   @override
+  String get deinterlace => 'Deinterlace';
+
+  @override
+  String get deinterlaceOff => 'Off';
+
+  @override
+  String get deinterlaceYadifFrame => 'Yadif (frame)';
+
+  @override
+  String get deinterlaceYadifField => 'Yadif (field, 2×fps)';
+
+  @override
+  String get deinterlaceBwdifFrame => 'Bwdif (frame)';
+
+  @override
+  String get deinterlaceBwdifField => 'Bwdif (field, 2×fps)';
+
+  @override
   String get original => 'Original';
 
   @override
@@ -240,5 +261,30 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get noPresetSelected => 'No preset selected';
+  String get revert => 'Revert';
+
+  @override
+  String revertConfirm(String name) {
+    return 'Revert all changes to preset \'\'$name\'\'?';
+  }
+
+  @override
+  String get import => 'Import';
+
+  @override
+  String get export => 'Export';
+
+  @override
+  String get importPresetNamePrompt =>
+      'Save imported settings as preset? Leave empty to load without saving.';
+
+  @override
+  String get importFailed =>
+      'Failed to import settings. File is invalid or unreadable.';
+
+  @override
+  String get importError => 'Import Error';
+
+  @override
+  String get exportSuccess => 'Settings exported';
 }

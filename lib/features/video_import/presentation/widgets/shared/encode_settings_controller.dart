@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/settings_preset.dart';
@@ -11,6 +15,7 @@ class EncodeSettingsController extends ChangeNotifier {
     required this.presetCubit,
   }) {
     _loadFromSettings(initialSettings);
+    selectedPresetId = presetCubit.currentData.selectedId;
   }
 
   final PresetCubit presetCubit;
@@ -31,6 +36,7 @@ class EncodeSettingsController extends ChangeNotifier {
   late AudioBitrate audioBitrate;
   late List<TextOverlay> textOverlays;
   late String outputNameTemplate;
+  late Deinterlace deinterlace;
   String resWidth = '';
   String resHeight = '';
   String aspectNum = '';
@@ -51,6 +57,7 @@ class EncodeSettingsController extends ChangeNotifier {
     audioBitrate = s.audioBitrate;
     textOverlays = List.of(s.textOverlays);
     outputNameTemplate = s.outputNameTemplate;
+    deinterlace = s.deinterlace;
 
     resWidth = '';
     resHeight = '';
@@ -86,6 +93,7 @@ class EncodeSettingsController extends ChangeNotifier {
       textOverlays: textOverlays,
       outputNameTemplate: outputNameTemplate,
       cropAspectRatio: cropAspectRatio,
+      deinterlace: deinterlace,
     );
   }
 
@@ -98,6 +106,7 @@ class EncodeSettingsController extends ChangeNotifier {
   void setAudioCodec(AudioCodec v) { audioCodec = v; notifyListeners(); }
   void setAudioBitrate(AudioBitrate v) { audioBitrate = v; notifyListeners(); }
   void setOutputNameTemplate(String v) { outputNameTemplate = v; notifyListeners(); }
+  void setDeinterlace(Deinterlace v) { deinterlace = v; notifyListeners(); }
   void appendNameTag(String tag) {
     outputNameTemplate = '$outputNameTemplate{$tag}';
     notifyListeners();
@@ -242,6 +251,80 @@ class EncodeSettingsController extends ChangeNotifier {
     final current = currentUserPreset();
     if (current == null) return;
     await presetCubit.overwrite(current.id, buildSettings());
+  }
+
+  /// Reloads the form from the currently-selected preset, discarding any
+  /// edits the user has made in this session.
+  void revertToSelectedPreset() {
+    final id = selectedPresetId;
+    if (id == null) return;
+    final match = presetCubit.currentData.presets
+        .where((p) => p.id == id)
+        .firstOrNull;
+    if (match == null) return;
+    _loadFromSettings(match.settings);
+    notifyListeners();
+  }
+
+  /// Name of the selected preset, or null if none is selected.
+  String? selectedPresetName() {
+    final id = selectedPresetId;
+    if (id == null) return null;
+    return presetCubit.currentData.presets
+        .where((p) => p.id == id)
+        .firstOrNull
+        ?.name;
+  }
+
+  /// Opens a file picker, parses the chosen JSON into [EncodeSettings], loads
+  /// them into the form, then optionally saves as a new user preset using the
+  /// name returned by [promptName] (caller decides how to prompt). Returns the
+  /// created preset, or null when the user cancelled the picker or the name
+  /// prompt. Throws [FormatException] or [IOException] on parse/read errors.
+  Future<SettingsPreset?> importAndSaveAsPreset(
+    Future<String?> Function() promptName,
+  ) async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+    );
+    if (result == null || result.files.isEmpty) return null;
+    final path = result.files.single.path;
+    if (path == null) return null;
+    final raw = await File(path).readAsString();
+    final decoded = jsonDecode(raw);
+    if (decoded is! Map<String, dynamic>) {
+      throw const FormatException('Expected JSON object at root');
+    }
+    final imported = EncodeSettings.fromJson(decoded);
+    _loadFromSettings(imported);
+    notifyListeners();
+    final name = await promptName();
+    if (name == null || name.isEmpty) return null;
+    return saveAsPreset(name);
+  }
+
+  /// Writes the currently-selected preset's settings to a user-chosen .json
+  /// file. Returns true on success, false when no preset is selected or the
+  /// user cancelled the save dialog.
+  Future<bool> exportSelectedPreset() async {
+    final id = selectedPresetId;
+    if (id == null) return false;
+    final preset = presetCubit.currentData.presets
+        .where((p) => p.id == id)
+        .firstOrNull;
+    if (preset == null) return false;
+    final path = await FilePicker.platform.saveFile(
+      dialogTitle: 'Export preset',
+      fileName: '${preset.name}.json',
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+    );
+    if (path == null) return false;
+    final withExt = path.toLowerCase().endsWith('.json') ? path : '$path.json';
+    const encoder = JsonEncoder.withIndent('  ');
+    await File(withExt).writeAsString(encoder.convert(preset.settings.toJson()));
+    return true;
   }
 
   Future<void> deleteSelectedPreset() async {

@@ -12,6 +12,7 @@
   "cancel": "Cancel",
   "delete": "Delete",
   "encodeSettings": "Encode Settings",
+  "noPresetSelected": "(No preset)",
   "start": "Start",
   "stop": "Stop",
   "videoPreview": "Video Preview",
@@ -51,6 +52,12 @@
   "videoCodec": "Video Codec",
   "encodePreset": "Preset",
   "crf": "CRF",
+  "deinterlace": "Deinterlace",
+  "deinterlaceOff": "Off",
+  "deinterlaceYadifFrame": "Yadif (frame)",
+  "deinterlaceYadifField": "Yadif (field, 2×fps)",
+  "deinterlaceBwdifFrame": "Bwdif (frame)",
+  "deinterlaceBwdifField": "Bwdif (field, 2×fps)",
   "original": "Original",
   "sourceSize": "Source",
   "afterCrop": "After crop",
@@ -80,5 +87,16 @@
   "@confirmDeletePreset": {
     "placeholders": { "name": { "type": "String" } }
   },
-  "noPresetSelected": "No preset selected"
+  "noPresetSelected": "No preset selected",
+  "revert": "Revert",
+  "revertConfirm": "Revert all changes to preset ''{name}''?",
+  "@revertConfirm": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "import": "Import",
+  "export": "Export",
+  "importPresetNamePrompt": "Save imported settings as preset? Leave empty to load without saving.",
+  "importFailed": "Failed to import settings. File is invalid or unreadable.",
+  "importError": "Import Error",
+  "exportSuccess": "Settings exported"
 }

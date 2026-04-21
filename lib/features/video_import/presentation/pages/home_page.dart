@@ -4,6 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart';
+import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_state.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/presentation/base/bloc_state_builder.dart';
@@ -98,28 +100,43 @@ class _HomePageState extends State<HomePage> {
           builder: (context, encodeState) {
             final isEncoding = encodeState.status == EncodeStatus.encoding;
 
-            final viewData = HomeViewData(
-              files: importState.files,
-              isDragging: importState.isDragging,
-              previewFraction: _previewFraction,
-              selectedFile: selectedFile,
-              encodeSettings: importState.encodeSettings,
-              encodeState: encodeState,
-              onPickFiles: _pickFiles,
-              onSelectVideo: _onSelectVideo,
-              onSaveEncodeSettings: _onSaveEncodeSettings,
-              onUpdateFileSettings: _onUpdateFileSettings,
-              onFilesDropped: _onFilesDropped,
-              onDragStateChanged: _onDragStateChanged,
-              onRemoveFile: _onRemoveFile,
-              onClearAll: _onClearAll,
-              onDividerDrag: _onDividerDrag,
-              onStart: importState.files.isEmpty || isEncoding ? null : _onStart,
-              onStop: isEncoding ? _onStop : null,
-            );
+            return CubitStateBuilder<PresetState>(
+              cubit: context.read<PresetCubit>(),
+              builder: (context, presetState) {
+                final selectedPreset = presetState.selectedId == null
+                    ? null
+                    : presetState.presets
+                        .where((p) => p.id == presetState.selectedId)
+                        .firstOrNull;
+                final isPresetModified = selectedPreset != null &&
+                    selectedPreset.settings != importState.encodeSettings;
 
-            if (Platform.isWindows) return WindowsHomeRenderer(data: viewData);
-            return MacosHomeRenderer(data: viewData);
+                final viewData = HomeViewData(
+                  files: importState.files,
+                  isDragging: importState.isDragging,
+                  previewFraction: _previewFraction,
+                  selectedFile: selectedFile,
+                  encodeSettings: importState.encodeSettings,
+                  encodeState: encodeState,
+                  currentPresetName: selectedPreset?.name,
+                  isPresetModified: isPresetModified,
+                  onPickFiles: _pickFiles,
+                  onSelectVideo: _onSelectVideo,
+                  onSaveEncodeSettings: _onSaveEncodeSettings,
+                  onUpdateFileSettings: _onUpdateFileSettings,
+                  onFilesDropped: _onFilesDropped,
+                  onDragStateChanged: _onDragStateChanged,
+                  onRemoveFile: _onRemoveFile,
+                  onClearAll: _onClearAll,
+                  onDividerDrag: _onDividerDrag,
+                  onStart: importState.files.isEmpty || isEncoding ? null : _onStart,
+                  onStop: isEncoding ? _onStop : null,
+                );
+
+                if (Platform.isWindows) return WindowsHomeRenderer(data: viewData);
+                return MacosHomeRenderer(data: viewData);
+              },
+            );
           },
         );
       },

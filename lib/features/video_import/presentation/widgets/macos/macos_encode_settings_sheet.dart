@@ -97,6 +97,100 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
     );
   }
 
+  Future<String?> _promptImportedPresetName() async {
+    final l10n = Languages.translate;
+    final controller = TextEditingController();
+    return showMacosAlertDialog<String?>(
+      context: context,
+      builder: (ctx) => MacosAlertDialog(
+        appIcon: const MacosIcon(CupertinoIcons.arrow_down_doc, size: 48),
+        title: Text(l10n.import),
+        message: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.importPresetNamePrompt),
+              const SizedBox(height: 8),
+              MacosTextField(
+                controller: controller,
+                placeholder: l10n.presetNameHint,
+                autofocus: true,
+              ),
+            ],
+          ),
+        ),
+        primaryButton: PushButton(
+          controlSize: ControlSize.large,
+          onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
+          child: Text(l10n.save),
+        ),
+        secondaryButton: PushButton(
+          controlSize: ControlSize.large,
+          secondary: true,
+          onPressed: () => Navigator.of(ctx).pop(''),
+          child: Text(l10n.cancel),
+        ),
+      ),
+    );
+  }
+
+  Future<bool?> _confirmRevert(String name) {
+    final l10n = Languages.translate;
+    return showMacosAlertDialog<bool>(
+      context: context,
+      builder: (ctx) => MacosAlertDialog(
+        appIcon: const MacosIcon(CupertinoIcons.arrow_uturn_left, size: 48),
+        title: Text(l10n.revert),
+        message: Text(l10n.revertConfirm(name)),
+        primaryButton: PushButton(
+          controlSize: ControlSize.large,
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: Text(l10n.revert),
+        ),
+        secondaryButton: PushButton(
+          controlSize: ControlSize.large,
+          secondary: true,
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: Text(l10n.cancel),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showImportError() {
+    final l10n = Languages.translate;
+    return showMacosAlertDialog<void>(
+      context: context,
+      builder: (ctx) => MacosAlertDialog(
+        appIcon: const MacosIcon(CupertinoIcons.exclamationmark_triangle,
+            size: 48),
+        title: Text(l10n.importError),
+        message: Text(l10n.importFailed),
+        primaryButton: PushButton(
+          controlSize: ControlSize.large,
+          onPressed: () => Navigator.of(ctx).pop(),
+          child: Text(l10n.save),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleImport() async {
+    try {
+      await _c.importAndSaveAsPreset(_promptImportedPresetName);
+    } catch (_) {
+      if (mounted) await _showImportError();
+    }
+  }
+
+  Future<void> _handleRevert() async {
+    final name = _c.selectedPresetName();
+    if (name == null) return;
+    final ok = await _confirmRevert(name);
+    if (ok == true) _c.revertToSelectedPreset();
+  }
+
   Future<bool?> _confirmDelete(String name) {
     final l10n = Languages.translate;
     return showMacosAlertDialog<bool>(
@@ -183,6 +277,31 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                                     style: theme.typography.title2,
                                   ),
                                 ),
+                                PushButton(
+                                  controlSize: ControlSize.regular,
+                                  secondary: true,
+                                  onPressed: _handleImport,
+                                  child: Text(l10n.import),
+                                ),
+                                const SizedBox(width: 6),
+                                PushButton(
+                                  controlSize: ControlSize.regular,
+                                  secondary: true,
+                                  onPressed: _c.selectedPresetId != null
+                                      ? () => _c.exportSelectedPreset()
+                                      : null,
+                                  child: Text(l10n.export),
+                                ),
+                                const SizedBox(width: 6),
+                                PushButton(
+                                  controlSize: ControlSize.regular,
+                                  secondary: true,
+                                  onPressed: _c.selectedPresetId != null
+                                      ? _handleRevert
+                                      : null,
+                                  child: Text(l10n.revert),
+                                ),
+                                const SizedBox(width: 6),
                                 PushButton(
                                   controlSize: ControlSize.regular,
                                   secondary: true,
@@ -474,6 +593,17 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
     );
   }
 
+  String _deinterlaceLabel(Deinterlace d) {
+    final l10n = Languages.translate;
+    return switch (d) {
+      Deinterlace.off => l10n.deinterlaceOff,
+      Deinterlace.yadifFrame => l10n.deinterlaceYadifFrame,
+      Deinterlace.yadifField => l10n.deinterlaceYadifField,
+      Deinterlace.bwdifFrame => l10n.deinterlaceBwdifFrame,
+      Deinterlace.bwdifField => l10n.deinterlaceBwdifField,
+    };
+  }
+
   Widget _buildSizingTab(MacosThemeData theme) {
     final l10n = Languages.translate;
     final isDark = theme.brightness == Brightness.dark;
@@ -589,6 +719,14 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          AppDropdown<Deinterlace>(
+            label: l10n.deinterlace,
+            value: _c.deinterlace,
+            items: Deinterlace.values,
+            itemLabel: _deinterlaceLabel,
+            onChanged: _c.setDeinterlace,
+          ),
+          const SizedBox(height: 16),
           Row(
             children: [
               Text(l10n.textOverlays, style: theme.typography.headline),

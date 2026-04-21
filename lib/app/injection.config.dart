@@ -31,6 +31,8 @@ import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_da
     as _i1066;
 import 'package:video_toolkit/features/video_encoding/data/datasources/preset_datasource.dart'
     as _i1063;
+import 'package:video_toolkit/features/video_encoding/data/datasources/user_settings_datasource.dart'
+    as _i1056;
 import 'package:video_toolkit/features/video_encoding/data/repositories/preset_repository.dart'
     as _i337;
 import 'package:video_toolkit/features/video_encoding/data/repositories/preset_repository_impl.dart'
@@ -77,6 +79,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i465.BundledFontDatasource>(
       () => _i465.BundledFontDatasource(),
     );
+    gh.lazySingleton<_i1056.UserSettingsDatasource>(
+      () => _i1056.UserSettingsDatasource(),
+    );
     gh.lazySingleton<_i974.Logger>(
       () => loggerModule.devLogger,
       registerFor: {_dev},
@@ -103,6 +108,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i465.BundledFontDatasource>(),
       ),
     );
+    gh.factory<_i657.PresetCubit>(
+      () => _i657.PresetCubit(
+        gh<_i337.PresetRepository>(),
+        gh<_i1056.UserSettingsDatasource>(),
+      ),
+    );
     gh.lazySingleton<_i954.VideoEncodeRepository>(
       () => _i848.VideoEncodeRepositoryImpl(gh<_i1066.FfmpegDatasource>()),
     );
@@ -118,9 +129,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i739.FontCubit>(
       () => _i739.FontCubit(gh<_i234.FontRepository>()),
     );
-    gh.factory<_i657.PresetCubit>(
-      () => _i657.PresetCubit(gh<_i337.PresetRepository>()),
-    );
     gh.lazySingleton<_i993.VideoMetadataRepository>(
       () => _i996.VideoMetadataRepositoryImpl(
         gh<_i675.ExiftoolDatasource>(),
@@ -128,7 +136,10 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.factory<_i1027.VideoImportCubit>(
-      () => _i1027.VideoImportCubit(gh<_i993.VideoMetadataRepository>()),
+      () => _i1027.VideoImportCubit(
+        gh<_i993.VideoMetadataRepository>(),
+        gh<_i1056.UserSettingsDatasource>(),
+      ),
     );
     gh.factory<_i19.VideoMetadataCubit>(
       () => _i19.VideoMetadataCubit(gh<_i993.VideoMetadataRepository>()),
