@@ -2,40 +2,43 @@ import 'dart:io';
 
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:video_toolkit/features/fonts/presentation/cubit/font_cubit.dart';
-import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart';
-import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
+import 'package:video_toolkit/app/injection.dart';
+import 'package:video_toolkit/core/i18n/app_language.dart';
+import 'package:video_toolkit/core/theme/app_accent.dart';
+import 'package:video_toolkit/features/settings/presentation/cubit/app_setting_cubit.dart';
+import 'package:video_toolkit/features/settings/presentation/cubit/app_setting_state.dart';
 import 'package:video_toolkit/generated/l10n/app_localizations.dart';
+import 'package:video_toolkit/presentation/base/bloc_state_builder.dart';
 
 import '../core/navigation/app_navigator.dart';
 import '../core/navigation/app_router.dart';
-import '../features/video_import/presentation/cubit/video_import_cubit.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => GetIt.I<VideoImportCubit>()),
-        BlocProvider(create: (_) => GetIt.I<VideoEncodeCubit>()),
-        BlocProvider(create: (_) => GetIt.I<FontCubit>()),
-        BlocProvider(create: (_) => GetIt.I<PresetCubit>()),
-      ],
-      child: Platform.isWindows ? const _WindowsApp() : const _MacosApp(),
+    return CubitStateBuilder<AppSettingState>(
+      cubit: getIt<AppSettingCubit>(),
+      builder: (context, settings) {
+        return Platform.isWindows
+            ? _WindowsApp(accent: settings.accent, locale: settings.language.locale)
+            : _MacosApp(accent: settings.accent, locale: settings.language.locale);
+      },
     );
   }
 }
 
 class _WindowsApp extends StatelessWidget {
-  const _WindowsApp();
+  const _WindowsApp({required this.accent, required this.locale});
+
+  final AppAccent accent;
+  final Locale? locale;
 
   @override
   Widget build(BuildContext context) {
+    final fluentAccent = accent.fluentAccent;
     return fluent.FluentApp(
       title: 'Video Toolkit',
       debugShowCheckedModeBanner: false,
@@ -43,21 +46,35 @@ class _WindowsApp extends StatelessWidget {
       onGenerateRoute: AppRouter.onGenerateRoute,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: locale,
       themeMode: ThemeMode.system,
       theme: fluent.FluentThemeData(
-        accentColor: fluent.Colors.blue,
+        accentColor: fluentAccent,
         brightness: Brightness.light,
       ),
       darkTheme: fluent.FluentThemeData(
-        accentColor: fluent.Colors.blue,
+        accentColor: fluentAccent,
         brightness: Brightness.dark,
       ),
     );
   }
 }
 
+MacosThemeData _macosTheme(MacosThemeData base, AppAccent accent) {
+  // `PushButton` reads `MacosThemeData.accentColor` (AccentColor enum) — not
+  // `primaryColor` — to pick its gradient. Set both so widgets that use
+  // either source stay in sync.
+  return base.copyWith(
+    primaryColor: accent.color,
+    accentColor: accent.macosAccent,
+  );
+}
+
 class _MacosApp extends StatelessWidget {
-  const _MacosApp();
+  const _MacosApp({required this.accent, required this.locale});
+
+  final AppAccent accent;
+  final Locale? locale;
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +85,10 @@ class _MacosApp extends StatelessWidget {
       onGenerateRoute: AppRouter.onGenerateRoute,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: locale,
       themeMode: ThemeMode.system,
-      theme: MacosThemeData.light(),
-      darkTheme: MacosThemeData.dark(),
+      theme: _macosTheme(MacosThemeData.light(), accent),
+      darkTheme: _macosTheme(MacosThemeData.dark(), accent),
     );
   }
 }

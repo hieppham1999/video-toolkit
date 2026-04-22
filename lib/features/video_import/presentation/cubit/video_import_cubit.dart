@@ -12,7 +12,7 @@ import 'package:video_toolkit/presentation/base/base_cubit.dart';
 import '../../data/models/video_file.dart';
 import 'video_import_state.dart';
 
-@injectable
+@lazySingleton
 class VideoImportCubit extends BaseCubit<VideoImportState> {
   VideoImportCubit(this._metadataRepository, this._userSettings)
       : super.normal(const VideoImportState()) {

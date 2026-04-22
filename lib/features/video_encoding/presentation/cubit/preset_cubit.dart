@@ -9,7 +9,7 @@ import 'package:video_toolkit/presentation/base/base_cubit.dart';
 
 import 'preset_state.dart';
 
-@injectable
+@lazySingleton
 class PresetCubit extends BaseCubit<PresetState> {
   PresetCubit(this._repository, this._userSettings)
       : super.normal(const PresetState()) {

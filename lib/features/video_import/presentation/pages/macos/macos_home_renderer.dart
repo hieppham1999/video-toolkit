@@ -11,6 +11,8 @@ import 'package:video_toolkit/features/video_import/presentation/widgets/app_met
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_overall_progress_bar.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_resizable_divider.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_toolbar_button.dart';
+import 'package:video_toolkit/core/theme/app_colors.dart';
+import 'package:video_toolkit/features/settings/presentation/pages/settings_page.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_video_table_section.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/macos/macos_encode_settings_sheet.dart';
 
@@ -94,6 +96,17 @@ class MacosHomeRenderer extends StatelessWidget {
               ),
             ),
           ],
+          const ToolBarDivider(),
+          CustomToolbarItem(
+            tooltipMessage: l10n.settings,
+            inToolbarBuilder: (_) => AppToolbarButton(
+              macosIcon: CupertinoIcons.gear,
+              fluentIcon: CupertinoIcons.gear,
+              label: l10n.settings,
+              tooltip: l10n.settings,
+              onTap: () => _openSettings(context),
+            ),
+          ),
         ],
       ),
       children: [
@@ -164,6 +177,13 @@ class MacosHomeRenderer extends StatelessWidget {
     return data.isPresetModified ? '$name*' : name;
   }
 
+
+  void _openSettings(BuildContext context) {
+    showMacosSheet<void>(
+      context: context,
+      builder: (_) => const SettingsPage(),
+    );
+  }
 
   void _openEncodeSettings(BuildContext context) {
     showMacosSheet<void>(
@@ -257,8 +277,9 @@ class _PreviewSection extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark ||
         MediaQuery.platformBrightnessOf(context) == Brightness.dark ||
         resolvedCanvas.computeLuminance() < 0.5;
-    final subtleText = isDark ? const Color(0xFFAEAEB2) : const Color(0xFF6E6E73);
-    final faintText = isDark ? const Color(0xFF8E8E93) : const Color(0xFF8E8E93);
+    final brightness = isDark ? Brightness.dark : Brightness.light;
+    final subtleText = AppColors.textSecondary(brightness);
+    final faintText = AppColors.textTertiary(brightness);
     final l10n = Languages.translate;
     // Drag overlay always takes priority
     if (isDragging) {
@@ -308,7 +329,7 @@ class _PreviewSection extends StatelessWidget {
 
     // Video selected — show metadata
     final metadata = selectedFile!.metadata;
-    final primaryText = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
+    final primaryText = AppColors.textPrimary(brightness);
     // Build TextStyles from scratch — theme.typography can carry
     // CupertinoDynamicColor that copyWith fails to replace cleanly.
     final labelStyle = TextStyle(color: subtleText, fontSize: 11);

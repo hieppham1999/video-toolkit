@@ -102,5 +102,22 @@
   "importPresetNamePrompt": "Lưu settings vừa nhập thành preset? Bỏ trống để chỉ nạp vào form.",
   "importFailed": "Nhập settings thất bại. File không hợp lệ hoặc không đọc được.",
   "importError": "Lỗi nhập",
-  "exportSuccess": "Đã xuất settings"
+  "exportSuccess": "Đã xuất settings",
+  "settings": "Cài đặt",
+  "appearance": "Giao diện",
+  "accentColor": "Màu chủ đề",
+  "accentBlue": "Xanh dương",
+  "accentPurple": "Tím",
+  "accentPink": "Hồng",
+  "accentRed": "Đỏ",
+  "accentOrange": "Cam",
+  "accentYellow": "Vàng",
+  "accentGreen": "Xanh lá",
+  "accentTeal": "Xanh ngọc",
+  "accentGraphite": "Xám chì",
+  "language": "Ngôn ngữ",
+  "languageSystem": "Theo hệ thống",
+  "languageEnglish": "English",
+  "languageVietnamese": "Tiếng Việt",
+  "defaultFont": "Font mặc định"
 }

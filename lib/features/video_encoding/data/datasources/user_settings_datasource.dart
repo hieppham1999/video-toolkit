@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:video_toolkit/core/i18n/app_language.dart';
+import 'package:video_toolkit/core/theme/app_accent.dart';
 import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/user_settings.dart';
@@ -72,6 +74,28 @@ class UserSettingsDatasource {
             defaultFontPath: path,
           )
         : current.copyWith(defaultFontPath: path);
+    await save(next);
+  }
+
+  Future<void> saveAccentColor(AppAccent accent) async {
+    final current = _cache ?? await load();
+    final next = current == null
+        ? UserSettings(
+            encodeSettings: const EncodeSettings(),
+            accentColor: accent,
+          )
+        : current.copyWith(accentColor: accent);
+    await save(next);
+  }
+
+  Future<void> saveLanguage(AppLanguage language) async {
+    final current = _cache ?? await load();
+    final next = current == null
+        ? UserSettings(
+            encodeSettings: const EncodeSettings(),
+            language: language,
+          )
+        : current.copyWith(language: language);
     await save(next);
   }
 }

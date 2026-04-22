@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/app/languages.dart';
+import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/core/utils/file_size_formatter.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
@@ -48,8 +49,8 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
   static const _headerHeight = 32.0;
   static const _proportions = [0.22, 0.33, 0.15, 0.3];
 
-  static const _greenColor = Color(0xFF34C759);
-  static const _redColor = Color(0xFFFF3B30);
+  static const _greenColor = AppColors.success;
+  static const _redColor = AppColors.error;
 
   final List<double> _dragOffsets = [0, 0, 0, 0];
 
@@ -430,15 +431,13 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
   _Palette _palette(BuildContext context) {
     if (Platform.isWindows) {
       final theme = fluent.FluentTheme.of(context);
-      final isDark = theme.brightness == Brightness.dark;
       return _Palette(
         accent: theme.accentColor,
         subtleText: theme.resources.textFillColorSecondary,
         divider: theme.resources.controlStrokeColorDefault,
         headerBg: theme.cardColor,
         altRowBg: theme.cardColor.withValues(alpha: 0.4),
-        selectedBg:
-            isDark ? const Color(0xFF0A3A6B) : const Color(0xFFD0E4F7),
+        selectedBg: AppColors.tableRowHighlight(theme.brightness),
         bodyStyle: theme.typography.body ?? const TextStyle(),
         captionStyle: theme.typography.caption ?? const TextStyle(),
         subtleCaptionStyle: (theme.typography.caption ?? const TextStyle())
@@ -453,18 +452,17 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       );
     }
     final theme = MacosTheme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final subtleText =
-        isDark ? const Color(0xFF8E8E93) : const Color(0xFF6E6E73);
-    final divider =
-        isDark ? const Color(0xFF38383A) : const Color(0xFFD1D1D6);
+    final b = theme.brightness;
+    final isDark = b == Brightness.dark;
+    final subtleText = AppColors.textTertiary(b);
+    final divider = AppColors.divider(b);
     return _Palette(
       accent: theme.primaryColor,
       subtleText: subtleText,
       divider: divider,
-      headerBg: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF2F2F7),
+      headerBg: AppColors.surface(b),
       altRowBg: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF9F9F9),
-      selectedBg: isDark ? const Color(0xFF0A3A6B) : const Color(0xFFD0E4F7),
+      selectedBg: AppColors.tableRowHighlight(b),
       bodyStyle: theme.typography.body,
       captionStyle: theme.typography.caption1,
       subtleCaptionStyle:

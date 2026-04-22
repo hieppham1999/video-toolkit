@@ -6,7 +6,7 @@ import 'package:video_toolkit/presentation/base/base_cubit.dart';
 
 import 'video_metadata_state.dart';
 
-@injectable
+@lazySingleton
 class VideoMetadataCubit extends BaseCubit<VideoMetadataState> {
   VideoMetadataCubit(this._repository) : super.normal(const VideoMetadataState());
 

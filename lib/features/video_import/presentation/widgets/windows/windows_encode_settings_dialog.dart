@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_toolkit/app/injection.dart';
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/fonts/data/models/font_info.dart';
@@ -9,6 +10,8 @@ import 'package:video_toolkit/features/video_encoding/data/models/encode_setting
 import 'package:video_toolkit/features/video_encoding/data/models/settings_preset.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_state.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_button.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_dialog_title_bar.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_dropdown.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_field.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_preset_chip.dart';
@@ -56,7 +59,7 @@ class _WindowsEncodeSettingsDialogState
     super.initState();
     _c = EncodeSettingsController(
       initialSettings: widget.settings,
-      presetCubit: context.read<PresetCubit>(),
+      presetCubit: getIt<PresetCubit>(),
     );
   }
 
@@ -86,11 +89,12 @@ class _WindowsEncodeSettingsDialogState
           ],
         ),
         actions: [
-          Button(
+          AppButton(
+            secondary: true,
             onPressed: () => Navigator.of(ctx).pop(null),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
+          AppButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
             child: Text(l10n.save),
           ),
@@ -120,11 +124,12 @@ class _WindowsEncodeSettingsDialogState
           ],
         ),
         actions: [
-          Button(
+          AppButton(
+            secondary: true,
             onPressed: () => Navigator.of(ctx).pop(''),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
+          AppButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
             child: Text(l10n.save),
           ),
@@ -141,11 +146,12 @@ class _WindowsEncodeSettingsDialogState
         title: Text(l10n.revert),
         content: Text(l10n.revertConfirm(name)),
         actions: [
-          Button(
+          AppButton(
+            secondary: true,
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
+          AppButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(l10n.revert),
           ),
@@ -162,7 +168,7 @@ class _WindowsEncodeSettingsDialogState
         title: Text(l10n.importError),
         content: Text(l10n.importFailed),
         actions: [
-          FilledButton(
+          AppButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: Text(l10n.save),
           ),
@@ -194,11 +200,12 @@ class _WindowsEncodeSettingsDialogState
         title: Text(l10n.deletePreset),
         content: Text(l10n.confirmDeletePreset(name)),
         actions: [
-          Button(
+          AppButton(
+            secondary: true,
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
+          AppButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(l10n.deletePreset),
           ),
@@ -209,9 +216,15 @@ class _WindowsEncodeSettingsDialogState
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: _c,
-      builder: (context, _) => _buildBody(context),
+    return BlocBuilder<PresetCubit, CubitState<PresetState>>(
+      bloc: getIt<PresetCubit>(),
+      builder: (context, _) => BlocBuilder<FontCubit, CubitState<FontState>>(
+        bloc: getIt<FontCubit>(),
+        builder: (context, _) => ListenableBuilder(
+          listenable: _c,
+          builder: (context, _) => _buildBody(context),
+        ),
+      ),
     );
   }
 
@@ -226,7 +239,7 @@ class _WindowsEncodeSettingsDialogState
       l10n.tabFilter,
       l10n.tabAudio,
     ];
-    final presetState = context.watch<PresetCubit>().state;
+    final presetState = getIt<PresetCubit>().state;
     final presets = presetState is NormalState<PresetState>
         ? presetState.data.presets
         : const <SettingsPreset>[];
@@ -234,43 +247,52 @@ class _WindowsEncodeSettingsDialogState
 
     return ContentDialog(
       constraints: const BoxConstraints(maxWidth: 820, maxHeight: 620),
-      title: Row(
-        children: [
-          Expanded(child: Text(l10n.encodeSettings)),
-          Button(
-            onPressed: _handleImport,
-            child: Text(l10n.import),
-          ),
-          const SizedBox(width: 6),
-          Button(
-            onPressed: _c.selectedPresetId != null
-                ? () => _c.exportSelectedPreset()
-                : null,
-            child: Text(l10n.export),
-          ),
-          const SizedBox(width: 6),
-          Button(
-            onPressed: _c.selectedPresetId != null ? _handleRevert : null,
-            child: Text(l10n.revert),
-          ),
-          const SizedBox(width: 6),
-          Button(
-            onPressed: () => _c.handleSaveAs(_promptPresetName),
-            child: Text(l10n.saveAs),
-          ),
-          const SizedBox(width: 6),
-          Button(
-            onPressed: () => _c.handleSave(_promptPresetName),
-            child: Text(l10n.save),
-          ),
-          const SizedBox(width: 6),
-          Button(
-            onPressed: canDelete
-                ? () => _c.handleDelete(_confirmDelete)
-                : null,
-            child: Text(l10n.deletePreset),
-          ),
-        ],
+      title: AppDialogTitleBar(
+        title: Text(l10n.encodeSettings),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppButton(
+              secondary: true,
+              onPressed: _handleImport,
+              child: Text(l10n.import),
+            ),
+            const SizedBox(width: 6),
+            AppButton(
+              secondary: true,
+              onPressed: _c.selectedPresetId != null
+                  ? () => _c.exportSelectedPreset()
+                  : null,
+              child: Text(l10n.export),
+            ),
+            const SizedBox(width: 6),
+            AppButton(
+              secondary: true,
+              onPressed: _c.selectedPresetId != null ? _handleRevert : null,
+              child: Text(l10n.revert),
+            ),
+            const SizedBox(width: 6),
+            AppButton(
+              secondary: true,
+              onPressed: () => _c.handleSaveAs(_promptPresetName),
+              child: Text(l10n.saveAs),
+            ),
+            const SizedBox(width: 6),
+            AppButton(
+              secondary: true,
+              onPressed: () => _c.handleSave(_promptPresetName),
+              child: Text(l10n.save),
+            ),
+            const SizedBox(width: 6),
+            AppButton(
+              secondary: true,
+              onPressed: canDelete
+                  ? () => _c.handleDelete(_confirmDelete)
+                  : null,
+              child: Text(l10n.deletePreset),
+            ),
+          ],
+        ),
       ),
       content: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -294,7 +316,8 @@ class _WindowsEncodeSettingsDialogState
                     children: [
                       for (int i = 0; i < tabs.length; i++) ...[
                         if (i > 0) const SizedBox(width: 4),
-                        Button(
+                        AppButton(
+                          secondary: true,
                           onPressed: () => _c.setTab(i),
                           child: Text(
                             tabs[i],
@@ -328,7 +351,7 @@ class _WindowsEncodeSettingsDialogState
         if (widget.onReset != null)
           Button(onPressed: widget.onReset, child: Text(l10n.resetToGlobal)),
         Button(onPressed: widget.onCancel, child: Text(l10n.cancel)),
-        FilledButton(
+        AppButton(
           onPressed: () => widget.onSave(_c.buildSettings()),
           child: Text(l10n.save),
         ),
@@ -592,7 +615,7 @@ class _WindowsEncodeSettingsDialogState
   }
 
   Widget _buildFilterTab(FluentThemeData theme, dynamic l10n) {
-    final fontState = context.watch<FontCubit>().state;
+    final fontState = getIt<FontCubit>().state;
     final fonts = fontState is NormalState<FontState>
         ? fontState.data.fonts
         : const <FontInfo>[];
@@ -613,7 +636,8 @@ class _WindowsEncodeSettingsDialogState
             children: [
               Text(l10n.textOverlays, style: theme.typography.bodyStrong),
               const Spacer(),
-              Button(
+              AppButton(
+                secondary: true,
                 onPressed: _c.addOverlay,
                 child: Text(l10n.addText),
               ),

@@ -12,7 +12,7 @@ import 'package:video_toolkit/presentation/base/base_cubit.dart';
 
 import 'video_encode_state.dart';
 
-@injectable
+@lazySingleton
 class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   VideoEncodeCubit(this._repository) : super.normal(const VideoEncodeState());
 

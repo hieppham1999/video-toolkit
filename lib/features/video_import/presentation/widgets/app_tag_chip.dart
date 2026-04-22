@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:video_toolkit/core/theme/app_colors.dart';
 
 /// Cross-platform monospace tag chip (e.g. `{year}`) tappable to insert
 /// into a template field.
@@ -30,14 +31,13 @@ class _MacosTagChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = MacosTheme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          color: isDark ? const Color(0xFF2C2C2E) : const Color(0xFFE5E5EA),
+          color: AppColors.surfaceElevated(theme.brightness),
         ),
         child: Text(
           tag,

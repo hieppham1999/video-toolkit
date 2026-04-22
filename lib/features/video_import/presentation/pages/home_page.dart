@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_toolkit/app/injection.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_state.dart';
@@ -24,6 +24,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final _importCubit = getIt<VideoImportCubit>();
+  final _encodeCubit = getIt<VideoEncodeCubit>();
+  final _presetCubit = getIt<PresetCubit>();
+
   double _previewFraction = 0.6;
   static const _minFraction = 0.2;
   static const _maxFraction = 0.85;
@@ -35,33 +39,31 @@ class _HomePageState extends State<HomePage> {
     );
     if (result == null || !mounted) return;
     final paths = result.paths.whereType<String>().toList();
-    context.read<VideoImportCubit>().addFiles(paths);
+    _importCubit.addFiles(paths);
   }
 
   void _onFilesDropped(List<String> paths) {
-    context.read<VideoImportCubit>().addFiles(paths);
+    _importCubit.addFiles(paths);
   }
 
   void _onDragStateChanged(bool isDragging) {
-    context.read<VideoImportCubit>().setDragging(isDragging);
+    _importCubit.setDragging(isDragging);
   }
 
   void _onRemoveFile(String path) {
-    context.read<VideoImportCubit>().removeFile(path);
+    _importCubit.removeFile(path);
     _resetEncodeIfEmpty();
   }
 
   void _onClearAll() {
-    context.read<VideoImportCubit>().clearAll();
+    _importCubit.clearAll();
     _resetEncodeIfEmpty();
   }
 
   void _resetEncodeIfEmpty() {
-    final importCubit = context.read<VideoImportCubit>();
-    final encodeCubit = context.read<VideoEncodeCubit>();
-    if (importCubit.currentData.files.isEmpty &&
-        encodeCubit.currentData.status != EncodeStatus.encoding) {
-      encodeCubit.reset();
+    if (_importCubit.currentData.files.isEmpty &&
+        _encodeCubit.currentData.status != EncodeStatus.encoding) {
+      _encodeCubit.reset();
     }
   }
 
@@ -72,47 +74,47 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onSelectVideo(String path) {
-    context.read<VideoImportCubit>().selectVideo(path);
+    _importCubit.selectVideo(path);
   }
 
   void _onSaveEncodeSettings(EncodeSettings settings) {
-    context.read<VideoImportCubit>().updateEncodeSettings(settings);
+    _importCubit.updateEncodeSettings(settings);
   }
 
   void _onUpdateFileSettings(String path, EncodeSettings? settings) {
-    context.read<VideoImportCubit>().updateFileSettings(path, settings);
+    _importCubit.updateFileSettings(path, settings);
   }
 
   void _onStart() {
-    final importState = context.read<VideoImportCubit>().currentData;
+    final importState = _importCubit.currentData;
     if (importState.files.isEmpty) return;
 
-    context.read<VideoEncodeCubit>().startBatchEncode(
+    _encodeCubit.startBatchEncode(
       files: importState.files,
       globalSettings: importState.encodeSettings,
     );
   }
 
   void _onStop() {
-    context.read<VideoEncodeCubit>().stop();
+    _encodeCubit.stop();
   }
 
   @override
   Widget build(BuildContext context) {
     return CubitStateBuilder<VideoImportState>(
-      cubit: context.read<VideoImportCubit>(),
+      cubit: _importCubit,
       builder: (context, importState) {
         final selectedFile = importState.selectedFilePath != null
             ? importState.files.where((f) => f.path == importState.selectedFilePath).firstOrNull
             : null;
 
         return CubitStateBuilder<VideoEncodeState>(
-          cubit: context.read<VideoEncodeCubit>(),
+          cubit: _encodeCubit,
           builder: (context, encodeState) {
             final isEncoding = encodeState.status == EncodeStatus.encoding;
 
             return CubitStateBuilder<PresetState>(
-              cubit: context.read<PresetCubit>(),
+              cubit: _presetCubit,
               builder: (context, presetState) {
                 final selectedPreset = presetState.selectedId == null
                     ? null

@@ -5,7 +5,7 @@ import 'package:video_toolkit/presentation/base/base_cubit.dart';
 
 import 'font_state.dart';
 
-@injectable
+@lazySingleton
 class FontCubit extends BaseCubit<FontState> {
   FontCubit(this._repository) : super.normal(const FontState()) {
     loadFonts();

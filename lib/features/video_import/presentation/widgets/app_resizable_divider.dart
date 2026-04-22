@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:video_toolkit/core/theme/app_colors.dart';
 
 /// Horizontal draggable divider used to resize stacked panes. Reports
 /// vertical drag delta via [onDrag].
@@ -17,8 +18,7 @@ class AppResizableDivider extends StatelessWidget {
     if (Platform.isWindows) {
       dividerColor = fluent.FluentTheme.of(context).resources.controlStrokeColorDefault;
     } else {
-      final isDark = MacosTheme.of(context).brightness == Brightness.dark;
-      dividerColor = isDark ? const Color(0xFF38383A) : const Color(0xFFD1D1D6);
+      dividerColor = AppColors.divider(MacosTheme.of(context).brightness);
     }
 
     return GestureDetector(

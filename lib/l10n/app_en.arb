@@ -102,5 +102,22 @@
   "importPresetNamePrompt": "Save imported settings as preset? Leave empty to load without saving.",
   "importFailed": "Failed to import settings. File is invalid or unreadable.",
   "importError": "Import Error",
-  "exportSuccess": "Settings exported"
+  "exportSuccess": "Settings exported",
+  "settings": "Settings",
+  "appearance": "Appearance",
+  "accentColor": "Accent color",
+  "accentBlue": "Blue",
+  "accentPurple": "Purple",
+  "accentPink": "Pink",
+  "accentRed": "Red",
+  "accentOrange": "Orange",
+  "accentYellow": "Yellow",
+  "accentGreen": "Green",
+  "accentTeal": "Teal",
+  "accentGraphite": "Graphite",
+  "language": "Language",
+  "languageSystem": "System",
+  "languageEnglish": "English",
+  "languageVietnamese": "Tiếng Việt",
+  "defaultFont": "Default font"
 }

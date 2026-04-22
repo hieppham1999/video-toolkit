@@ -1,26 +1,28 @@
 import 'dart:async';
 
-import 'package:video_toolkit/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 const double _kDefaultLoadingIndicatorSize = 50;
+const Color _kLoadingBackground = Color(0xA6000000);
+const Color _kLoadingProgress = Color(0xA63AFF19);
+const Color _kLoadingMask = Color(0x80000000);
 
 class LoadingUtil {
   static bool _isLoading = false;
 
   static void setup() {
     EasyLoading.instance
-      ..backgroundColor = AppColors.loadingBackground
+      ..backgroundColor = _kLoadingBackground
       ..maskType = EasyLoadingMaskType.custom
-      ..indicatorColor = AppColors.loadingProgress
-      ..progressColor = AppColors.loadingProgress
-      ..textColor = AppColors.loadingProgress
+      ..indicatorColor = _kLoadingProgress
+      ..progressColor = _kLoadingProgress
+      ..textColor = _kLoadingProgress
       ..dismissOnTap = false
       ..boxShadow = [] // keep this to make backgroundColor take effect
       ..userInteractions = false
-      ..maskColor = AppColors.loadingMask
+      ..maskColor = _kLoadingMask
       ..loadingStyle = EasyLoadingStyle.custom;
   }
 
@@ -36,7 +38,7 @@ class LoadingUtil {
         constraints: BoxConstraints(maxWidth: _kDefaultLoadingIndicatorSize),
         child: SpinKitRing(
           size: _kDefaultLoadingIndicatorSize,
-          color: AppColors.loadingProgress,
+          color: _kLoadingProgress,
           lineWidth: 3,
         ),
       ), // Chặn thao tác người dùng

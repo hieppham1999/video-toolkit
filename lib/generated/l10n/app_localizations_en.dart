@@ -299,4 +299,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportSuccess => 'Settings exported';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get accentColor => 'Accent color';
+
+  @override
+  String get accentBlue => 'Blue';
+
+  @override
+  String get accentPurple => 'Purple';
+
+  @override
+  String get accentPink => 'Pink';
+
+  @override
+  String get accentRed => 'Red';
+
+  @override
+  String get accentOrange => 'Orange';
+
+  @override
+  String get accentYellow => 'Yellow';
+
+  @override
+  String get accentGreen => 'Green';
+
+  @override
+  String get accentTeal => 'Teal';
+
+  @override
+  String get accentGraphite => 'Graphite';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get languageSystem => 'System';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageVietnamese => 'Tiếng Việt';
+
+  @override
+  String get defaultFont => 'Default font';
 }

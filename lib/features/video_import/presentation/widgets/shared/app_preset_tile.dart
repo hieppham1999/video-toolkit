@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/settings_preset.dart';
 
 /// A row in the preset sidebar. Highlights when [active], shows a lock
@@ -55,14 +56,14 @@ class _AppPresetTileState extends State<AppPresetTile> {
       radius = BorderRadius.circular(4);
     } else {
       final theme = MacosTheme.of(context);
-      final isDark = theme.brightness == Brightness.dark;
-      final subtle =
-          isDark ? const Color(0xFF8E8E93) : const Color(0xFF6E6E73);
+      final b = theme.brightness;
+      final isDark = b == Brightness.dark;
+      final subtle = AppColors.textTertiary(b);
       final accent = theme.primaryColor;
       if (widget.active) {
         bg = accent.withValues(alpha: isDark ? 0.35 : 0.22);
       } else if (_hovered) {
-        bg = isDark ? const Color(0x22FFFFFF) : const Color(0x11000000);
+        bg = AppColors.hoverOverlay(b);
       } else {
         bg = null;
       }

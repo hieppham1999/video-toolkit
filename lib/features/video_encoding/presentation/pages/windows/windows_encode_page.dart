@@ -1,5 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_toolkit/app/injection.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
 import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
@@ -20,7 +20,7 @@ class WindowsEncodePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CubitStateBuilder<VideoEncodeState>(
-      cubit: context.read<VideoEncodeCubit>(),
+      cubit: getIt<VideoEncodeCubit>(),
       builder: (context, state) {
         return ScaffoldPage(
           header: PageHeader(
@@ -48,13 +48,13 @@ class WindowsEncodePage extends StatelessWidget {
                   _EncodeAction(
                     state: state,
                     onStart: () {
-                      context.read<VideoEncodeCubit>().startBatchEncode(
+                      getIt<VideoEncodeCubit>().startBatchEncode(
                         files: [VideoFile(path: filePath, name: filePath.split(r'\').last, sizeInBytes: 0, importedAt: DateTime.now())],
                         globalSettings: const EncodeSettings(),
                       );
                     },
                     onReset: () {
-                      context.read<VideoEncodeCubit>().reset();
+                      getIt<VideoEncodeCubit>().reset();
                     },
                   ),
                 ],

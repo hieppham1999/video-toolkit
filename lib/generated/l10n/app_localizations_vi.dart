@@ -298,4 +298,55 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get exportSuccess => 'Đã xuất settings';
+
+  @override
+  String get settings => 'Cài đặt';
+
+  @override
+  String get appearance => 'Giao diện';
+
+  @override
+  String get accentColor => 'Màu chủ đề';
+
+  @override
+  String get accentBlue => 'Xanh dương';
+
+  @override
+  String get accentPurple => 'Tím';
+
+  @override
+  String get accentPink => 'Hồng';
+
+  @override
+  String get accentRed => 'Đỏ';
+
+  @override
+  String get accentOrange => 'Cam';
+
+  @override
+  String get accentYellow => 'Vàng';
+
+  @override
+  String get accentGreen => 'Xanh lá';
+
+  @override
+  String get accentTeal => 'Xanh ngọc';
+
+  @override
+  String get accentGraphite => 'Xám chì';
+
+  @override
+  String get language => 'Ngôn ngữ';
+
+  @override
+  String get languageSystem => 'Theo hệ thống';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageVietnamese => 'Tiếng Việt';
+
+  @override
+  String get defaultFont => 'Font mặc định';
 }

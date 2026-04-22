@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:video_toolkit/app/injection.dart';
 import 'package:video_toolkit/app/languages.dart';
+import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/fonts/data/models/font_info.dart';
 import 'package:video_toolkit/features/fonts/presentation/cubit/font_cubit.dart';
@@ -10,6 +12,8 @@ import 'package:video_toolkit/features/video_encoding/data/models/encode_setting
 import 'package:video_toolkit/features/video_encoding/data/models/settings_preset.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_state.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_button.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_dialog_title_bar.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_dropdown.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_field.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_preset_chip.dart';
@@ -56,7 +60,7 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
     super.initState();
     _c = EncodeSettingsController(
       initialSettings: widget.settings,
-      presetCubit: context.read<PresetCubit>(),
+      presetCubit: getIt<PresetCubit>(),
     );
   }
 
@@ -216,9 +220,15 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: _c,
-      builder: (context, _) => _buildBody(context),
+    return BlocBuilder<PresetCubit, CubitState<PresetState>>(
+      bloc: getIt<PresetCubit>(),
+      builder: (context, _) => BlocBuilder<FontCubit, CubitState<FontState>>(
+        bloc: getIt<FontCubit>(),
+        builder: (context, _) => ListenableBuilder(
+          listenable: _c,
+          builder: (context, _) => _buildBody(context),
+        ),
+      ),
     );
   }
 
@@ -233,35 +243,28 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
       l10n.tabFilter,
       l10n.tabAudio,
     ];
-    final presetState = context.watch<PresetCubit>().state;
+    final presetState = getIt<PresetCubit>().state;
     final presets = presetState is NormalState<PresetState>
         ? presetState.data.presets
         : const <SettingsPreset>[];
     final canDelete = _c.currentUserPreset() != null;
 
-    return Transform.translate(
-      offset: _c.dragOffset,
-      child: MacosSheet(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
-        child: Column(
+    return AppDialogTitleBar(
+      title: Text(l10n.encodeSettings),
+      draggable: true,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 8, 20),
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildTitleBar(theme),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 8, 20),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
                     SizedBox(
                       width: _c.sidebarWidth,
                       child: _buildPresetSidebar(theme, l10n, presets),
                     ),
                     SidebarResizeHandle(
                       onDragDelta: _c.resizeSidebar,
-                      lineColor: theme.brightness == Brightness.dark
-                          ? const Color(0xFF3A3A3C)
-                          : const Color(0xFFD1D1D6),
+                      lineColor: AppColors.divider(theme.brightness),
                     ),
                     Expanded(
                       child: Padding(
@@ -271,21 +274,14 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                           children: [
                             Row(
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    l10n.encodeSettings,
-                                    style: theme.typography.title2,
-                                  ),
-                                ),
-                                PushButton(
-                                  controlSize: ControlSize.regular,
+                                const Spacer(),
+                                AppButton(
                                   secondary: true,
                                   onPressed: _handleImport,
                                   child: Text(l10n.import),
                                 ),
                                 const SizedBox(width: 6),
-                                PushButton(
-                                  controlSize: ControlSize.regular,
+                                AppButton(
                                   secondary: true,
                                   onPressed: _c.selectedPresetId != null
                                       ? () => _c.exportSelectedPreset()
@@ -293,8 +289,7 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                                   child: Text(l10n.export),
                                 ),
                                 const SizedBox(width: 6),
-                                PushButton(
-                                  controlSize: ControlSize.regular,
+                                AppButton(
                                   secondary: true,
                                   onPressed: _c.selectedPresetId != null
                                       ? _handleRevert
@@ -302,24 +297,21 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                                   child: Text(l10n.revert),
                                 ),
                                 const SizedBox(width: 6),
-                                PushButton(
-                                  controlSize: ControlSize.regular,
+                                AppButton(
                                   secondary: true,
                                   onPressed: () =>
                                       _c.handleSaveAs(_promptPresetName),
                                   child: Text(l10n.saveAs),
                                 ),
                                 const SizedBox(width: 6),
-                                PushButton(
-                                  controlSize: ControlSize.regular,
+                                AppButton(
                                   secondary: true,
                                   onPressed: () =>
                                       _c.handleSave(_promptPresetName),
                                   child: Text(l10n.save),
                                 ),
                                 const SizedBox(width: 6),
-                                PushButton(
-                                  controlSize: ControlSize.regular,
+                                AppButton(
                                   secondary: true,
                                   onPressed: canDelete
                                       ? () => _c.handleDelete(_confirmDelete)
@@ -357,22 +349,22 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                             Row(
                               children: [
                                 if (widget.onReset != null)
-                                  PushButton(
-                                    controlSize: ControlSize.large,
+                                  AppButton(
+                                    size: AppButtonSize.large,
                                     secondary: true,
                                     onPressed: widget.onReset,
                                     child: Text(l10n.resetToGlobal),
                                   ),
                                 const Spacer(),
-                                PushButton(
-                                  controlSize: ControlSize.large,
+                                AppButton(
+                                  size: AppButtonSize.large,
                                   secondary: true,
                                   onPressed: widget.onCancel,
                                   child: Text(l10n.cancel),
                                 ),
                                 const SizedBox(width: 8),
-                                PushButton(
-                                  controlSize: ControlSize.large,
+                                AppButton(
+                                  size: AppButtonSize.large,
                                   onPressed: () =>
                                       widget.onSave(_c.buildSettings()),
                                   child: Text(l10n.save),
@@ -386,62 +378,7 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                   ],
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTitleBar(MacosThemeData theme) {
-    final isDark = theme.brightness == Brightness.dark;
-    final bg = isDark ? const Color(0xFF2C2C2E) : const Color(0xFFECECEC);
-    final borderColor =
-        isDark ? const Color(0xFF3A3A3C) : const Color(0xFFD1D1D6);
-
-    return Container(
-      height: 32,
-      decoration: BoxDecoration(
-        color: bg,
-        border: Border(bottom: BorderSide(color: borderColor)),
-      ),
-      child: Row(
-        children: [
-          const SizedBox(width: 10),
-          _TrafficLightButton(
-            color: const Color(0xFFFF5F56),
-            borderColor: const Color(0xFFE0443E),
-            icon: CupertinoIcons.xmark,
-            onTap: widget.onCancel,
-          ),
-          const SizedBox(width: 8),
-          _TrafficLightButton(
-            color: const Color(0xFFFFBD2E),
-            borderColor: const Color(0xFFDEA123),
-            icon: CupertinoIcons.minus,
-            onTap: _c.resetDrag,
-          ),
-          const SizedBox(width: 8),
-          _TrafficLightButton(
-            color: const Color(0xFF27C93F),
-            borderColor: const Color(0xFF1AAB29),
-            icon: CupertinoIcons.fullscreen,
-            onTap: _c.resetDrag,
-          ),
-          Expanded(
-            child: MouseRegion(
-              cursor: SystemMouseCursors.move,
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onPanUpdate: (d) => _c.dragBy(d.delta),
-                onDoubleTap: _c.resetDrag,
-                child: const SizedBox.expand(),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+      );
   }
 
   Widget _buildPresetSidebar(
@@ -449,9 +386,9 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
     dynamic l10n,
     List<SettingsPreset> presets,
   ) {
-    final isDark = theme.brightness == Brightness.dark;
-    final subtle = isDark ? const Color(0xFF8E8E93) : const Color(0xFF6E6E73);
-    final bg = isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF2F2F7);
+    final b = theme.brightness;
+    final subtle = AppColors.textTertiary(b);
+    final bg = AppColors.surface(b);
 
     return Container(
       decoration: BoxDecoration(
@@ -493,9 +430,7 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
   }
 
   Widget _buildFileTab(MacosThemeData theme, dynamic l10n) {
-    final isDark = theme.brightness == Brightness.dark;
-    final subtleText =
-        isDark ? const Color(0xFF8E8E93) : const Color(0xFF6E6E73);
+    final subtleText = AppColors.textTertiary(theme.brightness);
     final preview = FilenameTemplate.apply(
       _c.outputNameTemplate,
       originalName: widget.sampleFileName,
@@ -606,9 +541,7 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
 
   Widget _buildSizingTab(MacosThemeData theme) {
     final l10n = Languages.translate;
-    final isDark = theme.brightness == Brightness.dark;
-    final subtleText =
-        isDark ? const Color(0xFF8E8E93) : const Color(0xFF6E6E73);
+    final subtleText = AppColors.textTertiary(theme.brightness);
     final srcW = widget.sampleWidth;
     final srcH = widget.sampleHeight;
     final srcLabel = (srcW != null && srcH != null) ? '$srcW × $srcH' : '-';
@@ -706,11 +639,10 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
   }
 
   Widget _buildFilterTab(MacosThemeData theme, dynamic l10n) {
-    final isDark = theme.brightness == Brightness.dark;
-    final subtleText =
-        isDark ? const Color(0xFF8E8E93) : const Color(0xFF6E6E73);
+    final b = theme.brightness;
+    final subtleText = AppColors.textTertiary(b);
 
-    final fontState = context.watch<FontCubit>().state;
+    final fontState = getIt<FontCubit>().state;
     final fonts = fontState is NormalState<FontState>
         ? fontState.data.fonts
         : const <FontInfo>[];
@@ -747,9 +679,7 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: isDark
-                      ? const Color(0xFF1C1C1E)
-                      : const Color(0xFFF2F2F7),
+                  color: AppColors.surface(b),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -946,48 +876,3 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
   }
 }
 
-class _TrafficLightButton extends StatefulWidget {
-  const _TrafficLightButton({
-    required this.color,
-    required this.borderColor,
-    required this.icon,
-    required this.onTap,
-  });
-
-  final Color color;
-  final Color borderColor;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  State<_TrafficLightButton> createState() => _TrafficLightButtonState();
-}
-
-class _TrafficLightButtonState extends State<_TrafficLightButton> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            color: widget.color,
-            shape: BoxShape.circle,
-            border: Border.all(color: widget.borderColor, width: 0.5),
-          ),
-          alignment: Alignment.center,
-          child: _hovered
-              ? Icon(widget.icon, size: 8, color: const Color(0x99000000))
-              : null,
-        ),
-      ),
-    );
-  }
-}

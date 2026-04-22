@@ -13,6 +13,12 @@ _UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) =>
         json['encodeSettings'] as Map<String, dynamic>,
       ),
       defaultFontPath: json['defaultFontPath'] as String?,
+      accentColor:
+          $enumDecodeNullable(_$AppAccentEnumMap, json['accentColor']) ??
+          AppAccent.blue,
+      language:
+          $enumDecodeNullable(_$AppLanguageEnumMap, json['language']) ??
+          AppLanguage.system,
     );
 
 Map<String, dynamic> _$UserSettingsToJson(_UserSettings instance) =>
@@ -20,4 +26,24 @@ Map<String, dynamic> _$UserSettingsToJson(_UserSettings instance) =>
       'selectedPresetId': instance.selectedPresetId,
       'encodeSettings': instance.encodeSettings,
       'defaultFontPath': instance.defaultFontPath,
+      'accentColor': _$AppAccentEnumMap[instance.accentColor]!,
+      'language': _$AppLanguageEnumMap[instance.language]!,
     };
+
+const _$AppAccentEnumMap = {
+  AppAccent.blue: 'blue',
+  AppAccent.purple: 'purple',
+  AppAccent.pink: 'pink',
+  AppAccent.red: 'red',
+  AppAccent.orange: 'orange',
+  AppAccent.yellow: 'yellow',
+  AppAccent.green: 'green',
+  AppAccent.teal: 'teal',
+  AppAccent.graphite: 'graphite',
+};
+
+const _$AppLanguageEnumMap = {
+  AppLanguage.system: 'system',
+  AppLanguage.en: 'en',
+  AppLanguage.vi: 'vi',
+};

@@ -10,6 +10,8 @@ import 'package:video_toolkit/features/video_import/presentation/widgets/app_met
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_overall_progress_bar.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_resizable_divider.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_toolbar_button.dart';
+import 'package:video_toolkit/core/theme/app_colors.dart';
+import 'package:video_toolkit/features/settings/presentation/pages/settings_page.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_video_table_section.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/windows/windows_encode_settings_dialog.dart';
 
@@ -75,6 +77,14 @@ class WindowsHomeRenderer extends StatelessWidget {
                   onTap: () => _confirmClearAll(context),
                 ),
               ],
+              _toolbarDivider(theme),
+              AppToolbarButton(
+                macosIcon: FluentIcons.settings,
+                fluentIcon: FluentIcons.settings,
+                label: l10n.settings,
+                tooltip: l10n.settings,
+                onTap: () => _openSettings(context),
+              ),
             ],
           ),
         ),
@@ -142,6 +152,13 @@ class WindowsHomeRenderer extends StatelessWidget {
       height: 40,
       margin: const EdgeInsets.symmetric(horizontal: 4),
       color: theme.resources.dividerStrokeColorDefault,
+    );
+  }
+
+  void _openSettings(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => const SettingsPage(),
     );
   }
 
@@ -278,8 +295,9 @@ class _PreviewSection extends StatelessWidget {
     // Derive from the actual rendered mica background — system brightness
     // can differ from the app's effective canvas.
     final isDark = theme.micaBackgroundColor.computeLuminance() < 0.5;
-    final primaryText = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
-    final secondaryText = isDark ? const Color(0xFFAEAEB2) : const Color(0xFF6E6E73);
+    final brightness = isDark ? Brightness.dark : Brightness.light;
+    final primaryText = AppColors.textPrimary(brightness);
+    final secondaryText = AppColors.textSecondary(brightness);
     final labelStyle = TextStyle(color: secondaryText, fontSize: 12);
     final valueStyle = TextStyle(color: primaryText, fontSize: 14);
     final titleStyle = TextStyle(color: primaryText, fontSize: 16, fontWeight: FontWeight.w600);

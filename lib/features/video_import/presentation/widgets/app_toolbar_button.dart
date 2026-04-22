@@ -4,6 +4,7 @@ import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:video_toolkit/core/theme/app_colors.dart';
 
 /// Toolbar button shared between macOS and Windows. Layout: icon on top,
 /// label below, optional sub-label. No frame/border — relies on hover state
@@ -65,9 +66,8 @@ class _MacosToolbarBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = MacosTheme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final iconColor = isDark ? const Color(0xFFE5E5EA) : const Color(0xFF3A3A3C);
-    final subtleColor = isDark ? const Color(0xFF8E8E93) : const Color(0xFF6E6E73);
+    final iconColor = AppColors.textPrimary(theme.brightness);
+    final subtleColor = AppColors.textTertiary(theme.brightness);
     final enabled = onTap != null;
     final effectiveIconColor = enabled ? iconColor : iconColor.withValues(alpha: 0.4);
     final effectiveLabelColor = enabled ? iconColor : iconColor.withValues(alpha: 0.5);

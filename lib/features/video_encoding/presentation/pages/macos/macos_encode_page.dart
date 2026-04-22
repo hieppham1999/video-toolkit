@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:video_toolkit/app/injection.dart';
+import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
 import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
@@ -21,7 +22,7 @@ class MacosEncodePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CubitStateBuilder<VideoEncodeState>(
-      cubit: context.read<VideoEncodeCubit>(),
+      cubit: getIt<VideoEncodeCubit>(),
       builder: (context, state) {
         return MacosScaffold(
           toolBar: ToolBar(
@@ -52,13 +53,13 @@ class MacosEncodePage extends StatelessWidget {
                         _EncodeAction(
                           state: state,
                           onStart: () {
-                            context.read<VideoEncodeCubit>().startBatchEncode(
+                            getIt<VideoEncodeCubit>().startBatchEncode(
                               files: [VideoFile(path: filePath, name: filePath.split('/').last, sizeInBytes: 0, importedAt: DateTime.now())],
                               globalSettings: const EncodeSettings(),
                             );
                           },
                           onReset: () {
-                            context.read<VideoEncodeCubit>().reset();
+                            getIt<VideoEncodeCubit>().reset();
                           },
                         ),
                       ],
@@ -89,7 +90,7 @@ class _FileInfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.canvasColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: MacosColors.separatorColor),
+        border: Border.all(color: AppColors.divider(theme.brightness)),
       ),
       child: Row(
         children: [
@@ -108,7 +109,7 @@ class _FileInfoCard extends StatelessWidget {
                 Text(
                   _formatDuration(duration),
                   style: theme.typography.caption1.copyWith(
-                    color: MacosColors.secondaryLabelColor,
+                    color: AppColors.textSecondary(theme.brightness),
                   ),
                 ),
               ],
@@ -174,7 +175,7 @@ class _EncodeAction extends StatelessWidget {
             Text(
               _progressDetail(state),
               style: theme.typography.caption1.copyWith(
-                color: MacosColors.secondaryLabelColor,
+                color: AppColors.textSecondary(theme.brightness),
               ),
             ),
           ],
@@ -195,7 +196,7 @@ class _EncodeAction extends StatelessWidget {
               Text(
                 state.outputPath!,
                 style: theme.typography.caption1.copyWith(
-                  color: MacosColors.secondaryLabelColor,
+                  color: AppColors.textSecondary(theme.brightness),
                 ),
               ),
             ],

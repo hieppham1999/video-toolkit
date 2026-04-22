@@ -661,6 +661,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings exported'**
   String get exportSuccess;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @accentColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Accent color'**
+  String get accentColor;
+
+  /// No description provided for @accentBlue.
+  ///
+  /// In en, this message translates to:
+  /// **'Blue'**
+  String get accentBlue;
+
+  /// No description provided for @accentPurple.
+  ///
+  /// In en, this message translates to:
+  /// **'Purple'**
+  String get accentPurple;
+
+  /// No description provided for @accentPink.
+  ///
+  /// In en, this message translates to:
+  /// **'Pink'**
+  String get accentPink;
+
+  /// No description provided for @accentRed.
+  ///
+  /// In en, this message translates to:
+  /// **'Red'**
+  String get accentRed;
+
+  /// No description provided for @accentOrange.
+  ///
+  /// In en, this message translates to:
+  /// **'Orange'**
+  String get accentOrange;
+
+  /// No description provided for @accentYellow.
+  ///
+  /// In en, this message translates to:
+  /// **'Yellow'**
+  String get accentYellow;
+
+  /// No description provided for @accentGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Green'**
+  String get accentGreen;
+
+  /// No description provided for @accentTeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Teal'**
+  String get accentTeal;
+
+  /// No description provided for @accentGraphite.
+  ///
+  /// In en, this message translates to:
+  /// **'Graphite'**
+  String get accentGraphite;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @languageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get languageSystem;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languageVietnamese.
+  ///
+  /// In en, this message translates to:
+  /// **'Tiếng Việt'**
+  String get languageVietnamese;
+
+  /// No description provided for @defaultFont.
+  ///
+  /// In en, this message translates to:
+  /// **'Default font'**
+  String get defaultFont;
 }
 
 class _AppLocalizationsDelegate

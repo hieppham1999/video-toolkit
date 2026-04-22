@@ -46,7 +46,6 @@ class EncodeSettingsController extends ChangeNotifier {
   int selectedTab = 0;
   String? selectedPresetId;
   double sidebarWidth = 190;
-  Offset dragOffset = Offset.zero;
 
   void _loadFromSettings(EncodeSettings s) {
     codec = s.codec;
@@ -206,17 +205,9 @@ class EncodeSettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Sidebar / drag ───────────────────────────────────────────────
+  // ── Sidebar ──────────────────────────────────────────────────────
   void resizeSidebar(double delta) {
     sidebarWidth = (sidebarWidth + delta).clamp(minSidebar, maxSidebar);
-    notifyListeners();
-  }
-  void dragBy(Offset delta) {
-    dragOffset += delta;
-    notifyListeners();
-  }
-  void resetDrag() {
-    dragOffset = Offset.zero;
     notifyListeners();
   }
 

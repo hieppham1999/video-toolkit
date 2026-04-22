@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:video_toolkit/core/theme/app_colors.dart';
 
 /// Cross-platform tappable chip showing a preset value. Highlights when
 /// [active] to indicate the current selection.
@@ -41,15 +42,15 @@ class _MacosPresetChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = MacosTheme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final b = theme.brightness;
     final Color bg;
     final Color fg;
     if (active) {
       bg = theme.primaryColor;
       fg = const Color(0xFFFFFFFF);
     } else {
-      bg = isDark ? const Color(0xFF2C2C2E) : const Color(0xFFE5E5EA);
-      fg = isDark ? const Color(0xFFE5E5EA) : const Color(0xFF1C1C1E);
+      bg = AppColors.surfaceElevated(b);
+      fg = AppColors.textPrimary(b);
     }
     return GestureDetector(
       onTap: onTap,
