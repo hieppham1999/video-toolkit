@@ -30,7 +30,7 @@ class WindowsHomeRenderer extends StatelessWidget {
 
     return ScaffoldPage(
       header: SizedBox(
-        height: 78,
+        height: 85,
         child: PageHeader(
           title: const Text('Video Toolkit'),
           commandBar: Row(

@@ -30,6 +30,7 @@ class ExiftoolDatasource {
       '-c', '%+.6f',
       '-CreateDate',
       '-MediaCreateDate',
+      '-DateTimeOriginal',
       '-TrackCreateDate',
       '-GPSLatitude',
       '-GPSLongitude',
@@ -52,7 +53,7 @@ class ExiftoolDatasource {
 
       final metadata = VideoMetadata(
         creationDate: _parseDate(
-          data['CreateDate'] ?? data['MediaCreateDate'] ?? data['TrackCreateDate'],
+          data['CreateDate'] ?? data['MediaCreateDate'] ?? data['TrackCreateDate'] ?? data['DateTimeOriginal'],
         ),
         gpsLatitude: _parseDouble(data['GPSLatitude']),
         gpsLongitude: _parseDouble(data['GPSLongitude']),
