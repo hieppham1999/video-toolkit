@@ -18,23 +18,28 @@ class FfprobeDatasource {
   Future<VideoMetadata?> extract(String filePath) async {
     if (!await isAvailable) return null;
 
-    final result = await _runner.run(_executable, [
+    // -probesize 1M and -analyzeduration 1000000 (1s) limit how much of the file
+    // ffprobe reads to infer stream info. Defaults are 5MB / 5s which is slow
+    // on large files; 1MB / 1s is more than enough for MP4/MOV container headers
+    // and gives accurate codec/resolution/fps/duration.
+    final args = [
       '-v', 'quiet',
+      '-probesize', '1000000',
+      '-analyzeduration', '1000000',
       '-print_format', 'json',
       '-show_format',
       '-show_streams',
       filePath,
-    ], timeout: const Duration(seconds: 15));
-
-    print(result.stdout);
-    print(result.stderr);
-    
-    
+    ];
+    appLogger.i('ffprobe command: $_executable ${args.join(' ')}');
+    final result = await _runner.run(_executable, args, timeout: const Duration(seconds: 15));
 
     if (!result.isSuccess) {
       appLogger.w('ffprobe failed for $filePath: ${result.stderr}');
       return null;
     }
+
+    appLogger.d('ffprobe raw output for $filePath:\n${result.stdout}');
 
     try {
       final data = jsonDecode(result.stdout) as Map<String, dynamic>;
@@ -49,7 +54,7 @@ class FfprobeDatasource {
         (s) => s['codec_type'] == 'audio',
       ).firstOrNull;
 
-      return VideoMetadata(
+      final metadata = VideoMetadata(
         duration: _parseDuration(format['duration']),
         width: videoStream?['width'] as int?,
         height: videoStream?['height'] as int?,
@@ -59,6 +64,16 @@ class FfprobeDatasource {
         creationDate: _parseCreationDate(videoStream, format),
         frameRate: _parseFrameRate(videoStream?['r_frame_rate']),
       );
+
+      appLogger.i(
+        'ffprobe parsed: duration=${metadata.duration}, '
+        '${metadata.width}x${metadata.height}, '
+        'video=${metadata.videoCodec}, audio=${metadata.audioCodec}, '
+        'bitrate=${metadata.bitrate}, fps=${metadata.frameRate}, '
+        'creationDate=${metadata.creationDate}',
+      );
+
+      return metadata;
     } catch (e) {
       appLogger.e('ffprobe parse error: $e');
       return null;

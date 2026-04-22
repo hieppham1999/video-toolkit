@@ -49,6 +49,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get encodeSettings => 'Cài đặt Encode';
 
   @override
+  String get noPresetSelected => 'Chưa chọn preset';
+
+  @override
   String get start => 'Bắt đầu';
 
   @override
@@ -71,6 +74,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get columnOutput => 'Tên output';
+
+  @override
+  String get columnStatus => 'Trạng thái';
+
+  @override
+  String get statusPending => 'Đang chờ';
+
+  @override
+  String get statusCompleted => 'Hoàn tất';
+
+  @override
+  String get statusFailed => 'Thất bại';
 
   @override
   String get resolution => 'Độ phân giải';
@@ -166,6 +181,24 @@ class AppLocalizationsVi extends AppLocalizations {
   String get crf => 'CRF';
 
   @override
+  String get deinterlace => 'Khử xen kẽ';
+
+  @override
+  String get deinterlaceOff => 'Tắt';
+
+  @override
+  String get deinterlaceYadifFrame => 'Yadif (frame)';
+
+  @override
+  String get deinterlaceYadifField => 'Yadif (field, 2×fps)';
+
+  @override
+  String get deinterlaceBwdifFrame => 'Bwdif (frame)';
+
+  @override
+  String get deinterlaceBwdifField => 'Bwdif (field, 2×fps)';
+
+  @override
   String get original => 'Gốc';
 
   @override
@@ -239,5 +272,30 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get noPresetSelected => 'Chưa chọn preset';
+  String get revert => 'Hoàn tác';
+
+  @override
+  String revertConfirm(String name) {
+    return 'Hoàn tác toàn bộ thay đổi về preset \'\'$name\'\'?';
+  }
+
+  @override
+  String get import => 'Nhập';
+
+  @override
+  String get export => 'Xuất';
+
+  @override
+  String get importPresetNamePrompt =>
+      'Lưu settings vừa nhập thành preset? Bỏ trống để chỉ nạp vào form.';
+
+  @override
+  String get importFailed =>
+      'Nhập settings thất bại. File không hợp lệ hoặc không đọc được.';
+
+  @override
+  String get importError => 'Lỗi nhập';
+
+  @override
+  String get exportSuccess => 'Đã xuất settings';
 }

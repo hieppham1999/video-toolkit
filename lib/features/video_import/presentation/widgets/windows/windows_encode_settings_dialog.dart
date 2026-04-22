@@ -95,6 +95,93 @@ class _WindowsEncodeSettingsDialogState
     );
   }
 
+  Future<String?> _promptImportedPresetName() async {
+    final l10n = Languages.translate;
+    final controller = TextEditingController();
+    return showDialog<String?>(
+      context: context,
+      builder: (ctx) => ContentDialog(
+        title: Text(l10n.import),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.importPresetNamePrompt),
+            const SizedBox(height: 8),
+            TextBox(
+              controller: controller,
+              placeholder: l10n.presetNameHint,
+              autofocus: true,
+            ),
+          ],
+        ),
+        actions: [
+          Button(
+            onPressed: () => Navigator.of(ctx).pop(''),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<bool?> _confirmRevert(String name) {
+    final l10n = Languages.translate;
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => ContentDialog(
+        title: Text(l10n.revert),
+        content: Text(l10n.revertConfirm(name)),
+        actions: [
+          Button(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.revert),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showImportError() {
+    final l10n = Languages.translate;
+    return showDialog<void>(
+      context: context,
+      builder: (ctx) => ContentDialog(
+        title: Text(l10n.importError),
+        content: Text(l10n.importFailed),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleImport() async {
+    try {
+      await _c.importAndSaveAsPreset(_promptImportedPresetName);
+    } catch (_) {
+      if (mounted) await _showImportError();
+    }
+  }
+
+  Future<void> _handleRevert() async {
+    final name = _c.selectedPresetName();
+    if (name == null) return;
+    final ok = await _confirmRevert(name);
+    if (ok == true) _c.revertToSelectedPreset();
+  }
+
   Future<bool?> _confirmDelete(String name) {
     final l10n = Languages.translate;
     return showDialog<bool>(
@@ -146,6 +233,23 @@ class _WindowsEncodeSettingsDialogState
       title: Row(
         children: [
           Expanded(child: Text(l10n.encodeSettings)),
+          Button(
+            onPressed: _handleImport,
+            child: Text(l10n.import),
+          ),
+          const SizedBox(width: 6),
+          Button(
+            onPressed: _c.selectedPresetId != null
+                ? () => _c.exportSelectedPreset()
+                : null,
+            child: Text(l10n.export),
+          ),
+          const SizedBox(width: 6),
+          Button(
+            onPressed: _c.selectedPresetId != null ? _handleRevert : null,
+            child: Text(l10n.revert),
+          ),
+          const SizedBox(width: 6),
           Button(
             onPressed: () => _c.handleSaveAs(_promptPresetName),
             child: Text(l10n.saveAs),
@@ -373,6 +477,17 @@ class _WindowsEncodeSettingsDialogState
     );
   }
 
+  String _deinterlaceLabel(Deinterlace d) {
+    final l10n = Languages.translate;
+    return switch (d) {
+      Deinterlace.off => l10n.deinterlaceOff,
+      Deinterlace.yadifFrame => l10n.deinterlaceYadifFrame,
+      Deinterlace.yadifField => l10n.deinterlaceYadifField,
+      Deinterlace.bwdifFrame => l10n.deinterlaceBwdifFrame,
+      Deinterlace.bwdifField => l10n.deinterlaceBwdifField,
+    };
+  }
+
   Widget _buildSizingTab(FluentThemeData theme) {
     final l10n = Languages.translate;
     final srcW = widget.sampleWidth;
@@ -482,6 +597,14 @@ class _WindowsEncodeSettingsDialogState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          AppDropdown<Deinterlace>(
+            label: l10n.deinterlace,
+            value: _c.deinterlace,
+            items: Deinterlace.values,
+            itemLabel: _deinterlaceLabel,
+            onChanged: _c.setDeinterlace,
+          ),
+          const SizedBox(height: 16),
           Row(
             children: [
               Text(l10n.textOverlays, style: theme.typography.bodyStrong),

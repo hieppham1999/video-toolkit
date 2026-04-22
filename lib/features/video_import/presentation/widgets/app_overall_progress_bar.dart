@@ -21,7 +21,11 @@ class AppOverallProgressBar extends StatelessWidget {
     final current = encodeState.currentIndex;
     final completed = encodeState.completedCount;
     final failed = encodeState.failedFiles;
-    final overallPercent = total > 0 ? current / total : 0.0;
+    final currentFileFraction =
+        status == EncodeStatus.encoding ? encodeState.progress.percent : 0.0;
+    final overallPercent = total > 0
+        ? ((current + currentFileFraction) / total).clamp(0.0, 1.0)
+        : 0.0;
 
     final isWindows = Platform.isWindows;
 
@@ -86,9 +90,12 @@ class AppOverallProgressBar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          isWindows
-              ? fluent.ProgressBar(value: overallPercent * 100)
-              : ProgressBar(value: overallPercent * 100),
+          SizedBox(
+            width: double.infinity,
+            child: isWindows
+                ? fluent.ProgressBar(value: overallPercent * 100)
+                : ProgressBar(value: overallPercent * 100),
+          ),
         ],
       ),
     );

@@ -21,6 +21,7 @@ import 'package:video_toolkit/features/fonts/data/datasources/bundled_font_datas
     as _i465;
 import 'package:video_toolkit/features/fonts/data/datasources/system_font_datasource.dart'
     as _i894;
+import 'package:video_toolkit/features/fonts/data/font_resolver.dart' as _i8;
 import 'package:video_toolkit/features/fonts/data/repositories/font_repository.dart'
     as _i234;
 import 'package:video_toolkit/features/fonts/data/repositories/font_repository_impl.dart'
@@ -31,6 +32,8 @@ import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_da
     as _i1066;
 import 'package:video_toolkit/features/video_encoding/data/datasources/preset_datasource.dart'
     as _i1063;
+import 'package:video_toolkit/features/video_encoding/data/datasources/user_settings_datasource.dart'
+    as _i1056;
 import 'package:video_toolkit/features/video_encoding/data/repositories/preset_repository.dart'
     as _i337;
 import 'package:video_toolkit/features/video_encoding/data/repositories/preset_repository_impl.dart'
@@ -77,9 +80,18 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i465.BundledFontDatasource>(
       () => _i465.BundledFontDatasource(),
     );
+    gh.lazySingleton<_i1056.UserSettingsDatasource>(
+      () => _i1056.UserSettingsDatasource(),
+    );
     gh.lazySingleton<_i974.Logger>(
       () => loggerModule.devLogger,
       registerFor: {_dev},
+    );
+    gh.lazySingleton<_i8.FontResolver>(
+      () => _i8.FontResolver(
+        gh<_i465.BundledFontDatasource>(),
+        gh<_i1056.UserSettingsDatasource>(),
+      ),
     );
     gh.lazySingleton<_i297.CliToolRunner>(
       () => _i873.CliToolRunnerImpl(gh<_i753.BundledBinaryResolver>()),
@@ -103,11 +115,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i465.BundledFontDatasource>(),
       ),
     );
-    gh.lazySingleton<_i954.VideoEncodeRepository>(
-      () => _i848.VideoEncodeRepositoryImpl(gh<_i1066.FfmpegDatasource>()),
-    );
-    gh.factory<_i987.VideoEncodeCubit>(
-      () => _i987.VideoEncodeCubit(gh<_i954.VideoEncodeRepository>()),
+    gh.factory<_i657.PresetCubit>(
+      () => _i657.PresetCubit(
+        gh<_i337.PresetRepository>(),
+        gh<_i1056.UserSettingsDatasource>(),
+      ),
     );
     gh.lazySingleton<_i735.FfprobeDatasource>(
       () => _i735.FfprobeDatasource(gh<_i297.CliToolRunner>()),
@@ -118,8 +130,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i739.FontCubit>(
       () => _i739.FontCubit(gh<_i234.FontRepository>()),
     );
-    gh.factory<_i657.PresetCubit>(
-      () => _i657.PresetCubit(gh<_i337.PresetRepository>()),
+    gh.lazySingleton<_i954.VideoEncodeRepository>(
+      () => _i848.VideoEncodeRepositoryImpl(
+        gh<_i1066.FfmpegDatasource>(),
+        gh<_i8.FontResolver>(),
+      ),
+    );
+    gh.factory<_i987.VideoEncodeCubit>(
+      () => _i987.VideoEncodeCubit(gh<_i954.VideoEncodeRepository>()),
     );
     gh.lazySingleton<_i993.VideoMetadataRepository>(
       () => _i996.VideoMetadataRepositoryImpl(
@@ -128,7 +146,10 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.factory<_i1027.VideoImportCubit>(
-      () => _i1027.VideoImportCubit(gh<_i993.VideoMetadataRepository>()),
+      () => _i1027.VideoImportCubit(
+        gh<_i993.VideoMetadataRepository>(),
+        gh<_i1056.UserSettingsDatasource>(),
+      ),
     );
     gh.factory<_i19.VideoMetadataCubit>(
       () => _i19.VideoMetadataCubit(gh<_i993.VideoMetadataRepository>()),

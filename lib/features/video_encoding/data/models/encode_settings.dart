@@ -151,6 +151,8 @@ abstract class EncodeSettings with _$EncodeSettings {
     /// Target aspect ratio `num:den` (e.g. "16:9", "9:16", "1:1"). Null or
     /// empty = keep original, no crop.
     String? cropAspectRatio,
+    /// Deinterlacing filter applied before text overlays.
+    @Default(Deinterlace.off) Deinterlace deinterlace,
   }) = _EncodeSettings;
 
   factory EncodeSettings.fromJson(Map<String, dynamic> json) => _$EncodeSettingsFromJson(json);
@@ -175,6 +177,18 @@ abstract class EncodeSettings with _$EncodeSettings {
         final den = parts[1].trim();
         filters.insert(0, 'crop=min(iw\\,ih*$num/$den):min(ih\\,iw*$den/$num)');
       }
+    }
+
+    // Deinterlacing runs after crop/scale but before drawtext overlays so the
+    // text is drawn onto clean progressive frames. Example full chain:
+    //   crop=...,scale=...,yadif=mode=1,drawtext=...
+    if (deinterlace.filter.isNotEmpty) {
+      // Count of preset prepends (crop, scale) already at the head of `filters`.
+      // Insert yadif right after them, before the drawtext entries.
+      final prependedCount = filters.length - textOverlays
+          .expand((t) => textOverlayToFilter(t, creationDate: creationDate))
+          .length;
+      filters.insert(prependedCount, deinterlace.filter);
     }
 
     return [
@@ -244,6 +258,24 @@ enum AudioCodec {
   const AudioCodec(this.value);
 
   final String value;
+}
+
+/// Deinterlacing via ffmpeg.
+/// - [off]: no filter applied.
+/// - [yadifFrame]: `yadif=mode=0` — one output frame per input frame (preserves fps).
+/// - [yadifField]: `yadif=mode=1` — one output frame per input field (doubles fps, smoother).
+/// - [bwdifFrame]: `bwdif=mode=0` — better quality than yadif, single fps.
+/// - [bwdifField]: `bwdif=mode=1` — better quality than yadif, doubles fps.
+enum Deinterlace {
+  off(''),
+  yadifFrame('yadif=mode=0'),
+  yadifField('yadif=mode=1'),
+  bwdifFrame('bwdif=mode=0'),
+  bwdifField('bwdif=mode=1');
+
+  const Deinterlace(this.filter);
+
+  final String filter;
 }
 
 enum AudioBitrate {

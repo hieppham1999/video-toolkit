@@ -4,16 +4,14 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/utils/date_formatter.dart';
-import 'package:video_toolkit/core/utils/file_size_formatter.dart';
-import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/core/utils/video_utils.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
-import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
-import 'package:video_toolkit/features/video_import/presentation/widgets/app_column_resize_handle.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_metadata_row.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_overall_progress_bar.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_resizable_divider.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_toolbar_button.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_video_table_section.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/macos/macos_encode_settings_sheet.dart';
 
 import '../home_view_data.dart';
@@ -27,54 +25,73 @@ class MacosHomeRenderer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = MacosTheme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final iconColor = isDark ? const Color(0xFFE5E5EA) : const Color(0xFF3A3A3C);
     final l10n = Languages.translate;
-    const iconSize = 30.0;
     return MacosScaffold(
       backgroundColor: CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
                 theme.canvasColor,
       toolBar: ToolBar(
         title: const Text('Video Toolkit'),
+        height: 78,
         titleWidth: 150,
         decoration: BoxDecoration(
           color: CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
                 theme.canvasColor,
         ),
-          
+
         actions: [
-          ToolBarIconButton(
-            label: l10n.addVideo,
-            icon: MacosIcon(CupertinoIcons.add_circled, color: iconColor, size: iconSize),
-            onPressed: data.onPickFiles,
-            showLabel: true,
+          CustomToolbarItem(
+            tooltipMessage: l10n.addVideo,
+            inToolbarBuilder: (_) => AppToolbarButton(
+              macosIcon: CupertinoIcons.add_circled,
+              fluentIcon: CupertinoIcons.add_circled,
+              label: l10n.addVideo,
+              tooltip: l10n.addVideo,
+              onTap: data.onPickFiles,
+            ),
           ),
           const ToolBarDivider(),
-          ToolBarIconButton(
-            label: l10n.encodeSettings,
-            icon: MacosIcon(CupertinoIcons.slider_horizontal_3, color: iconColor, size: iconSize),
-            onPressed: () => _openEncodeSettings(context),
-            showLabel: true,
+          CustomToolbarItem(
+            tooltipMessage: l10n.encodeSettings,
+            inToolbarBuilder: (_) => AppToolbarButton(
+              macosIcon: CupertinoIcons.slider_horizontal_3,
+              fluentIcon: CupertinoIcons.slider_horizontal_3,
+              label: l10n.encodeSettings,
+              subLabel: _presetSubLabel(),
+              tooltip: l10n.encodeSettings,
+              onTap: () => _openEncodeSettings(context),
+            ),
           ),
-          ToolBarIconButton(
-            label: l10n.start,
-            icon: MacosIcon(CupertinoIcons.play_fill, color: iconColor, size: iconSize),
-            onPressed: data.onStart,
-            showLabel: true,
+          CustomToolbarItem(
+            tooltipMessage: l10n.start,
+            inToolbarBuilder: (_) => AppToolbarButton(
+              macosIcon: CupertinoIcons.play_fill,
+              fluentIcon: CupertinoIcons.play_fill,
+              label: l10n.start,
+              tooltip: l10n.start,
+              onTap: data.onStart,
+            ),
           ),
-          ToolBarIconButton(
-            label: l10n.stop,
-            icon: MacosIcon(CupertinoIcons.stop_fill, color: iconColor, size: iconSize),
-            onPressed: data.onStop,
-            showLabel: true,
+          CustomToolbarItem(
+            tooltipMessage: l10n.stop,
+            inToolbarBuilder: (_) => AppToolbarButton(
+              macosIcon: CupertinoIcons.stop_fill,
+              fluentIcon: CupertinoIcons.stop_fill,
+              label: l10n.stop,
+              tooltip: l10n.stop,
+              onTap: data.onStop,
+            ),
           ),
           if (data.hasFiles) ...[
             const ToolBarDivider(),
-            ToolBarIconButton(
-              label: l10n.clearAll,
-              icon: MacosIcon(CupertinoIcons.trash, color: iconColor),
-              onPressed: () => _confirmClearAll(context),
-              showLabel: true,
+            CustomToolbarItem(
+              tooltipMessage: l10n.clearAll,
+              inToolbarBuilder: (_) => AppToolbarButton(
+                macosIcon: CupertinoIcons.trash,
+                fluentIcon: CupertinoIcons.trash,
+                label: l10n.clearAll,
+                tooltip: l10n.clearAll,
+                onTap: () => _confirmClearAll(context),
+              ),
             ),
           ],
         ],
@@ -113,14 +130,19 @@ class MacosHomeRenderer extends StatelessWidget {
                           onDrag: (dy) => data.onDividerDrag(dy / totalHeight),
                         ),
                         Expanded(
-                          child: _VideoTableSection(
+                          child: AppVideoTableSection(
                             files: data.files,
                             globalSettings: data.encodeSettings,
                             selectedFilePath: data.selectedFile?.path,
                             encodeState: data.encodeState,
                             onSelect: data.onSelectVideo,
                             onRemove: data.onRemoveFile,
-                            onUpdateFileSettings: data.onUpdateFileSettings,
+                            onOpenFileSettings: (file) => _openFileSettings(
+                              context,
+                              file,
+                              data.encodeSettings,
+                              data.onUpdateFileSettings,
+                            ),
                           ),
                         ),
                         AppOverallProgressBar(encodeState: data.encodeState),
@@ -136,6 +158,13 @@ class MacosHomeRenderer extends StatelessWidget {
     );
   }
 
+  String? _presetSubLabel() {
+    final name = data.currentPresetName;
+    if (name == null) return null;
+    return data.isPresetModified ? '$name*' : name;
+  }
+
+
   void _openEncodeSettings(BuildContext context) {
     showMacosSheet<void>(
       context: context,
@@ -146,6 +175,36 @@ class MacosHomeRenderer extends StatelessWidget {
           Navigator.of(context).pop();
         },
         onCancel: () => Navigator.of(context).pop(),
+      ),
+    );
+  }
+
+  void _openFileSettings(
+    BuildContext context,
+    VideoFile file,
+    EncodeSettings globalSettings,
+    void Function(String path, EncodeSettings? settings) onUpdate,
+  ) {
+    final effective = file.overrideSettings ?? globalSettings;
+    showMacosSheet<void>(
+      context: context,
+      builder: (_) => MacosEncodeSettingsSheet(
+        settings: effective,
+        sampleFileName: p.basenameWithoutExtension(file.path),
+        sampleCreationDate: file.metadata?.creationDate,
+        sampleWidth: file.metadata?.width,
+        sampleHeight: file.metadata?.height,
+        onSave: (settings) {
+          onUpdate(file.path, settings);
+          Navigator.of(context).pop();
+        },
+        onCancel: () => Navigator.of(context).pop(),
+        onReset: file.overrideSettings != null
+            ? () {
+                onUpdate(file.path, null);
+                Navigator.of(context).pop();
+              }
+            : null,
       ),
     );
   }
@@ -351,281 +410,5 @@ class _PreviewSection extends StatelessWidget {
     );
   }
 
-}
-
-// ─── Video Table Section ────────────────────────────────────────
-
-class _VideoTableSection extends StatefulWidget {
-  const _VideoTableSection({
-    required this.files,
-    required this.globalSettings,
-    required this.selectedFilePath,
-    required this.encodeState,
-    required this.onSelect,
-    required this.onRemove,
-    required this.onUpdateFileSettings,
-  });
-
-  final List<VideoFile> files;
-  final EncodeSettings globalSettings;
-  final String? selectedFilePath;
-  final VideoEncodeState encodeState;
-  final ValueChanged<String> onSelect;
-  final ValueChanged<String> onRemove;
-  final void Function(String path, EncodeSettings? settings) onUpdateFileSettings;
-
-  @override
-  State<_VideoTableSection> createState() => _VideoTableSectionState();
-}
-
-class _VideoTableSectionState extends State<_VideoTableSection> {
-  static const _minColWidth = 60.0;
-  static const _gapWidth = 8.0;
-  static const _actionWidth = 72.0; // settings + delete buttons
-  static const _headerHeight = 32.0;
-  // Proportions for: Name, Path, Size, Output
-  static const _proportions = [0.22, 0.33, 0.15, 0.3];
-
-  // Manual offsets from user drag (starts at 0 for each column)
-  final List<double> _dragOffsets = [0, 0, 0, 0];
-
-  List<double> _computeWidths(double viewportWidth) {
-    final available = viewportWidth - _actionWidth - 32 - (_gapWidth * 3);
-    return List.generate(4, (i) {
-      return (available * _proportions[i] + _dragOffsets[i]).clamp(_minColWidth, double.infinity);
-    });
-  }
-
-  void _onResizeColumn(int index, double dx) {
-    setState(() {
-      _dragOffsets[index] += dx;
-      _dragOffsets[index + 1] -= dx;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = MacosTheme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final subtleText = isDark ? const Color(0xFF8E8E93) : const Color(0xFF6E6E73);
-    final divider = isDark ? const Color(0xFF38383A) : const Color(0xFFD1D1D6);
-    final headerBg = isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF2F2F7);
-    final altRowBg = isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF9F9F9);
-    final selectedBg = isDark ? const Color(0xFF0A3A6B) : const Color(0xFFD0E4F7);
-    final l10n = Languages.translate;
-    final isEncoding = widget.encodeState.status == EncodeStatus.encoding;
-
-    if (widget.files.isEmpty) {
-      return Center(
-        child: Text(
-          l10n.noVideos,
-          style: theme.typography.subheadline.copyWith(color: subtleText),
-        ),
-      );
-    }
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final colWidths = _computeWidths(constraints.maxWidth);
-        final contentWidth = colWidths.fold(0.0, (s, w) => s + w) + (_gapWidth * 3) + _actionWidth + 32;
-        final effectiveWidth = contentWidth.clamp(constraints.maxWidth, double.infinity);
-        final headerLabels = [l10n.columnName, l10n.columnPath, l10n.columnSize, l10n.columnOutput];
-
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SizedBox(
-            width: effectiveWidth,
-            height: constraints.maxHeight,
-            child: Column(
-              children: [
-                // ── Header ──
-                Container(
-                  height: _headerHeight,
-                  decoration: BoxDecoration(
-                    color: headerBg,
-                    border: Border(bottom: BorderSide(color: divider)),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < 4; i++) ...[
-                        SizedBox(
-                          width: colWidths[i],
-                          child: Align(
-                            alignment: i == 2 ? Alignment.centerRight : Alignment.centerLeft,
-                            child: Text(
-                              headerLabels[i],
-                              style: theme.typography.caption1.copyWith(
-                                color: subtleText,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        if (i < 3)
-                          AppColumnResizeHandle(
-                            dividerColor: divider,
-                            onDrag: (dx) => _onResizeColumn(i, dx),
-                          ),
-                      ],
-                      const SizedBox(width: _actionWidth),
-                    ],
-                  ),
-                ),
-                // ── Rows ──
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: widget.files.length,
-                    itemBuilder: (context, index) {
-                      final file = widget.files[index];
-                      final isSelected = file.path == widget.selectedFilePath;
-                      final isCurrentFile = isEncoding && widget.encodeState.currentFilePath == file.path;
-                      final isDone = isEncoding && widget.encodeState.currentIndex > index;
-
-                      Color? bgColor;
-                      if (isSelected) {
-                        bgColor = selectedBg;
-                      } else if (index.isEven) {
-                        bgColor = altRowBg;
-                      }
-
-                      final effectiveSettings = file.overrideSettings ?? widget.globalSettings;
-                      final baseName = p.basenameWithoutExtension(file.path);
-                      final outName = FilenameTemplate.apply(
-                        effectiveSettings.outputNameTemplate,
-                        originalName: baseName,
-                        creationDate: file.metadata?.creationDate,
-                      );
-                      final outputDisplay = '$outName.${effectiveSettings.outputExtension.value}';
-
-                      return GestureDetector(
-                        onTap: () => widget.onSelect(file.path),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: bgColor,
-                            border: Border(bottom: BorderSide(color: divider, width: 0.5)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: colWidths[0],
-                                    child: Row(
-                                      children: [
-                                        MacosIcon(
-                                          isDone
-                                              ? CupertinoIcons.checkmark_circle_fill
-                                              : CupertinoIcons.film,
-                                          size: 16,
-                                          color: isDone
-                                              ? const Color(0xFF34C759)
-                                              : theme.primaryColor,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Expanded(
-                                          child: Text(file.name, style: theme.typography.body, overflow: TextOverflow.ellipsis),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: _gapWidth),
-                                  SizedBox(
-                                    width: colWidths[1],
-                                    child: Text(p.dirname(file.path), style: theme.typography.caption1.copyWith(color: subtleText), overflow: TextOverflow.ellipsis),
-                                  ),
-                                  const SizedBox(width: _gapWidth),
-                                  SizedBox(
-                                    width: colWidths[2],
-                                    child: Text(FileSizeFormatter.format(file.sizeInBytes), style: theme.typography.caption1, textAlign: TextAlign.end),
-                                  ),
-                                  const SizedBox(width: _gapWidth),
-                                  SizedBox(
-                                    width: colWidths[3],
-                                    child: Text(outputDisplay, style: theme.typography.caption1, overflow: TextOverflow.ellipsis),
-                                  ),
-                                  SizedBox(
-                                    width: _actionWidth,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        MacosIconButton(
-                                          icon: MacosIcon(
-                                            CupertinoIcons.slider_horizontal_3,
-                                            size: 12,
-                                            color: file.overrideSettings != null
-                                                ? theme.primaryColor
-                                                : subtleText,
-                                          ),
-                                          onPressed: () => _openFileSettings(
-                                            context,
-                                            file,
-                                            widget.globalSettings,
-                                            widget.onUpdateFileSettings,
-                                          ),
-                                        ),
-                                        MacosIconButton(
-                                          icon: MacosIcon(CupertinoIcons.xmark, size: 12, color: subtleText),
-                                          onPressed: () => widget.onRemove(file.path),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              if (isCurrentFile)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: ProgressBar(
-                                    value: widget.encodeState.progress.percent * 100,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _openFileSettings(
-    BuildContext context,
-    VideoFile file,
-    EncodeSettings globalSettings,
-    void Function(String path, EncodeSettings? settings) onUpdate,
-  ) {
-    final effective = file.overrideSettings ?? globalSettings;
-    showMacosSheet<void>(
-      context: context,
-      builder: (_) => MacosEncodeSettingsSheet(
-        settings: effective,
-        sampleFileName: p.basenameWithoutExtension(file.path),
-        sampleCreationDate: file.metadata?.creationDate,
-        sampleWidth: file.metadata?.width,
-        sampleHeight: file.metadata?.height,
-        onSave: (settings) {
-          onUpdate(file.path, settings);
-          Navigator.of(context).pop();
-        },
-        onCancel: () => Navigator.of(context).pop(),
-        onReset: file.overrideSettings != null
-            ? () {
-                onUpdate(file.path, null);
-                Navigator.of(context).pop();
-              }
-            : null,
-      ),
-    );
-  }
 }
 

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/core/utils/app_logger.dart';
+import 'package:video_toolkit/features/video_encoding/data/datasources/user_settings_datasource.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/encode_preset.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_metadata/data/repositories/video_metadata_repository.dart';
 import 'package:video_toolkit/presentation/base/base_cubit.dart';
@@ -12,9 +14,20 @@ import 'video_import_state.dart';
 
 @injectable
 class VideoImportCubit extends BaseCubit<VideoImportState> {
-  VideoImportCubit(this._metadataRepository) : super.normal(const VideoImportState());
+  VideoImportCubit(this._metadataRepository, this._userSettings)
+      : super.normal(const VideoImportState()) {
+    _loadPersistedSettings();
+  }
 
   final VideoMetadataRepository _metadataRepository;
+  final UserSettingsDatasource _userSettings;
+
+  Future<void> _loadPersistedSettings() async {
+    final persisted = await _userSettings.load();
+    final initialSettings =
+        persisted?.encodeSettings ?? kBuiltInPresets.first.settings;
+    emitNormal(currentData.copyWith(encodeSettings: initialSettings));
+  }
 
   static const _videoExtensions = {
     '.mp4', '.mov', '.avi', '.mkv', '.wmv',
@@ -74,6 +87,7 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
 
   void updateEncodeSettings(EncodeSettings settings) {
     emitNormal(currentData.copyWith(encodeSettings: settings));
+    _userSettings.saveEncodeSettings(settings);
   }
 
   void updateFileSettings(String path, EncodeSettings? settings) {
@@ -90,6 +104,9 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
   }
 
   void clearAll() {
-    emitNormal(const VideoImportState());
+    emitNormal(currentData.copyWith(
+      files: [],
+      selectedFilePath: null,
+    ));
   }
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/fonts/data/models/font_info.dart';
 
@@ -12,6 +13,26 @@ import 'package:video_toolkit/features/fonts/data/models/font_info.dart';
 class BundledFontDatasource {
   static const _assetPrefix = 'assets/fonts/';
   static const _fontExtensions = {'.ttf', '.otf', '.ttc'};
+
+  /// Built-in fallback font shipped under `assets/fonts/`. Used as the final
+  /// fallback when an overlay has no explicit font and no user-chosen default
+  /// is configured (or that default no longer exists on disk).
+  static const defaultFontAssetName = 'VCR_OSD_Mono_ALLCAPS.ttf';
+
+  String? _cachedDefaultPath;
+
+  /// Extracts the built-in fallback font to a writable path and returns it.
+  /// Cached after first call. Returns null only if the asset is missing or
+  /// extraction fails.
+  Future<String?> extractDefaultFont() async {
+    if (_cachedDefaultPath != null) {
+      if (File(_cachedDefaultPath!).existsSync()) return _cachedDefaultPath;
+      _cachedDefaultPath = null;
+    }
+    final path = await _extractToCache('$_assetPrefix$defaultFontAssetName');
+    _cachedDefaultPath = path;
+    return path;
+  }
 
   Future<List<FontInfo>> list() async {
     try {
@@ -68,10 +89,8 @@ class BundledFontDatasource {
   }
 
   Future<Directory> _targetDirectory() async {
-    final home = Platform.environment['HOME'] ??
-        Platform.environment['USERPROFILE'] ??
-        '.';
-    final dir = Directory(p.join(home, '.video_toolkit', 'fonts'));
+    final support = await getApplicationSupportDirectory();
+    final dir = Directory(p.join(support.path, 'fonts'));
     if (!dir.existsSync()) {
       await dir.create(recursive: true);
     }

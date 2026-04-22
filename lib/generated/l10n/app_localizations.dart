@@ -176,6 +176,12 @@ abstract class AppLocalizations {
   /// **'Encode Settings'**
   String get encodeSettings;
 
+  /// No description provided for @noPresetSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No preset selected'**
+  String get noPresetSelected;
+
   /// No description provided for @start.
   ///
   /// In en, this message translates to:
@@ -223,6 +229,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Output'**
   String get columnOutput;
+
+  /// No description provided for @columnStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get columnStatus;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @statusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get statusCompleted;
+
+  /// No description provided for @statusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get statusFailed;
 
   /// No description provided for @resolution.
   ///
@@ -410,6 +440,42 @@ abstract class AppLocalizations {
   /// **'CRF'**
   String get crf;
 
+  /// No description provided for @deinterlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Deinterlace'**
+  String get deinterlace;
+
+  /// No description provided for @deinterlaceOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get deinterlaceOff;
+
+  /// No description provided for @deinterlaceYadifFrame.
+  ///
+  /// In en, this message translates to:
+  /// **'Yadif (frame)'**
+  String get deinterlaceYadifFrame;
+
+  /// No description provided for @deinterlaceYadifField.
+  ///
+  /// In en, this message translates to:
+  /// **'Yadif (field, 2×fps)'**
+  String get deinterlaceYadifField;
+
+  /// No description provided for @deinterlaceBwdifFrame.
+  ///
+  /// In en, this message translates to:
+  /// **'Bwdif (frame)'**
+  String get deinterlaceBwdifFrame;
+
+  /// No description provided for @deinterlaceBwdifField.
+  ///
+  /// In en, this message translates to:
+  /// **'Bwdif (field, 2×fps)'**
+  String get deinterlaceBwdifField;
+
   /// No description provided for @original.
   ///
   /// In en, this message translates to:
@@ -548,11 +614,53 @@ abstract class AppLocalizations {
   /// **'Delete preset \'{name}\'?'**
   String confirmDeletePreset(String name);
 
-  /// No description provided for @noPresetSelected.
+  /// No description provided for @revert.
   ///
   /// In en, this message translates to:
-  /// **'No preset selected'**
-  String get noPresetSelected;
+  /// **'Revert'**
+  String get revert;
+
+  /// No description provided for @revertConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Revert all changes to preset \'\'{name}\'\'?'**
+  String revertConfirm(String name);
+
+  /// No description provided for @import.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get import;
+
+  /// No description provided for @export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get export;
+
+  /// No description provided for @importPresetNamePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Save imported settings as preset? Leave empty to load without saving.'**
+  String get importPresetNamePrompt;
+
+  /// No description provided for @importFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to import settings. File is invalid or unreadable.'**
+  String get importFailed;
+
+  /// No description provided for @importError.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Error'**
+  String get importError;
+
+  /// No description provided for @exportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings exported'**
+  String get exportSuccess;
 }
 
 class _AppLocalizationsDelegate

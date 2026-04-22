@@ -19,6 +19,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   final VideoEncodeRepository _repository;
   StreamSubscription<void>? _encodeSub;
   bool _cancelled = false;
+  int _lastLoggedBucket = -1;
 
   List<VideoFile> _queue = [];
   late EncodeSettings _globalSettings;
@@ -55,6 +56,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       return;
     }
 
+    _lastLoggedBucket = -1;
     final file = _queue[index];
     final settings = file.overrideSettings ?? _globalSettings;
     final dir = p.dirname(file.path);
@@ -83,6 +85,16 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
         )
         .listen(
           (progress) {
+            final bucket = (progress.percent / 10).floor();
+            if (bucket > _lastLoggedBucket) {
+              _lastLoggedBucket = bucket;
+              appLogger.i(
+                'Encode ${p.basename(file.path)}: ${progress.percent.toStringAsFixed(0)}% '
+                'fps=${progress.fps.toStringAsFixed(1)} '
+                'speed=${progress.speed.toStringAsFixed(2)}x '
+                'eta=${progress.estimatedRemaining ?? "-"}',
+              );
+            }
             emitNormal(currentData.copyWith(progress: progress));
           },
           onError: (Object e) {

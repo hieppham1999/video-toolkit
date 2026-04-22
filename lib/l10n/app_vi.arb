@@ -12,6 +12,7 @@
   "cancel": "Hủy",
   "delete": "Xóa",
   "encodeSettings": "Cài đặt Encode",
+  "noPresetSelected": "(Không có preset)",
   "start": "Bắt đầu",
   "stop": "Dừng",
   "videoPreview": "Xem trước Video",
@@ -20,6 +21,10 @@
   "columnSize": "Kích thước",
   "columnImported": "Đã thêm",
   "columnOutput": "Tên output",
+  "columnStatus": "Trạng thái",
+  "statusPending": "Đang chờ",
+  "statusCompleted": "Hoàn tất",
+  "statusFailed": "Thất bại",
   "resolution": "Độ phân giải",
   "codec": "Codec",
   "frameRate": "Tốc độ khung hình",
@@ -51,6 +56,12 @@
   "videoCodec": "Codec video",
   "encodePreset": "Preset",
   "crf": "CRF",
+  "deinterlace": "Khử xen kẽ",
+  "deinterlaceOff": "Tắt",
+  "deinterlaceYadifFrame": "Yadif (frame)",
+  "deinterlaceYadifField": "Yadif (field, 2×fps)",
+  "deinterlaceBwdifFrame": "Bwdif (frame)",
+  "deinterlaceBwdifField": "Bwdif (field, 2×fps)",
   "original": "Gốc",
   "sourceSize": "Nguồn",
   "afterCrop": "Sau khi crop",
@@ -80,5 +91,16 @@
   "@confirmDeletePreset": {
     "placeholders": { "name": { "type": "String" } }
   },
-  "noPresetSelected": "Chưa chọn preset"
+  "noPresetSelected": "Chưa chọn preset",
+  "revert": "Hoàn tác",
+  "revertConfirm": "Hoàn tác toàn bộ thay đổi về preset ''{name}''?",
+  "@revertConfirm": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "import": "Nhập",
+  "export": "Xuất",
+  "importPresetNamePrompt": "Lưu settings vừa nhập thành preset? Bỏ trống để chỉ nạp vào form.",
+  "importFailed": "Nhập settings thất bại. File không hợp lệ hoặc không đọc được.",
+  "importError": "Lỗi nhập",
+  "exportSuccess": "Đã xuất settings"
 }

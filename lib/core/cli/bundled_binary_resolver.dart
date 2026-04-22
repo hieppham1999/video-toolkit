@@ -5,14 +5,30 @@ import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/core/utils/app_logger.dart';
 
-/// Resolves bundled binary executables (e.g. ffmpeg) from the app bundle.
+/// Resolves bundled binary executables (e.g. ffmpeg, exiftool) from the app bundle.
 ///
 /// Resolution order:
-/// 1. macOS app bundle: YourApp.app/Contents/Resources/bin/<name>
-/// 2. Flutter asset extraction: rootBundle → ~/.video_toolkit/bin/<name>
+/// 1. Platform app bundle (prod): macOS `.app/Contents/Resources/bin/<name>`,
+///    Windows `data/bin/<name>.exe`.
+/// 2. Dev assets: walk up from executable to find `assets/bin/<folder>/<platform>/<name><ext>`.
+/// 3. Flutter asset extraction (single-file tools only, e.g. ffmpeg/ffprobe).
+///    Multi-file tools like exiftool (needs sibling `lib/`) must be shipped via
+///    steps 1 or 2 — asset extraction is skipped for them.
 @lazySingleton
 class BundledBinaryResolver {
   final Map<String, String?> _cache = {};
+
+  /// Maps tool executable name → assets subfolder.
+  /// ffmpeg and ffprobe share `assets/bin/ffmpeg/`; exiftool has its own folder.
+  static const _toolFolder = {
+    'ffmpeg': 'ffmpeg',
+    'ffprobe': 'ffmpeg',
+    'exiftool': 'exiftool',
+  };
+
+  /// Tools that cannot be extracted from Flutter assets at runtime because
+  /// they depend on sibling files/folders (e.g. exiftool's `lib/`).
+  static const _singleFileExtractable = {'ffmpeg', 'ffprobe'};
 
   Future<String?> resolve(String name) async {
     if (_cache.containsKey(name)) return _cache[name];
@@ -41,17 +57,18 @@ class BundledBinaryResolver {
     return _extractFromAssets(name);
   }
 
-  /// In development, ffmpeg lives at the project's assets directory.
+  /// In development, bundled tools live under the project's assets directory.
   /// Resolve by walking up from the app executable to find the project root.
   String? _devAssetPath(String name) {
     try {
+      final folder = _toolFolder[name];
+      if (folder == null) return null;
       final platform = Platform.isWindows ? 'windows' : 'macos';
       final ext = Platform.isWindows ? '.exe' : '';
       final execPath = Platform.resolvedExecutable;
-      // Walk up from executable to find the project root containing pubspec.yaml
       var dir = Directory(p.dirname(execPath));
       for (var i = 0; i < 10; i++) {
-        final candidate = File(p.join(dir.path, 'assets', 'bin', 'ffmpeg', platform, '$name$ext'));
+        final candidate = File(p.join(dir.path, 'assets', 'bin', folder, platform, '$name$ext'));
         if (candidate.existsSync()) return candidate.path;
         final parent = dir.parent;
         if (parent.path == dir.path) break;
@@ -87,9 +104,15 @@ class BundledBinaryResolver {
   }
 
   Future<String?> _extractFromAssets(String name) async {
+    if (!_singleFileExtractable.contains(name)) {
+      appLogger.d('BundledBinaryResolver: $name is not single-file extractable, skipping');
+      return null;
+    }
+    final folder = _toolFolder[name];
+    if (folder == null) return null;
     final platform = Platform.isWindows ? 'windows' : 'macos';
     final ext = Platform.isWindows ? '.exe' : '';
-    final assetKey = 'assets/bin/ffmpeg/$platform/$name$ext';
+    final assetKey = 'assets/bin/$folder/$platform/$name$ext';
 
     try {
       final data = await rootBundle.load(assetKey);
