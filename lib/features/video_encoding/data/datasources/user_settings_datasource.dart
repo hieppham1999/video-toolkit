@@ -63,4 +63,15 @@ class UserSettingsDatasource {
         : current.copyWith(encodeSettings: settings);
     await save(next);
   }
+
+  Future<void> saveDefaultFontPath(String? path) async {
+    final current = _cache ?? await load();
+    final next = current == null
+        ? UserSettings(
+            encodeSettings: const EncodeSettings(),
+            defaultFontPath: path,
+          )
+        : current.copyWith(defaultFontPath: path);
+    await save(next);
+  }
 }

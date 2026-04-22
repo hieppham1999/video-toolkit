@@ -57,7 +57,7 @@ flutter:
   uses-material-design: true
   generate: true
 
-assets:
-  - assets/bin/ffmpeg/windows/
-  - assets/bin/ffmpeg/macos/
-  - assets/fonts/
+  assets:
+    - assets/bin/ffmpeg/windows/
+    - assets/bin/ffmpeg/macos/
+    - assets/fonts/

@@ -76,6 +76,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get columnOutput => 'Output';
 
   @override
+  String get columnStatus => 'Status';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusCompleted => 'Completed';
+
+  @override
+  String get statusFailed => 'Failed';
+
+  @override
   String get resolution => 'Resolution';
 
   @override

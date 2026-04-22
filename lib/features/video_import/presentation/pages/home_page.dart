@@ -48,10 +48,21 @@ class _HomePageState extends State<HomePage> {
 
   void _onRemoveFile(String path) {
     context.read<VideoImportCubit>().removeFile(path);
+    _resetEncodeIfEmpty();
   }
 
   void _onClearAll() {
     context.read<VideoImportCubit>().clearAll();
+    _resetEncodeIfEmpty();
+  }
+
+  void _resetEncodeIfEmpty() {
+    final importCubit = context.read<VideoImportCubit>();
+    final encodeCubit = context.read<VideoEncodeCubit>();
+    if (importCubit.currentData.files.isEmpty &&
+        encodeCubit.currentData.status != EncodeStatus.encoding) {
+      encodeCubit.reset();
+    }
   }
 
   void _onDividerDrag(double dy) {

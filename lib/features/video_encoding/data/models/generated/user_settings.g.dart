@@ -12,10 +12,12 @@ _UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) =>
       encodeSettings: EncodeSettings.fromJson(
         json['encodeSettings'] as Map<String, dynamic>,
       ),
+      defaultFontPath: json['defaultFontPath'] as String?,
     );
 
 Map<String, dynamic> _$UserSettingsToJson(_UserSettings instance) =>
     <String, dynamic>{
       'selectedPresetId': instance.selectedPresetId,
       'encodeSettings': instance.encodeSettings,
+      'defaultFontPath': instance.defaultFontPath,
     };

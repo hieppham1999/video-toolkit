@@ -15,7 +15,11 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserSettings {
 
- String? get selectedPresetId; EncodeSettings get encodeSettings;
+ String? get selectedPresetId; EncodeSettings get encodeSettings;/// User-chosen default font path. Used when an overlay has no explicit
+/// `fontFile`. When null or the file no longer exists, the bundled VCR
+/// font is used as the final fallback. Configured from the app settings
+/// page.
+ String? get defaultFontPath;
 /// Create a copy of UserSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +32,16 @@ $UserSettingsCopyWith<UserSettings> get copyWith => _$UserSettingsCopyWithImpl<U
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserSettings&&(identical(other.selectedPresetId, selectedPresetId) || other.selectedPresetId == selectedPresetId)&&(identical(other.encodeSettings, encodeSettings) || other.encodeSettings == encodeSettings));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserSettings&&(identical(other.selectedPresetId, selectedPresetId) || other.selectedPresetId == selectedPresetId)&&(identical(other.encodeSettings, encodeSettings) || other.encodeSettings == encodeSettings)&&(identical(other.defaultFontPath, defaultFontPath) || other.defaultFontPath == defaultFontPath));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,selectedPresetId,encodeSettings);
+int get hashCode => Object.hash(runtimeType,selectedPresetId,encodeSettings,defaultFontPath);
 
 @override
 String toString() {
-  return 'UserSettings(selectedPresetId: $selectedPresetId, encodeSettings: $encodeSettings)';
+  return 'UserSettings(selectedPresetId: $selectedPresetId, encodeSettings: $encodeSettings, defaultFontPath: $defaultFontPath)';
 }
 
 
@@ -48,7 +52,7 @@ abstract mixin class $UserSettingsCopyWith<$Res>  {
   factory $UserSettingsCopyWith(UserSettings value, $Res Function(UserSettings) _then) = _$UserSettingsCopyWithImpl;
 @useResult
 $Res call({
- String? selectedPresetId, EncodeSettings encodeSettings
+ String? selectedPresetId, EncodeSettings encodeSettings, String? defaultFontPath
 });
 
 
@@ -65,11 +69,12 @@ class _$UserSettingsCopyWithImpl<$Res>
 
 /// Create a copy of UserSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? selectedPresetId = freezed,Object? encodeSettings = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? selectedPresetId = freezed,Object? encodeSettings = null,Object? defaultFontPath = freezed,}) {
   return _then(_self.copyWith(
 selectedPresetId: freezed == selectedPresetId ? _self.selectedPresetId : selectedPresetId // ignore: cast_nullable_to_non_nullable
 as String?,encodeSettings: null == encodeSettings ? _self.encodeSettings : encodeSettings // ignore: cast_nullable_to_non_nullable
-as EncodeSettings,
+as EncodeSettings,defaultFontPath: freezed == defaultFontPath ? _self.defaultFontPath : defaultFontPath // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of UserSettings
@@ -163,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? selectedPresetId,  EncodeSettings encodeSettings)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? selectedPresetId,  EncodeSettings encodeSettings,  String? defaultFontPath)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserSettings() when $default != null:
-return $default(_that.selectedPresetId,_that.encodeSettings);case _:
+return $default(_that.selectedPresetId,_that.encodeSettings,_that.defaultFontPath);case _:
   return orElse();
 
 }
@@ -184,10 +189,10 @@ return $default(_that.selectedPresetId,_that.encodeSettings);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? selectedPresetId,  EncodeSettings encodeSettings)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? selectedPresetId,  EncodeSettings encodeSettings,  String? defaultFontPath)  $default,) {final _that = this;
 switch (_that) {
 case _UserSettings():
-return $default(_that.selectedPresetId,_that.encodeSettings);case _:
+return $default(_that.selectedPresetId,_that.encodeSettings,_that.defaultFontPath);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +209,10 @@ return $default(_that.selectedPresetId,_that.encodeSettings);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? selectedPresetId,  EncodeSettings encodeSettings)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? selectedPresetId,  EncodeSettings encodeSettings,  String? defaultFontPath)?  $default,) {final _that = this;
 switch (_that) {
 case _UserSettings() when $default != null:
-return $default(_that.selectedPresetId,_that.encodeSettings);case _:
+return $default(_that.selectedPresetId,_that.encodeSettings,_that.defaultFontPath);case _:
   return null;
 
 }
@@ -219,11 +224,16 @@ return $default(_that.selectedPresetId,_that.encodeSettings);case _:
 @JsonSerializable()
 
 class _UserSettings implements UserSettings {
-  const _UserSettings({this.selectedPresetId, required this.encodeSettings});
+  const _UserSettings({this.selectedPresetId, required this.encodeSettings, this.defaultFontPath});
   factory _UserSettings.fromJson(Map<String, dynamic> json) => _$UserSettingsFromJson(json);
 
 @override final  String? selectedPresetId;
 @override final  EncodeSettings encodeSettings;
+/// User-chosen default font path. Used when an overlay has no explicit
+/// `fontFile`. When null or the file no longer exists, the bundled VCR
+/// font is used as the final fallback. Configured from the app settings
+/// page.
+@override final  String? defaultFontPath;
 
 /// Create a copy of UserSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -238,16 +248,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserSettings&&(identical(other.selectedPresetId, selectedPresetId) || other.selectedPresetId == selectedPresetId)&&(identical(other.encodeSettings, encodeSettings) || other.encodeSettings == encodeSettings));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserSettings&&(identical(other.selectedPresetId, selectedPresetId) || other.selectedPresetId == selectedPresetId)&&(identical(other.encodeSettings, encodeSettings) || other.encodeSettings == encodeSettings)&&(identical(other.defaultFontPath, defaultFontPath) || other.defaultFontPath == defaultFontPath));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,selectedPresetId,encodeSettings);
+int get hashCode => Object.hash(runtimeType,selectedPresetId,encodeSettings,defaultFontPath);
 
 @override
 String toString() {
-  return 'UserSettings(selectedPresetId: $selectedPresetId, encodeSettings: $encodeSettings)';
+  return 'UserSettings(selectedPresetId: $selectedPresetId, encodeSettings: $encodeSettings, defaultFontPath: $defaultFontPath)';
 }
 
 
@@ -258,7 +268,7 @@ abstract mixin class _$UserSettingsCopyWith<$Res> implements $UserSettingsCopyWi
   factory _$UserSettingsCopyWith(_UserSettings value, $Res Function(_UserSettings) _then) = __$UserSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- String? selectedPresetId, EncodeSettings encodeSettings
+ String? selectedPresetId, EncodeSettings encodeSettings, String? defaultFontPath
 });
 
 
@@ -275,11 +285,12 @@ class __$UserSettingsCopyWithImpl<$Res>
 
 /// Create a copy of UserSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? selectedPresetId = freezed,Object? encodeSettings = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? selectedPresetId = freezed,Object? encodeSettings = null,Object? defaultFontPath = freezed,}) {
   return _then(_UserSettings(
 selectedPresetId: freezed == selectedPresetId ? _self.selectedPresetId : selectedPresetId // ignore: cast_nullable_to_non_nullable
 as String?,encodeSettings: null == encodeSettings ? _self.encodeSettings : encodeSettings // ignore: cast_nullable_to_non_nullable
-as EncodeSettings,
+as EncodeSettings,defaultFontPath: freezed == defaultFontPath ? _self.defaultFontPath : defaultFontPath // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

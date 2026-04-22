@@ -230,6 +230,30 @@ abstract class AppLocalizations {
   /// **'Output'**
   String get columnOutput;
 
+  /// No description provided for @columnStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get columnStatus;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @statusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get statusCompleted;
+
+  /// No description provided for @statusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get statusFailed;
+
   /// No description provided for @resolution.
   ///
   /// In en, this message translates to:

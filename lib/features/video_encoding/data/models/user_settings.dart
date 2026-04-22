@@ -11,6 +11,11 @@ abstract class UserSettings with _$UserSettings {
   const factory UserSettings({
     String? selectedPresetId,
     required EncodeSettings encodeSettings,
+    /// User-chosen default font path. Used when an overlay has no explicit
+    /// `fontFile`. When null or the file no longer exists, the bundled VCR
+    /// font is used as the final fallback. Configured from the app settings
+    /// page.
+    String? defaultFontPath,
   }) = _UserSettings;
 
   factory UserSettings.fromJson(Map<String, dynamic> json) =>

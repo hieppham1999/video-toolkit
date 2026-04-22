@@ -104,6 +104,9 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
   }
 
   void clearAll() {
-    emitNormal(const VideoImportState());
+    emitNormal(currentData.copyWith(
+      files: [],
+      selectedFilePath: null,
+    ));
   }
 }

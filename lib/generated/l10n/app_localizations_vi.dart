@@ -76,6 +76,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get columnOutput => 'Tên output';
 
   @override
+  String get columnStatus => 'Trạng thái';
+
+  @override
+  String get statusPending => 'Đang chờ';
+
+  @override
+  String get statusCompleted => 'Hoàn tất';
+
+  @override
+  String get statusFailed => 'Thất bại';
+
+  @override
   String get resolution => 'Độ phân giải';
 
   @override
