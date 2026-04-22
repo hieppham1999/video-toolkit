@@ -73,13 +73,17 @@ class _WindowsEncodeSettingsDialogState
       context: context,
       builder: (ctx) => ContentDialog(
         title: Text(l10n.saveAs),
-        content: Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: TextBox(
-            controller: controller,
-            placeholder: l10n.presetNameHint,
-            autofocus: true,
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 8),
+            TextBox(
+              controller: controller,
+              placeholder: l10n.presetNameHint,
+              autofocus: true,
+            ),
+          ],
         ),
         actions: [
           Button(
