@@ -21,6 +21,8 @@
   "columnSize": "Size",
   "columnImported": "Imported",
   "columnOutput": "Output",
+  "columnOutputSize": "Output Size",
+  "columnSizeRatio": "Ratio",
   "columnStatus": "Status",
   "statusPending": "Pending",
   "statusCompleted": "Completed",

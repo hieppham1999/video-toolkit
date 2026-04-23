@@ -76,6 +76,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get columnOutput => 'Tên output';
 
   @override
+  String get columnOutputSize => 'Kích thước output';
+
+  @override
+  String get columnSizeRatio => 'Tỉ lệ';
+
+  @override
   String get columnStatus => 'Trạng thái';
 
   @override

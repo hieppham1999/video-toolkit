@@ -21,6 +21,8 @@
   "columnSize": "Kích thước",
   "columnImported": "Đã thêm",
   "columnOutput": "Tên output",
+  "columnOutputSize": "Kích thước output",
+  "columnSizeRatio": "Tỉ lệ",
   "columnStatus": "Trạng thái",
   "statusPending": "Đang chờ",
   "statusCompleted": "Hoàn tất",

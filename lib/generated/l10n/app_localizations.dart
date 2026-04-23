@@ -230,6 +230,18 @@ abstract class AppLocalizations {
   /// **'Output'**
   String get columnOutput;
 
+  /// No description provided for @columnOutputSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Output Size'**
+  String get columnOutputSize;
+
+  /// No description provided for @columnSizeRatio.
+  ///
+  /// In en, this message translates to:
+  /// **'Ratio'**
+  String get columnSizeRatio;
+
   /// No description provided for @columnStatus.
   ///
   /// In en, this message translates to:

@@ -76,6 +76,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get columnOutput => 'Output';
 
   @override
+  String get columnOutputSize => 'Output Size';
+
+  @override
+  String get columnSizeRatio => 'Ratio';
+
+  @override
   String get columnStatus => 'Status';
 
   @override

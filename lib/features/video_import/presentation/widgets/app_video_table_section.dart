@@ -46,19 +46,32 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
   static const _gapWidth = 8.0;
   static const _actionWidth = 72.0;
   static const _statusWidth = 140.0;
+  static const _sizeColWidth = 40.0;
+  static const _outputSizeColWidth = 40.0;
+  static const _ratioColWidth = 52.0;
   static const _headerHeight = 32.0;
-  static const _proportions = [0.22, 0.33, 0.15, 0.3];
+  // Proportional columns: Name, Path, Output.
+  static const _proportions = [0.28, 0.34, 0.38];
 
   static const _greenColor = AppColors.success;
   static const _redColor = AppColors.error;
 
-  final List<double> _dragOffsets = [0, 0, 0, 0];
+  final List<double> _dragOffsets = [0, 0, 0];
+  final Map<String, int?> _outputSizeCache = {};
 
   List<double> _computeWidths(double viewportWidth, bool showStatus) {
-    final statusSpace = showStatus ? (_statusWidth + _gapWidth) : 0.0;
-    final available =
-        viewportWidth - _actionWidth - statusSpace - 32 - (_gapWidth * 3);
-    return List.generate(4, (i) {
+    final statusSpace = showStatus
+        ? (_statusWidth + _outputSizeColWidth + _ratioColWidth + _gapWidth * 3)
+        : 0.0;
+    // Fixed columns consumed: horizontal padding (32) + size col + 3 gaps
+    // between the 3 proportional columns and the size column.
+    final available = viewportWidth -
+        _actionWidth -
+        statusSpace -
+        _sizeColWidth -
+        32 -
+        (_gapWidth * 3);
+    return List.generate(3, (i) {
       return (available * _proportions[i] + _dragOffsets[i])
           .clamp(_minColWidth, double.infinity);
     });
@@ -69,6 +82,18 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       _dragOffsets[index] += dx;
       _dragOffsets[index + 1] -= dx;
     });
+  }
+
+  int? _readOutputSize(String path) {
+    if (_outputSizeCache.containsKey(path)) return _outputSizeCache[path];
+    try {
+      final size = File(path).lengthSync();
+      _outputSizeCache[path] = size;
+      return size;
+    } catch (_) {
+      _outputSizeCache[path] = null;
+      return null;
+    }
   }
 
   @override
@@ -87,19 +112,21 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final colWidths = _computeWidths(constraints.maxWidth, showStatus);
+        // Layout: [name] [path] [size(fixed)] [output] + optional
+        // [outputSize][ratio][status] + actions. Gaps between every cell.
         final contentWidth = colWidths.fold(0.0, (s, w) => s + w) +
+            _sizeColWidth +
             (_gapWidth * 3) +
-            (showStatus ? (_statusWidth + _gapWidth) : 0) +
+            (showStatus
+                ? (_outputSizeColWidth +
+                    _ratioColWidth +
+                    _statusWidth +
+                    _gapWidth * 3)
+                : 0) +
             _actionWidth +
             32;
         final effectiveWidth =
             contentWidth.clamp(constraints.maxWidth, double.infinity);
-        final headerLabels = [
-          l10n.columnName,
-          l10n.columnPath,
-          l10n.columnSize,
-          l10n.columnOutput,
-        ];
 
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -108,7 +135,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
             height: constraints.maxHeight,
             child: Column(
               children: [
-                _buildHeader(palette, colWidths, headerLabels, showStatus),
+                _buildHeader(palette, colWidths, showStatus),
                 Expanded(
                   child: ListView.builder(
                     itemCount: widget.files.length,
@@ -128,9 +155,23 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
   Widget _buildHeader(
     _Palette palette,
     List<double> colWidths,
-    List<String> headerLabels,
     bool showStatus,
   ) {
+    final l10n = Languages.translate;
+    Widget headerCell(String label, double width, {bool alignEnd = false}) {
+      return SizedBox(
+        width: width,
+        child: Align(
+          alignment: alignEnd ? Alignment.centerRight : Alignment.centerLeft,
+          child: Text(
+            label,
+            style: palette.headerStyle,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      );
+    }
+
     return Container(
       height: _headerHeight,
       decoration: BoxDecoration(
@@ -140,35 +181,27 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          for (int i = 0; i < 4; i++) ...[
-            SizedBox(
-              width: colWidths[i],
-              child: Align(
-                alignment:
-                    i == 2 ? Alignment.centerRight : Alignment.centerLeft,
-                child: Text(
-                  headerLabels[i],
-                  style: palette.headerStyle,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-            if (i < 3)
-              AppColumnResizeHandle(
-                dividerColor: palette.divider,
-                onDrag: (dx) => _onResizeColumn(i, dx),
-              ),
-          ],
+          headerCell(l10n.columnName, colWidths[0]),
+          AppColumnResizeHandle(
+            dividerColor: palette.divider,
+            onDrag: (dx) => _onResizeColumn(0, dx),
+          ),
+          headerCell(l10n.columnPath, colWidths[1]),
+          AppColumnResizeHandle(
+            dividerColor: palette.divider,
+            onDrag: (dx) => _onResizeColumn(1, dx),
+          ),
+          headerCell(l10n.columnSize, _sizeColWidth, alignEnd: true),
+          const SizedBox(width: _gapWidth),
+          headerCell(l10n.columnOutput, colWidths[2]),
           if (showStatus) ...[
             const SizedBox(width: _gapWidth),
-            SizedBox(
-              width: _statusWidth,
-              child: Text(
-                Languages.translate.columnStatus,
-                style: palette.headerStyle,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
+            headerCell(l10n.columnOutputSize, _outputSizeColWidth,
+                alignEnd: true),
+            const SizedBox(width: _gapWidth),
+            headerCell(l10n.columnSizeRatio, _ratioColWidth, alignEnd: true),
+            const SizedBox(width: _gapWidth),
+            headerCell(l10n.columnStatus, _statusWidth),
           ],
           const SizedBox(width: _actionWidth),
         ],
@@ -201,9 +234,20 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       originalName: baseName,
       creationDate: file.metadata?.creationDate,
     );
-    final outputDisplay =
+    final outputDir = p.dirname(file.path);
+    final outputFileName =
         '$outName.${effectiveSettings.outputExtension.value}';
+    final outputPath = p.join(outputDir, outputFileName);
     final hasOverride = file.overrideSettings != null;
+
+    final isCompleted = rowStatus == _RowStatus.completed;
+    final outputSize = isCompleted ? _readOutputSize(outputPath) : null;
+    final outputSizeLabel = outputSize != null
+        ? FileSizeFormatter.format(outputSize)
+        : '–';
+    final ratioLabel = (outputSize != null && file.sizeInBytes > 0)
+        ? '${((outputSize / file.sizeInBytes) * 100).toStringAsFixed(0)}%'
+        : '–';
 
     final rowColor = _rowTextColor(rowStatus);
     final bodyStyle = rowColor == null
@@ -247,14 +291,14 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
             SizedBox(
               width: colWidths[1],
               child: Text(
-                p.dirname(file.path),
+                outputDir,
                 style: subtleCaptionStyle,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(width: _gapWidth),
             SizedBox(
-              width: colWidths[2],
+              width: _sizeColWidth,
               child: Text(
                 FileSizeFormatter.format(file.sizeInBytes),
                 style: captionStyle,
@@ -263,14 +307,34 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
             ),
             const SizedBox(width: _gapWidth),
             SizedBox(
-              width: colWidths[3],
+              width: colWidths[2],
               child: Text(
-                outputDisplay,
-                style: captionStyle,
+                outputPath,
+                style: subtleCaptionStyle,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             if (showStatus) ...[
+              const SizedBox(width: _gapWidth),
+              SizedBox(
+                width: _outputSizeColWidth,
+                child: Text(
+                  outputSizeLabel,
+                  style: captionStyle,
+                  textAlign: TextAlign.end,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: _gapWidth),
+              SizedBox(
+                width: _ratioColWidth,
+                child: Text(
+                  ratioLabel,
+                  style: captionStyle,
+                  textAlign: TextAlign.end,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
               const SizedBox(width: _gapWidth),
               SizedBox(
                 width: _statusWidth,

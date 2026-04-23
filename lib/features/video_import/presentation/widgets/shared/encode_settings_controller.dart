@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
+import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/settings_preset.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart';
@@ -167,6 +168,18 @@ class EncodeSettingsController extends ChangeNotifier {
     } else if (h != null && h > 0) {
       resWidth = (h * n / d).round().toString();
     }
+  }
+
+  /// Localized label for a [Deinterlace] enum value.
+  static String deinterlaceLabel(Deinterlace d) {
+    final l10n = Languages.translate;
+    return switch (d) {
+      Deinterlace.off => l10n.deinterlaceOff,
+      Deinterlace.yadifFrame => l10n.deinterlaceYadifFrame,
+      Deinterlace.yadifField => l10n.deinterlaceYadifField,
+      Deinterlace.bwdifFrame => l10n.deinterlaceBwdifFrame,
+      Deinterlace.bwdifField => l10n.deinterlaceBwdifField,
+    };
   }
 
   /// Returns formatted output size after a center-crop to the given aspect.
