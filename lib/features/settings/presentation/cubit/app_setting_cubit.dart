@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:video_toolkit/core/i18n/app_language.dart';
 import 'package:video_toolkit/core/theme/app_accent.dart';
+import 'package:video_toolkit/core/theme/app_theme_mode.dart';
 import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/video_encoding/data/datasources/user_settings_datasource.dart';
 import 'package:video_toolkit/presentation/base/base_cubit.dart';
@@ -26,6 +27,7 @@ class AppSettingCubit extends BaseCubit<AppSettingState> {
         currentData.copyWith(
           accent: settings.accentColor,
           language: settings.language,
+          themeMode: settings.themeMode,
           defaultFontPath: settings.defaultFontPath,
         ),
       );
@@ -42,6 +44,11 @@ class AppSettingCubit extends BaseCubit<AppSettingState> {
   Future<void> setLanguage(AppLanguage language) async {
     emitNormal(currentData.copyWith(language: language));
     await _datasource.saveLanguage(language);
+  }
+
+  Future<void> setThemeMode(AppThemeMode mode) async {
+    emitNormal(currentData.copyWith(themeMode: mode));
+    await _datasource.saveThemeMode(mode);
   }
 
   Future<void> setDefaultFont(String? path) async {

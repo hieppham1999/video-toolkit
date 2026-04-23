@@ -30,10 +30,12 @@ class SettingsPage extends StatelessWidget {
             final data = SettingsViewData(
               accent: state.accent,
               language: state.language,
+              themeMode: state.themeMode,
               defaultFontPath: state.defaultFontPath,
               fonts: _filteredFonts(fontState.fonts),
               onAccentChanged: settingCubit.setAccent,
               onLanguageChanged: settingCubit.setLanguage,
+              onThemeModeChanged: settingCubit.setThemeMode,
               onDefaultFontChanged: settingCubit.setDefaultFont,
               onClose: () => Navigator.of(context).pop(),
             );

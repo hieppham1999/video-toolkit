@@ -560,6 +560,24 @@ abstract class AppLocalizations {
   /// **'Position'**
   String get position;
 
+  /// No description provided for @offsetX.
+  ///
+  /// In en, this message translates to:
+  /// **'Offset X'**
+  String get offsetX;
+
+  /// No description provided for @offsetY.
+  ///
+  /// In en, this message translates to:
+  /// **'Offset Y'**
+  String get offsetY;
+
+  /// No description provided for @offsetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pixels from anchor'**
+  String get offsetHint;
+
   /// No description provided for @audioCodec.
   ///
   /// In en, this message translates to:
@@ -673,6 +691,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Appearance'**
   String get appearance;
+
+  /// No description provided for @theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
 
   /// No description provided for @accentColor.
   ///

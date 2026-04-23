@@ -244,6 +244,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get position => 'Position';
 
   @override
+  String get offsetX => 'Offset X';
+
+  @override
+  String get offsetY => 'Offset Y';
+
+  @override
+  String get offsetHint => 'Pixels from anchor';
+
+  @override
   String get audioCodec => 'Audio Codec';
 
   @override
@@ -305,6 +314,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appearance => 'Appearance';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
 
   @override
   String get accentColor => 'Accent color';

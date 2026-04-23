@@ -19,6 +19,9 @@ _UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) =>
       language:
           $enumDecodeNullable(_$AppLanguageEnumMap, json['language']) ??
           AppLanguage.system,
+      themeMode:
+          $enumDecodeNullable(_$AppThemeModeEnumMap, json['themeMode']) ??
+          AppThemeMode.system,
     );
 
 Map<String, dynamic> _$UserSettingsToJson(_UserSettings instance) =>
@@ -28,6 +31,7 @@ Map<String, dynamic> _$UserSettingsToJson(_UserSettings instance) =>
       'defaultFontPath': instance.defaultFontPath,
       'accentColor': _$AppAccentEnumMap[instance.accentColor]!,
       'language': _$AppLanguageEnumMap[instance.language]!,
+      'themeMode': _$AppThemeModeEnumMap[instance.themeMode]!,
     };
 
 const _$AppAccentEnumMap = {
@@ -46,4 +50,10 @@ const _$AppLanguageEnumMap = {
   AppLanguage.system: 'system',
   AppLanguage.en: 'en',
   AppLanguage.vi: 'vi',
+};
+
+const _$AppThemeModeEnumMap = {
+  AppThemeMode.system: 'system',
+  AppThemeMode.light: 'light',
+  AppThemeMode.dark: 'dark',
 };

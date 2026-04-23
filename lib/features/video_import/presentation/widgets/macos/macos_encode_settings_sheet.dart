@@ -822,6 +822,41 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                         _c.textOverlays[i].copyWith(position: v),
                       ),
                     ),
+                    if (_c.textOverlays[i].position !=
+                        TextOverlayPosition.center) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppField(
+                              label: l10n.offsetX,
+                              value: '${_c.textOverlays[i].offsetX}',
+                              onChanged: (v) => _c.updateOverlay(
+                                i,
+                                _c.textOverlays[i].copyWith(
+                                  offsetX: int.tryParse(v) ?? 0,
+                                ),
+                              ),
+                              hint: l10n.offsetHint,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: AppField(
+                              label: l10n.offsetY,
+                              value: '${_c.textOverlays[i].offsetY}',
+                              onChanged: (v) => _c.updateOverlay(
+                                i,
+                                _c.textOverlays[i].copyWith(
+                                  offsetY: int.tryParse(v) ?? 0,
+                                ),
+                              ),
+                              hint: l10n.offsetHint,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: 8),
                     AppDropdown<String>(
                       label: l10n.font,

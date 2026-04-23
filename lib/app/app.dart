@@ -6,6 +6,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:video_toolkit/app/injection.dart';
 import 'package:video_toolkit/core/i18n/app_language.dart';
 import 'package:video_toolkit/core/theme/app_accent.dart';
+import 'package:video_toolkit/core/theme/app_theme_mode.dart';
 import 'package:video_toolkit/features/settings/presentation/cubit/app_setting_cubit.dart';
 import 'package:video_toolkit/features/settings/presentation/cubit/app_setting_state.dart';
 import 'package:video_toolkit/generated/l10n/app_localizations.dart';
@@ -23,18 +24,31 @@ class App extends StatelessWidget {
       cubit: getIt<AppSettingCubit>(),
       builder: (context, settings) {
         return Platform.isWindows
-            ? _WindowsApp(accent: settings.accent, locale: settings.language.locale)
-            : _MacosApp(accent: settings.accent, locale: settings.language.locale);
+            ? _WindowsApp(
+                accent: settings.accent,
+                locale: settings.language.locale,
+                themeMode: settings.themeMode,
+              )
+            : _MacosApp(
+                accent: settings.accent,
+                locale: settings.language.locale,
+                themeMode: settings.themeMode,
+              );
       },
     );
   }
 }
 
 class _WindowsApp extends StatelessWidget {
-  const _WindowsApp({required this.accent, required this.locale});
+  const _WindowsApp({
+    required this.accent,
+    required this.locale,
+    required this.themeMode,
+  });
 
   final AppAccent accent;
   final Locale? locale;
+  final AppThemeMode themeMode;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +61,7 @@ class _WindowsApp extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: locale,
-      themeMode: ThemeMode.system,
+      themeMode: themeMode.flutterThemeMode,
       theme: fluent.FluentThemeData(
         accentColor: fluentAccent,
         brightness: Brightness.light,
@@ -71,10 +85,15 @@ MacosThemeData _macosTheme(MacosThemeData base, AppAccent accent) {
 }
 
 class _MacosApp extends StatelessWidget {
-  const _MacosApp({required this.accent, required this.locale});
+  const _MacosApp({
+    required this.accent,
+    required this.locale,
+    required this.themeMode,
+  });
 
   final AppAccent accent;
   final Locale? locale;
+  final AppThemeMode themeMode;
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +105,7 @@ class _MacosApp extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: locale,
-      themeMode: ThemeMode.system,
+      themeMode: themeMode.flutterThemeMode,
       theme: _macosTheme(MacosThemeData.light(), accent),
       darkTheme: _macosTheme(MacosThemeData.dark(), accent),
     );

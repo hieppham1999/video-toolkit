@@ -4,6 +4,7 @@ import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/i18n/app_language.dart';
 import 'package:video_toolkit/core/theme/app_accent.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
+import 'package:video_toolkit/core/theme/app_theme_mode.dart';
 import 'package:video_toolkit/features/settings/presentation/widgets/app_accent_swatch.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_button.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_dialog_title_bar.dart';
@@ -34,7 +35,14 @@ class MacosSettingsRenderer extends StatelessWidget {
               _section(
                 context,
                 title: l10n.appearance,
-                child: _AccentRow(data: data),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _AccentRow(data: data),
+                    const SizedBox(height: 12),
+                    _ThemeModeDropdown(data: data),
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
               _section(
@@ -130,6 +138,37 @@ class _LanguageDropdown extends StatelessWidget {
         return t.languageEnglish;
       case AppLanguage.vi:
         return t.languageVietnamese;
+    }
+  }
+}
+
+class _ThemeModeDropdown extends StatelessWidget {
+  const _ThemeModeDropdown({required this.data});
+  final SettingsViewData data;
+
+  @override
+  Widget build(BuildContext context) {
+    return MacosPopupButton<AppThemeMode>(
+      value: data.themeMode,
+      onChanged: (v) {
+        if (v != null) data.onThemeModeChanged(v);
+      },
+      items: [
+        for (final mode in AppThemeMode.values)
+          MacosPopupMenuItem(value: mode, child: Text(_themeLabel(mode))),
+      ],
+    );
+  }
+
+  String _themeLabel(AppThemeMode mode) {
+    final t = Languages.translate;
+    switch (mode) {
+      case AppThemeMode.system:
+        return t.themeSystem;
+      case AppThemeMode.light:
+        return t.themeLight;
+      case AppThemeMode.dark:
+        return t.themeDark;
     }
   }
 }

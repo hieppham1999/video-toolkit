@@ -243,6 +243,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get position => 'Vị trí';
 
   @override
+  String get offsetX => 'Lệch ngang';
+
+  @override
+  String get offsetY => 'Lệch dọc';
+
+  @override
+  String get offsetHint => 'Số pixel từ vị trí gốc';
+
+  @override
   String get audioCodec => 'Codec âm thanh';
 
   @override
@@ -304,6 +313,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get appearance => 'Giao diện';
+
+  @override
+  String get theme => 'Chủ đề';
+
+  @override
+  String get themeSystem => 'Theo hệ thống';
+
+  @override
+  String get themeLight => 'Sáng';
+
+  @override
+  String get themeDark => 'Tối';
 
   @override
   String get accentColor => 'Màu chủ đề';

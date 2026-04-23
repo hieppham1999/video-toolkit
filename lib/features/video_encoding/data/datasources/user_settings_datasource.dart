@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:video_toolkit/core/i18n/app_language.dart';
 import 'package:video_toolkit/core/theme/app_accent.dart';
+import 'package:video_toolkit/core/theme/app_theme_mode.dart';
 import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/user_settings.dart';
@@ -96,6 +97,17 @@ class UserSettingsDatasource {
             language: language,
           )
         : current.copyWith(language: language);
+    await save(next);
+  }
+
+  Future<void> saveThemeMode(AppThemeMode mode) async {
+    final current = _cache ?? await load();
+    final next = current == null
+        ? UserSettings(
+            encodeSettings: const EncodeSettings(),
+            themeMode: mode,
+          )
+        : current.copyWith(themeMode: mode);
     await save(next);
   }
 }
