@@ -377,4 +377,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get defaultFont => 'Default font';
+
+  @override
+  String get previewNoSelection => 'Select a video to preview';
+
+  @override
+  String get previewLoadingFrame => 'Generating preview…';
+
+  @override
+  String get previewLiveBadge => 'LIVE';
+
+  @override
+  String get previewFrameError => 'Preview unavailable';
 }

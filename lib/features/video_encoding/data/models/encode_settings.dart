@@ -157,19 +157,21 @@ abstract class EncodeSettings with _$EncodeSettings {
 
   factory EncodeSettings.fromJson(Map<String, dynamic> json) => _$EncodeSettingsFromJson(json);
 
-  /// Builds ffmpeg arguments from these settings.
-  List<String> buildArgs(String inputPath, String outputPath, {DateTime? creationDate}) {
-    final filters = textOverlays
+  /// Builds the ffmpeg `-vf` filter chain from these settings.
+  ///
+  /// Returned string is the joined filter graph suitable for `-vf`, or null
+  /// if no filters apply. Kept public so the preview pipeline can reuse the
+  /// exact same chain as the real encode.
+  String? buildVideoFilterChain({DateTime? creationDate}) {
+    final overlayFilters = textOverlays
         .expand((t) => textOverlayToFilter(t, creationDate: creationDate))
         .toList();
+    final filters = [...overlayFilters];
 
     if (resolution != null) {
       filters.insert(0, 'scale=$resolution');
     }
 
-    // Crop to target aspect ratio (center crop). Runs before scale so scale
-    // operates on the cropped image. Commas inside the expressions must be
-    // escaped (`\,`) — otherwise they'd be parsed as filter-graph separators.
     if (cropAspectRatio != null && cropAspectRatio!.isNotEmpty) {
       final parts = cropAspectRatio!.split(':');
       if (parts.length == 2) {
@@ -179,24 +181,24 @@ abstract class EncodeSettings with _$EncodeSettings {
       }
     }
 
-    // Deinterlacing runs after crop/scale but before drawtext overlays so the
-    // text is drawn onto clean progressive frames. Example full chain:
-    //   crop=...,scale=...,yadif=mode=1,drawtext=...
     if (deinterlace.filter.isNotEmpty) {
-      // Count of preset prepends (crop, scale) already at the head of `filters`.
-      // Insert yadif right after them, before the drawtext entries.
-      final prependedCount = filters.length - textOverlays
-          .expand((t) => textOverlayToFilter(t, creationDate: creationDate))
-          .length;
+      final prependedCount = filters.length - overlayFilters.length;
       filters.insert(prependedCount, deinterlace.filter);
     }
+
+    return filters.isEmpty ? null : filters.join(',');
+  }
+
+  /// Builds ffmpeg arguments from these settings.
+  List<String> buildArgs(String inputPath, String outputPath, {DateTime? creationDate}) {
+    final filterChain = buildVideoFilterChain(creationDate: creationDate);
 
     return [
       '-i', inputPath,
       '-c:v', codec.value,
       if (preset.value.isNotEmpty) ...['-preset', preset.value],
       '-crf', '$crf',
-      if (filters.isNotEmpty) ...['-vf', filters.join(',')],
+      if (filterChain != null) ...['-vf', filterChain],
       '-c:a', audioCodec.value,
       '-b:a', audioBitrate.value,
       '-y',

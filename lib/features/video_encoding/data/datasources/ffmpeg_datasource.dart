@@ -123,6 +123,45 @@ class FfmpegDatasource {
     );
   }
 
+  /// Extracts a single frame from [inputPath] at [atSeconds], optionally
+  /// applying [filterChain], and writes it as a PNG to [outputPath].
+  ///
+  /// Used by the preview pipeline so previews match the real encode output.
+  Future<String> extractFrame({
+    required String inputPath,
+    required double atSeconds,
+    required String? filterChain,
+    required String outputPath,
+  }) async {
+    final ffmpegPath = await _bundledResolver.resolve(_executable) ??
+        await _systemPath();
+    if (ffmpegPath == null) {
+      throw const ToolNotFoundException(_executable);
+    }
+
+    final safeSeconds = atSeconds.isFinite && atSeconds >= 0 ? atSeconds : 0.0;
+
+    final args = <String>[
+      '-y',
+      '-ss', safeSeconds.toStringAsFixed(3),
+      '-i', inputPath,
+      if (filterChain != null) ...['-vf', filterChain],
+      '-frames:v', '1',
+      '-q:v', '3',
+      outputPath,
+    ];
+
+    final result = await Process.run(ffmpegPath, args);
+    if (result.exitCode != 0) {
+      throw ToolExecutionException(
+        tool: _executable,
+        exitCode: result.exitCode,
+        stderr: result.stderr?.toString() ?? '',
+      );
+    }
+    return outputPath;
+  }
+
   Future<String?> _systemPath() async {
     final whichCmd = Platform.isWindows ? 'where' : 'which';
     try {

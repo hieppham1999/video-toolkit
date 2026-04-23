@@ -10,6 +10,7 @@ import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_e
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/presentation/base/bloc_state_builder.dart';
 
+import '../cubit/preview_cubit.dart';
 import '../cubit/video_import_cubit.dart';
 import '../cubit/video_import_state.dart';
 import 'home_view_data.dart';
@@ -27,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   final _importCubit = getIt<VideoImportCubit>();
   final _encodeCubit = getIt<VideoEncodeCubit>();
   final _presetCubit = getIt<PresetCubit>();
+  final _previewCubit = getIt<PreviewCubit>();
 
   double _previewFraction = 0.6;
   static const _minFraction = 0.2;
@@ -107,6 +109,10 @@ class _HomePageState extends State<HomePage> {
         final selectedFile = importState.selectedFilePath != null
             ? importState.files.where((f) => f.path == importState.selectedFilePath).firstOrNull
             : null;
+
+        final effectiveSettings =
+            selectedFile?.overrideSettings ?? importState.encodeSettings;
+        _previewCubit.requestStaticFrame(selectedFile, effectiveSettings);
 
         return CubitStateBuilder<VideoEncodeState>(
           cubit: _encodeCubit,

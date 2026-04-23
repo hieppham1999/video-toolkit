@@ -817,6 +817,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Default font'**
   String get defaultFont;
+
+  /// No description provided for @previewNoSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a video to preview'**
+  String get previewNoSelection;
+
+  /// No description provided for @previewLoadingFrame.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating preview…'**
+  String get previewLoadingFrame;
+
+  /// No description provided for @previewLiveBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'LIVE'**
+  String get previewLiveBadge;
+
+  /// No description provided for @previewFrameError.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview unavailable'**
+  String get previewFrameError;
 }
 
 class _AppLocalizationsDelegate

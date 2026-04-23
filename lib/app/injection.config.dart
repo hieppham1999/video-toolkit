@@ -48,6 +48,8 @@ import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_
     as _i657;
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart'
     as _i987;
+import 'package:video_toolkit/features/video_import/presentation/cubit/preview_cubit.dart'
+    as _i109;
 import 'package:video_toolkit/features/video_import/presentation/cubit/video_import_cubit.dart'
     as _i1027;
 import 'package:video_toolkit/features/video_metadata/data/datasources/exiftool_datasource.dart'
@@ -126,6 +128,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1056.UserSettingsDatasource>(),
       ),
     );
+    gh.lazySingleton<_i109.PreviewCubit>(
+      () => _i109.PreviewCubit(gh<_i1066.FfmpegDatasource>()),
+    );
     gh.lazySingleton<_i735.FfprobeDatasource>(
       () => _i735.FfprobeDatasource(gh<_i297.CliToolRunner>()),
     );
@@ -141,13 +146,16 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i8.FontResolver>(),
       ),
     );
-    gh.lazySingleton<_i987.VideoEncodeCubit>(
-      () => _i987.VideoEncodeCubit(gh<_i954.VideoEncodeRepository>()),
-    );
     gh.lazySingleton<_i993.VideoMetadataRepository>(
       () => _i996.VideoMetadataRepositoryImpl(
         gh<_i675.ExiftoolDatasource>(),
         gh<_i735.FfprobeDatasource>(),
+      ),
+    );
+    gh.lazySingleton<_i987.VideoEncodeCubit>(
+      () => _i987.VideoEncodeCubit(
+        gh<_i954.VideoEncodeRepository>(),
+        gh<_i109.PreviewCubit>(),
       ),
     );
     gh.lazySingleton<_i1027.VideoImportCubit>(

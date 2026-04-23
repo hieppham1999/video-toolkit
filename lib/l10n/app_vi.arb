@@ -128,5 +128,9 @@
   "languageSystem": "Theo hệ thống",
   "languageEnglish": "English",
   "languageVietnamese": "Tiếng Việt",
-  "defaultFont": "Font mặc định"
+  "defaultFont": "Font mặc định",
+  "previewNoSelection": "Chọn một video để xem preview",
+  "previewLoadingFrame": "Đang tạo preview…",
+  "previewLiveBadge": "TRỰC TIẾP",
+  "previewFrameError": "Không thể tạo preview"
 }

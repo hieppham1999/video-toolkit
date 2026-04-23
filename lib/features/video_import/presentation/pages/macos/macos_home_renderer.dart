@@ -7,9 +7,14 @@ import 'package:video_toolkit/core/utils/date_formatter.dart';
 import 'package:video_toolkit/core/utils/video_utils.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
+import 'package:video_toolkit/app/injection.dart';
+import 'package:video_toolkit/features/video_import/presentation/cubit/preview_cubit.dart';
+import 'package:video_toolkit/features/video_import/presentation/cubit/preview_state.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_metadata_row.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_overall_progress_bar.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_preview_panel.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_resizable_divider.dart';
+import 'package:video_toolkit/presentation/base/bloc_state_builder.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_toolbar_button.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/features/settings/presentation/pages/settings_page.dart';
@@ -415,13 +420,13 @@ class _PreviewSection extends StatelessWidget {
               ],
             ),
           ),
-          // Right: placeholder for future preview/thumbnail
+          // Right: live/static preview frame.
           Expanded(
-            child: Center(
-              child: MacosIcon(
-                CupertinoIcons.film,
-                size: 64,
-                color: subtleText,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: CubitStateBuilder<PreviewState>(
+                cubit: getIt<PreviewCubit>(),
+                builder: (context, state) => AppPreviewPanel(state: state),
               ),
             ),
           ),

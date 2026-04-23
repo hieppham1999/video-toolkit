@@ -376,4 +376,16 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get defaultFont => 'Font mặc định';
+
+  @override
+  String get previewNoSelection => 'Chọn một video để xem preview';
+
+  @override
+  String get previewLoadingFrame => 'Đang tạo preview…';
+
+  @override
+  String get previewLiveBadge => 'TRỰC TIẾP';
+
+  @override
+  String get previewFrameError => 'Không thể tạo preview';
 }

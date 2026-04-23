@@ -8,15 +8,18 @@ import 'package:video_toolkit/features/video_encoding/data/models/encode_progres
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart';
 import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
+import 'package:video_toolkit/features/video_import/presentation/cubit/preview_cubit.dart';
 import 'package:video_toolkit/presentation/base/base_cubit.dart';
 
 import 'video_encode_state.dart';
 
 @lazySingleton
 class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
-  VideoEncodeCubit(this._repository) : super.normal(const VideoEncodeState());
+  VideoEncodeCubit(this._repository, this._previewCubit)
+      : super.normal(const VideoEncodeState());
 
   final VideoEncodeRepository _repository;
+  final PreviewCubit _previewCubit;
   StreamSubscription<void>? _encodeSub;
   bool _cancelled = false;
   int _lastLoggedBucket = -1;
@@ -45,6 +48,8 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       failedFiles: [],
       errorMessage: null,
     ));
+
+    _previewCubit.startLiveMode();
 
     await _encodeNext();
   }
@@ -96,6 +101,11 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
               );
             }
             emitNormal(currentData.copyWith(progress: progress));
+            _previewCubit.updateLiveContext(
+              file: file,
+              settings: settings,
+              percent: progress.percent,
+            );
           },
           onError: (Object e) {
             appLogger.e('Encode error for ${file.name}: $e');
@@ -120,6 +130,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   }
 
   void _finish() {
+    _previewCubit.stopLiveMode();
     final failed = currentData.failedFiles;
     emitNormal(currentData.copyWith(
       status: _cancelled
