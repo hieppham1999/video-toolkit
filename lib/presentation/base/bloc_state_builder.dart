@@ -1,6 +1,4 @@
-import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/presentation/base/app_state.dart';
-import 'package:video_toolkit/presentation/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,27 +25,10 @@ class CubitStateBuilder<T> extends StatefulWidget {
 }
 
 class _CubitStateBuilderState<T> extends State<CubitStateBuilder<T>> {
-  Type? _lastStateType;
-  DateTime? _lastLogAt;
-
-  static const _heartbeat = Duration(seconds: 1);
-
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<Cubit<CubitState<T>>, CubitState<T>>(
+    return BlocBuilder<Cubit<CubitState<T>>, CubitState<T>>(
       bloc: widget.cubit,
-      listener: (context, state) {
-        final now = DateTime.now();
-        final typeChanged = state.runtimeType != _lastStateType;
-        final elapsed = _lastLogAt == null ? _heartbeat : now.difference(_lastLogAt!);
-        if (typeChanged || elapsed >= _heartbeat) {
-          appLogger.d(
-            "${widget.cubit.runtimeType}: New state -> ${state.toString()}",
-          );
-          _lastStateType = state.runtimeType;
-          _lastLogAt = now;
-        }
-      },
       builder: (context, state) {
         switch (state) {
           case NormalState<T>():
