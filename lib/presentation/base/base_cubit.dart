@@ -58,7 +58,7 @@ class BaseCubit<T> extends Cubit<CubitState<T>> {
     super.onChange(change);
     final diffMessage = _buildStateDiff(change.currentState, change.nextState);
     if (diffMessage != null) {
-      appLogger.d('$runtimeType: $diffMessage');
+      appLogger.d('${state.runtimeType} in $runtimeType: $diffMessage');
     }
   }
 
