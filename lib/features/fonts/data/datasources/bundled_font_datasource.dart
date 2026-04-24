@@ -35,32 +35,36 @@ class BundledFontDatasource {
   }
 
   Future<List<FontInfo>> list() async {
+    final keys = <String>{};
     try {
       final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-      final keys = manifest.listAssets().where((k) {
-        if (!k.startsWith(_assetPrefix)) return false;
+      for (final k in manifest.listAssets()) {
+        if (!k.startsWith(_assetPrefix)) continue;
         final ext = p.extension(k).toLowerCase();
-        return _fontExtensions.contains(ext);
-      }).toList();
-
-      if (keys.isEmpty) return const [];
-
-      final fonts = <FontInfo>[];
-      for (final key in keys) {
-        final extractedPath = await _extractToCache(key);
-        if (extractedPath == null) continue;
-        fonts.add(FontInfo(
-          name: _prettyName(key),
-          path: extractedPath,
-          isBundled: true,
-        ));
+        if (_fontExtensions.contains(ext)) keys.add(k);
       }
-      fonts.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-      return fonts;
     } catch (e) {
-      appLogger.w('BundledFontDatasource: failed to load bundled fonts: $e');
-      return const [];
+      appLogger.w('BundledFontDatasource: AssetManifest load failed: $e');
     }
+
+    // Always ensure the built-in fallback shows up, even if the manifest
+    // lookup fails (has been observed on Windows release builds where the
+    // manifest for extra asset dirs isn't indexed the same way).
+    keys.add('$_assetPrefix$defaultFontAssetName');
+
+    final fonts = <FontInfo>[];
+    for (final key in keys) {
+      final extractedPath = await _extractToCache(key);
+      if (extractedPath == null) continue;
+      fonts.add(FontInfo(
+        name: _prettyName(key),
+        path: extractedPath,
+        isBundled: true,
+      ));
+    }
+    fonts.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    appLogger.i('BundledFontDatasource: listed ${fonts.length} bundled fonts');
+    return fonts;
   }
 
   Future<String?> _extractToCache(String assetKey) async {

@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/fonts/data/datasources/bundled_font_datasource.dart';
 import 'package:video_toolkit/features/fonts/data/datasources/system_font_datasource.dart';
 import 'package:video_toolkit/features/fonts/data/models/font_info.dart';
@@ -17,9 +18,12 @@ class FontRepositoryImpl implements FontRepository {
   Future<List<FontInfo>> listFonts() async {
     if (_cache != null) return _cache!;
 
+    // Isolate each source: one throwing (e.g. system font scan hitting a
+    // permission error on Windows) must not drop the other's results —
+    // bundled fonts are the only ones surfaced in the settings picker.
     final results = await Future.wait([
-      _system.list(),
-      _bundled.list(),
+      _safeList('system', _system.list),
+      _safeList('bundled', _bundled.list),
     ]);
     final system = results[0];
     final bundled = results[1];
@@ -33,5 +37,17 @@ class FontRepositoryImpl implements FontRepository {
 
     _cache = merged;
     return merged;
+  }
+
+  Future<List<FontInfo>> _safeList(
+    String label,
+    Future<List<FontInfo>> Function() fn,
+  ) async {
+    try {
+      return await fn();
+    } catch (e, st) {
+      appLogger.w('FontRepositoryImpl: $label font source failed: $e\n$st');
+      return const [];
+    }
   }
 }

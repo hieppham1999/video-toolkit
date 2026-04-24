@@ -247,53 +247,7 @@ class _WindowsEncodeSettingsDialogState
 
     return ContentDialog(
       constraints: const BoxConstraints(maxWidth: 820, maxHeight: 620),
-      title: AppDialogTitleBar(
-        title: Text(l10n.encodeSettings),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppButton(
-              secondary: true,
-              onPressed: _handleImport,
-              child: Text(l10n.import),
-            ),
-            const SizedBox(width: 6),
-            AppButton(
-              secondary: true,
-              onPressed: _c.selectedPresetId != null
-                  ? () => _c.exportSelectedPreset()
-                  : null,
-              child: Text(l10n.export),
-            ),
-            const SizedBox(width: 6),
-            AppButton(
-              secondary: true,
-              onPressed: _c.selectedPresetId != null ? _handleRevert : null,
-              child: Text(l10n.revert),
-            ),
-            const SizedBox(width: 6),
-            AppButton(
-              secondary: true,
-              onPressed: () => _c.handleSaveAs(_promptPresetName),
-              child: Text(l10n.saveAs),
-            ),
-            const SizedBox(width: 6),
-            AppButton(
-              secondary: true,
-              onPressed: () => _c.handleSave(_promptPresetName),
-              child: Text(l10n.save),
-            ),
-            const SizedBox(width: 6),
-            AppButton(
-              secondary: true,
-              onPressed: canDelete
-                  ? () => _c.handleDelete(_confirmDelete)
-                  : null,
-              child: Text(l10n.deletePreset),
-            ),
-          ],
-        ),
-      ),
+      title: AppDialogTitleBar(title: Text(l10n.encodeSettings)),
       content: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -312,6 +266,53 @@ class _WindowsEncodeSettingsDialogState
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Row(
+                    children: [
+                      const Spacer(),
+                      AppButton(
+                        secondary: true,
+                        onPressed: _handleImport,
+                        child: Text(l10n.import),
+                      ),
+                      const SizedBox(width: 6),
+                      AppButton(
+                        secondary: true,
+                        onPressed: _c.selectedPresetId != null
+                            ? () => _c.exportSelectedPreset()
+                            : null,
+                        child: Text(l10n.export),
+                      ),
+                      const SizedBox(width: 6),
+                      AppButton(
+                        secondary: true,
+                        onPressed: _c.selectedPresetId != null
+                            ? _handleRevert
+                            : null,
+                        child: Text(l10n.revert),
+                      ),
+                      const SizedBox(width: 6),
+                      AppButton(
+                        secondary: true,
+                        onPressed: () => _c.handleSaveAs(_promptPresetName),
+                        child: Text(l10n.saveAs),
+                      ),
+                      const SizedBox(width: 6),
+                      AppButton(
+                        secondary: true,
+                        onPressed: () => _c.handleSave(_promptPresetName),
+                        child: Text(l10n.save),
+                      ),
+                      const SizedBox(width: 6),
+                      AppButton(
+                        secondary: true,
+                        onPressed: canDelete
+                            ? () => _c.handleDelete(_confirmDelete)
+                            : null,
+                        child: Text(l10n.deletePreset),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       for (int i = 0; i < tabs.length; i++) ...[
