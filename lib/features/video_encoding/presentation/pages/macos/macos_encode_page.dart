@@ -4,9 +4,9 @@ import 'package:video_toolkit/app/injection.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
-import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
+import 'package:video_toolkit/features/home/data/models/video_file.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
-import 'package:video_toolkit/presentation/base/bloc_state_builder.dart';
+import 'package:video_toolkit/app/base/bloc_state_builder.dart';
 import 'package:path/path.dart' as p;
 
 class MacosEncodePage extends StatelessWidget {

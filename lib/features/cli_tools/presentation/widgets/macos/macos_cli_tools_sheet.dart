@@ -9,11 +9,11 @@ import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/features/cli_tools/domain/cli_tool.dart';
 import 'package:video_toolkit/features/cli_tools/presentation/widgets/shared/cli_tool_command_bar.dart';
 import 'package:video_toolkit/features/cli_tools/presentation/widgets/shared/cli_tools_controller.dart';
-import 'package:video_toolkit/features/video_import/presentation/widgets/app_button.dart';
-import 'package:video_toolkit/features/video_import/presentation/widgets/app_dialog_title_bar.dart';
-import 'package:video_toolkit/features/video_import/presentation/widgets/app_dropdown.dart';
-import 'package:video_toolkit/features/video_import/presentation/widgets/app_icon_button.dart';
-import 'package:video_toolkit/features/video_import/presentation/widgets/app_preset_chip.dart';
+import 'package:video_toolkit/widgets/app_button.dart';
+import 'package:video_toolkit/widgets/app_dialog_title_bar.dart';
+import 'package:video_toolkit/widgets/app_dropdown.dart';
+import 'package:video_toolkit/widgets/app_icon_button.dart';
+import 'package:video_toolkit/widgets/app_preset_chip.dart';
 
 class MacosCliToolsSheet extends StatefulWidget {
   const MacosCliToolsSheet({

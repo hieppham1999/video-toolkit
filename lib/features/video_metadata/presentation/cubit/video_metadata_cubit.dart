@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
 import 'package:video_toolkit/core/utils/app_logger.dart';
-import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
+import 'package:video_toolkit/features/home/data/models/video_file.dart';
 import 'package:video_toolkit/features/video_metadata/data/repositories/video_metadata_repository.dart';
-import 'package:video_toolkit/presentation/base/base_cubit.dart';
+import 'package:video_toolkit/app/base/base_cubit.dart';
 
 import 'video_metadata_state.dart';
 

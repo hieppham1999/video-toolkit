@@ -5,7 +5,7 @@ import 'package:video_toolkit/features/video_encoding/data/models/encode_preset.
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/settings_preset.dart';
 import 'package:video_toolkit/features/video_encoding/data/repositories/preset_repository.dart';
-import 'package:video_toolkit/presentation/base/base_cubit.dart';
+import 'package:video_toolkit/app/base/base_cubit.dart';
 
 import 'preset_state.dart';
 

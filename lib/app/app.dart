@@ -7,10 +7,10 @@ import 'package:video_toolkit/app/injection.dart';
 import 'package:video_toolkit/core/i18n/app_language.dart';
 import 'package:video_toolkit/core/theme/app_accent.dart';
 import 'package:video_toolkit/core/theme/app_theme_mode.dart';
-import 'package:video_toolkit/features/settings/presentation/cubit/app_setting_cubit.dart';
-import 'package:video_toolkit/features/settings/presentation/cubit/app_setting_state.dart';
+import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_cubit.dart';
+import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_state.dart';
 import 'package:video_toolkit/generated/l10n/app_localizations.dart';
-import 'package:video_toolkit/presentation/base/bloc_state_builder.dart';
+import 'package:video_toolkit/app/base/bloc_state_builder.dart';
 
 import '../core/navigation/app_navigator.dart';
 import '../core/navigation/app_router.dart';

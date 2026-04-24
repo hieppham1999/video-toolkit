@@ -5,7 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
-import 'package:video_toolkit/features/fonts/data/font_resolver.dart';
+import 'package:video_toolkit/features/fonts_loader/data/font_resolver.dart';
 import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_datasource.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';

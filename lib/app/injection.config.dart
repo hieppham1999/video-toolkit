@@ -17,18 +17,18 @@ import 'package:video_toolkit/core/cli/bundled_binary_resolver.dart' as _i753;
 import 'package:video_toolkit/core/cli/cli_tool_runner.dart' as _i297;
 import 'package:video_toolkit/core/cli/cli_tool_runner_impl.dart' as _i873;
 import 'package:video_toolkit/core/utils/app_logger.dart' as _i70;
-import 'package:video_toolkit/features/fonts/data/datasources/bundled_font_datasource.dart'
+import 'package:video_toolkit/features/fonts_loader/data/datasources/bundled_font_datasource.dart'
     as _i465;
-import 'package:video_toolkit/features/fonts/data/datasources/system_font_datasource.dart'
+import 'package:video_toolkit/features/fonts_loader/data/datasources/system_font_datasource.dart'
     as _i894;
-import 'package:video_toolkit/features/fonts/data/font_resolver.dart' as _i8;
-import 'package:video_toolkit/features/fonts/data/repositories/font_repository.dart'
+import 'package:video_toolkit/features/fonts_loader/data/font_resolver.dart' as _i8;
+import 'package:video_toolkit/features/fonts_loader/data/repositories/font_repository.dart'
     as _i234;
-import 'package:video_toolkit/features/fonts/data/repositories/font_repository_impl.dart'
+import 'package:video_toolkit/features/fonts_loader/data/repositories/font_repository_impl.dart'
     as _i710;
-import 'package:video_toolkit/features/fonts/presentation/cubit/font_cubit.dart'
+import 'package:video_toolkit/features/fonts_loader/presentation/cubit/font_cubit.dart'
     as _i739;
-import 'package:video_toolkit/features/settings/presentation/cubit/app_setting_cubit.dart'
+import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_cubit.dart'
     as _i689;
 import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_datasource.dart'
     as _i1066;
@@ -48,9 +48,9 @@ import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_
     as _i657;
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart'
     as _i987;
-import 'package:video_toolkit/features/video_import/presentation/cubit/preview_cubit.dart'
+import 'package:video_toolkit/features/home/presentation/cubit/preview_cubit.dart'
     as _i109;
-import 'package:video_toolkit/features/video_import/presentation/cubit/video_import_cubit.dart'
+import 'package:video_toolkit/features/home/presentation/cubit/video_import_cubit.dart'
     as _i1027;
 import 'package:video_toolkit/features/video_metadata/data/datasources/exiftool_datasource.dart'
     as _i675;

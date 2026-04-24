@@ -7,9 +7,9 @@ import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart';
-import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
-import 'package:video_toolkit/features/video_import/presentation/cubit/preview_cubit.dart';
-import 'package:video_toolkit/presentation/base/base_cubit.dart';
+import 'package:video_toolkit/features/home/data/models/video_file.dart';
+import 'package:video_toolkit/features/home/presentation/cubit/preview_cubit.dart';
+import 'package:video_toolkit/app/base/base_cubit.dart';
 
 import 'video_encode_state.dart';
 
