@@ -913,6 +913,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Preview unavailable'**
   String get previewFrameError;
+
+  /// No description provided for @cliTools.
+  ///
+  /// In en, this message translates to:
+  /// **'CLI Tools'**
+  String get cliTools;
+
+  /// No description provided for @cliToolSelectTool.
+  ///
+  /// In en, this message translates to:
+  /// **'Tool'**
+  String get cliToolSelectTool;
+
+  /// No description provided for @cliToolPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Presets'**
+  String get cliToolPresets;
+
+  /// No description provided for @cliToolCommand.
+  ///
+  /// In en, this message translates to:
+  /// **'Command'**
+  String get cliToolCommand;
+
+  /// No description provided for @cliToolOutput.
+  ///
+  /// In en, this message translates to:
+  /// **'Output'**
+  String get cliToolOutput;
+
+  /// No description provided for @cliToolExecute.
+  ///
+  /// In en, this message translates to:
+  /// **'Execute'**
+  String get cliToolExecute;
+
+  /// No description provided for @cliToolStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get cliToolStop;
+
+  /// No description provided for @cliToolRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running…'**
+  String get cliToolRunning;
+
+  /// No description provided for @cliToolExitCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit code: {code}'**
+  String cliToolExitCode(int code);
+
+  /// No description provided for @cliToolCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get cliToolCopy;
+
+  /// No description provided for @cliToolClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get cliToolClear;
+
+  /// No description provided for @cliToolNoOutput.
+  ///
+  /// In en, this message translates to:
+  /// **'No output yet. Click Execute to run the command.'**
+  String get cliToolNoOutput;
+
+  /// No description provided for @cliToolCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get cliToolCopied;
+
+  /// No description provided for @cliToolFormatRaw.
+  ///
+  /// In en, this message translates to:
+  /// **'Raw'**
+  String get cliToolFormatRaw;
+
+  /// No description provided for @cliToolFormatJson.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON'**
+  String get cliToolFormatJson;
 }
 
 class _AppLocalizationsDelegate

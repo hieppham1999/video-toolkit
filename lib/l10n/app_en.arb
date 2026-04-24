@@ -144,5 +144,23 @@
   "previewNoSelection": "Select a video to preview",
   "previewLoadingFrame": "Generating preview…",
   "previewLiveBadge": "LIVE",
-  "previewFrameError": "Preview unavailable"
+  "previewFrameError": "Preview unavailable",
+  "cliTools": "CLI Tools",
+  "cliToolSelectTool": "Tool",
+  "cliToolPresets": "Presets",
+  "cliToolCommand": "Command",
+  "cliToolOutput": "Output",
+  "cliToolExecute": "Execute",
+  "cliToolStop": "Stop",
+  "cliToolRunning": "Running…",
+  "cliToolExitCode": "Exit code: {code}",
+  "@cliToolExitCode": {
+    "placeholders": { "code": { "type": "int" } }
+  },
+  "cliToolCopy": "Copy",
+  "cliToolClear": "Clear",
+  "cliToolNoOutput": "No output yet. Click Execute to run the command.",
+  "cliToolCopied": "Copied",
+  "cliToolFormatRaw": "Raw",
+  "cliToolFormatJson": "JSON"
 }

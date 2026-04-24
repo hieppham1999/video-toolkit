@@ -590,7 +590,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
         divider: theme.resources.controlStrokeColorDefault,
         headerBg: theme.cardColor,
         altRowBg: theme.cardColor.withValues(alpha: 0.4),
-        selectedBg: AppColors.tableRowHighlight(theme.brightness),
+        selectedBg: theme.accentColor.withValues(alpha: 0.18),
         bodyStyle: theme.typography.body ?? const TextStyle(),
         captionStyle: theme.typography.caption ?? const TextStyle(),
         subtleCaptionStyle: (theme.typography.caption ?? const TextStyle())
@@ -615,7 +615,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       divider: divider,
       headerBg: AppColors.surface(b),
       altRowBg: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF9F9F9),
-      selectedBg: AppColors.tableRowHighlight(b),
+      selectedBg: theme.primaryColor.withValues(alpha: 0.18),
       bodyStyle: theme.typography.body,
       captionStyle: theme.typography.caption1,
       subtleCaptionStyle:

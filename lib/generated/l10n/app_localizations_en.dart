@@ -425,4 +425,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get previewFrameError => 'Preview unavailable';
+
+  @override
+  String get cliTools => 'CLI Tools';
+
+  @override
+  String get cliToolSelectTool => 'Tool';
+
+  @override
+  String get cliToolPresets => 'Presets';
+
+  @override
+  String get cliToolCommand => 'Command';
+
+  @override
+  String get cliToolOutput => 'Output';
+
+  @override
+  String get cliToolExecute => 'Execute';
+
+  @override
+  String get cliToolStop => 'Stop';
+
+  @override
+  String get cliToolRunning => 'Running…';
+
+  @override
+  String cliToolExitCode(int code) {
+    return 'Exit code: $code';
+  }
+
+  @override
+  String get cliToolCopy => 'Copy';
+
+  @override
+  String get cliToolClear => 'Clear';
+
+  @override
+  String get cliToolNoOutput =>
+      'No output yet. Click Execute to run the command.';
+
+  @override
+  String get cliToolCopied => 'Copied';
+
+  @override
+  String get cliToolFormatRaw => 'Raw';
+
+  @override
+  String get cliToolFormatJson => 'JSON';
 }

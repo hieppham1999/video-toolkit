@@ -66,11 +66,13 @@ class _MacosToolbarBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = MacosTheme.of(context);
-    final iconColor = AppColors.textPrimary(theme.brightness);
+    final textColor = AppColors.textPrimary(theme.brightness);
     final subtleColor = AppColors.textTertiary(theme.brightness);
     final enabled = onTap != null;
-    final effectiveIconColor = enabled ? iconColor : iconColor.withValues(alpha: 0.4);
-    final effectiveLabelColor = enabled ? iconColor : iconColor.withValues(alpha: 0.5);
+    final effectiveIconColor =
+        enabled ? theme.primaryColor : textColor.withValues(alpha: 0.4);
+    final effectiveLabelColor =
+        enabled ? textColor : textColor.withValues(alpha: 0.5);
 
     return SizedBox(
       height: AppToolbarButton.height,
@@ -130,9 +132,11 @@ class _FluentToolbarBtnState extends State<_FluentToolbarBtn> {
     final theme = fluent.FluentTheme.of(context);
     final enabled = widget.onTap != null;
     final iconColor = enabled
+        ? theme.accentColor
+        : theme.resources.textFillColorDisabled;
+    final labelColor = enabled
         ? theme.resources.textFillColorPrimary
         : theme.resources.textFillColorDisabled;
-    final labelColor = iconColor;
     final subtleColor = theme.resources.textFillColorSecondary;
 
     Color? bg;

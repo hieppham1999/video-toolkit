@@ -424,4 +424,51 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get previewFrameError => 'Không thể tạo preview';
+
+  @override
+  String get cliTools => 'CLI Tools';
+
+  @override
+  String get cliToolSelectTool => 'Tool';
+
+  @override
+  String get cliToolPresets => 'Presets';
+
+  @override
+  String get cliToolCommand => 'Lệnh';
+
+  @override
+  String get cliToolOutput => 'Kết quả';
+
+  @override
+  String get cliToolExecute => 'Chạy';
+
+  @override
+  String get cliToolStop => 'Dừng';
+
+  @override
+  String get cliToolRunning => 'Đang chạy…';
+
+  @override
+  String cliToolExitCode(int code) {
+    return 'Mã thoát: $code';
+  }
+
+  @override
+  String get cliToolCopy => 'Sao chép';
+
+  @override
+  String get cliToolClear => 'Xoá';
+
+  @override
+  String get cliToolNoOutput => 'Chưa có kết quả. Bấm Chạy để thực thi lệnh.';
+
+  @override
+  String get cliToolCopied => 'Đã sao chép';
+
+  @override
+  String get cliToolFormatRaw => 'Raw';
+
+  @override
+  String get cliToolFormatJson => 'JSON';
 }

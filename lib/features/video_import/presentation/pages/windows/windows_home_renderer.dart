@@ -17,6 +17,7 @@ import 'package:video_toolkit/features/video_import/presentation/widgets/app_res
 import 'package:video_toolkit/presentation/base/bloc_state_builder.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_toolbar_button.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
+import 'package:video_toolkit/features/cli_tools/presentation/cli_tools_launcher.dart';
 import 'package:video_toolkit/features/settings/presentation/pages/settings_page.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_video_table_section.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/windows/windows_encode_settings_dialog.dart';
@@ -72,6 +73,18 @@ class WindowsHomeRenderer extends StatelessWidget {
                 label: l10n.stop,
                 tooltip: l10n.stop,
                 onTap: data.onStop,
+              ),
+              _toolbarDivider(theme),
+              Builder(
+                builder: (ctx) => AppToolbarButton(
+                  macosIcon: FluentIcons.command_prompt,
+                  fluentIcon: FluentIcons.command_prompt,
+                  label: l10n.cliTools,
+                  tooltip: l10n.cliTools,
+                  onTap: data.selectedFile != null
+                      ? () => showCliToolsDialog(ctx, data.selectedFile!.path)
+                      : null,
+                ),
               ),
               _toolbarDivider(theme),
               AppToolbarButton(

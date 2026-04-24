@@ -144,5 +144,23 @@
   "previewNoSelection": "Chọn một video để xem preview",
   "previewLoadingFrame": "Đang tạo preview…",
   "previewLiveBadge": "TRỰC TIẾP",
-  "previewFrameError": "Không thể tạo preview"
+  "previewFrameError": "Không thể tạo preview",
+  "cliTools": "CLI Tools",
+  "cliToolSelectTool": "Tool",
+  "cliToolPresets": "Presets",
+  "cliToolCommand": "Lệnh",
+  "cliToolOutput": "Kết quả",
+  "cliToolExecute": "Chạy",
+  "cliToolStop": "Dừng",
+  "cliToolRunning": "Đang chạy…",
+  "cliToolExitCode": "Mã thoát: {code}",
+  "@cliToolExitCode": {
+    "placeholders": { "code": { "type": "int" } }
+  },
+  "cliToolCopy": "Sao chép",
+  "cliToolClear": "Xoá",
+  "cliToolNoOutput": "Chưa có kết quả. Bấm Chạy để thực thi lệnh.",
+  "cliToolCopied": "Đã sao chép",
+  "cliToolFormatRaw": "Raw",
+  "cliToolFormatJson": "JSON"
 }
