@@ -12,6 +12,7 @@ import 'package:video_toolkit/features/video_encoding/data/models/encode_setting
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/video_import/data/models/video_file.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/app_column_resize_handle.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/app_context_menu.dart';
 
 /// Cross-platform table listing imported videos. Layout, resize, selection,
 /// alt-row striping and per-row progress are platform-agnostic; only the
@@ -26,6 +27,7 @@ class AppVideoTableSection extends StatefulWidget {
     required this.encodeState,
     required this.onSelect,
     required this.onRemove,
+    required this.onRemoveAll,
     required this.onOpenFileSettings,
   });
 
@@ -35,6 +37,7 @@ class AppVideoTableSection extends StatefulWidget {
   final VideoEncodeState encodeState;
   final ValueChanged<String> onSelect;
   final ValueChanged<String> onRemove;
+  final VoidCallback onRemoveAll;
   final ValueChanged<VideoFile> onOpenFileSettings;
 
   @override
@@ -146,38 +149,43 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       );
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final colWidths = _computeWidths(constraints.maxWidth, showStatus);
-        final gapCount = showStatus ? 6 : 3;
-        final contentWidth = colWidths.fold(0.0, (s, w) => s + w) +
-            (_gapWidth * gapCount) +
-            _actionWidth +
-            32;
-        final effectiveWidth =
-            contentWidth.clamp(constraints.maxWidth, double.infinity);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onSecondaryTapDown: (details) =>
+          _showAreaMenu(context, details.globalPosition),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final colWidths = _computeWidths(constraints.maxWidth, showStatus);
+          final gapCount = showStatus ? 6 : 3;
+          final contentWidth = colWidths.fold(0.0, (s, w) => s + w) +
+              (_gapWidth * gapCount) +
+              _actionWidth +
+              32;
+          final effectiveWidth =
+              contentWidth.clamp(constraints.maxWidth, double.infinity);
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SizedBox(
-            width: effectiveWidth,
-            height: constraints.maxHeight,
-            child: Column(
-              children: [
-                _buildHeader(palette, colWidths, showStatus),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: widget.files.length,
-                    itemBuilder: (context, index) =>
-                        _buildRow(palette, colWidths, index, isEncoding,
-                            showStatus),
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              width: effectiveWidth,
+              height: constraints.maxHeight,
+              child: Column(
+                children: [
+                  _buildHeader(palette, colWidths, showStatus),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: widget.files.length,
+                      itemBuilder: (context, index) =>
+                          _buildRow(palette, colWidths, index, isEncoding,
+                              showStatus),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -302,6 +310,8 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
 
     return GestureDetector(
       onTap: () => widget.onSelect(file.path),
+      onSecondaryTapDown: (details) =>
+          _showRowMenu(context, details.globalPosition, file),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
@@ -396,6 +406,43 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showRowMenu(BuildContext context, Offset position, VideoFile file) {
+    final l10n = Languages.translate;
+    final isSelected = widget.selectedFilePath == file.path;
+    showAppContextMenu(
+      context: context,
+      globalPosition: position,
+      items: [
+        if (isSelected)
+          AppContextMenuItem(
+            label: l10n.remove,
+            isDestructive: true,
+            onTap: () => widget.onRemove(file.path),
+          ),
+        AppContextMenuItem(
+          label: l10n.removeAll,
+          isDestructive: true,
+          onTap: widget.onRemoveAll,
+        ),
+      ],
+    );
+  }
+
+  void _showAreaMenu(BuildContext context, Offset position) {
+    final l10n = Languages.translate;
+    showAppContextMenu(
+      context: context,
+      globalPosition: position,
+      items: [
+        AppContextMenuItem(
+          label: l10n.removeAll,
+          isDestructive: true,
+          onTap: widget.onRemoveAll,
+        ),
+      ],
     );
   }
 

@@ -37,7 +37,12 @@ class CliToolRunnerImpl implements CliToolRunner {
       );
 
       if (!cliResult.isSuccess) {
-        appLogger.w('CLI: $executable exited with ${cliResult.exitCode}');
+        appLogger.w(
+          'CLI: $executable exited with ${cliResult.exitCode}\n'
+          'args: ${args.join(' ')}\n'
+          'stderr: ${cliResult.stderr.trim()}\n'
+          'stdout: ${cliResult.stdout.trim()}',
+        );
       }
 
       return cliResult;

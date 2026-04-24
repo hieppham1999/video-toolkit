@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
+import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/fonts/data/font_resolver.dart';
 import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_datasource.dart';
@@ -40,13 +42,69 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
         final outputPath = p.join(dir, '$outName.${settings.outputExtension.value}');
 
         final resolved = await _resolveFonts(settings);
-        final args = resolved.buildArgs(inputPath, outputPath, creationDate: creationDate);
+        final useTwoPass = resolved.qualityMode == QualityMode.avgBitrate &&
+            resolved.twoPass;
 
-        await controller.addStream(_ffmpeg.encode(
-          inputPath: inputPath,
-          args: args,
-          totalDuration: totalDuration,
-        ));
+        if (useTwoPass) {
+          final logPrefix = p.join(
+            Directory.systemTemp.path,
+            'vt-passlog-${DateTime.now().microsecondsSinceEpoch}',
+          );
+          try {
+            final pass1Args = resolved.buildArgs(
+              inputPath,
+              outputPath,
+              creationDate: creationDate,
+              pass: 1,
+              passLogPrefix: logPrefix,
+            );
+            appLogger.d('2-pass: prefix=$logPrefix');
+            await _ffmpeg
+                .encode(
+                  inputPath: inputPath,
+                  args: pass1Args,
+                  totalDuration: totalDuration,
+                )
+                .drain<void>();
+
+            final statsFile = File('$logPrefix-0.log');
+            final statsExists = await statsFile.exists();
+            final statsSize = statsExists ? await statsFile.length() : 0;
+            appLogger.d(
+              '2-pass: after pass1 — stats file ${statsFile.path} '
+              'exists=$statsExists size=$statsSize bytes',
+            );
+            if (!statsExists || statsSize == 0) {
+              throw StateError(
+                'Pass 1 finished but stats file is missing/empty at '
+                '${statsFile.path}. Pass 2 cannot proceed.',
+              );
+            }
+
+            final pass2Args = resolved.buildArgs(
+              inputPath,
+              outputPath,
+              creationDate: creationDate,
+              pass: 2,
+              passLogPrefix: logPrefix,
+            );
+            appLogger.i('ffmpeg pass2 args: ${pass2Args.join(' ')}');
+            await controller.addStream(_ffmpeg.encode(
+              inputPath: inputPath,
+              args: pass2Args,
+              totalDuration: totalDuration,
+            ));
+          } finally {
+            await _cleanupPassLogs(logPrefix);
+          }
+        } else {
+          final args = resolved.buildArgs(inputPath, outputPath, creationDate: creationDate);
+          await controller.addStream(_ffmpeg.encode(
+            inputPath: inputPath,
+            args: args,
+            totalDuration: totalDuration,
+          ));
+        }
       } catch (e, st) {
         controller.addError(e, st);
       } finally {
@@ -54,6 +112,25 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
       }
     }();
     return controller.stream;
+  }
+
+  /// Removes the ffmpeg 2-pass stats files generated under [prefix]
+  /// (`<prefix>-0.log`, `<prefix>-0.log.mbtree`, and the x265 variants).
+  Future<void> _cleanupPassLogs(String prefix) async {
+    const suffixes = [
+      '-0.log',
+      '-0.log.mbtree',
+      '-0.log.cutree',
+      '-0.log.temp',
+    ];
+    for (final s in suffixes) {
+      final f = File('$prefix$s');
+      if (await f.exists()) {
+        try {
+          await f.delete();
+        } catch (_) {}
+      }
+    }
   }
 
   /// Replaces each overlay's `fontFile` with the resolver's effective path so

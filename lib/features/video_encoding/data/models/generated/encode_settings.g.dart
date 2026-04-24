@@ -86,6 +86,13 @@ _EncodeSettings _$EncodeSettingsFromJson(Map<String, dynamic> json) =>
       deinterlace:
           $enumDecodeNullable(_$DeinterlaceEnumMap, json['deinterlace']) ??
           Deinterlace.off,
+      qualityMode:
+          $enumDecodeNullable(_$QualityModeEnumMap, json['qualityMode']) ??
+          QualityMode.crf,
+      avgBitrateKbps: (json['avgBitrateKbps'] as num?)?.toInt() ?? 4000,
+      twoPass: json['twoPass'] as bool? ?? false,
+      turboFirstPass: json['turboFirstPass'] as bool? ?? false,
+      extraParams: json['extraParams'] as String? ?? '',
     );
 
 Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
@@ -101,6 +108,11 @@ Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
       'outputNameTemplate': instance.outputNameTemplate,
       'cropAspectRatio': instance.cropAspectRatio,
       'deinterlace': _$DeinterlaceEnumMap[instance.deinterlace]!,
+      'qualityMode': _$QualityModeEnumMap[instance.qualityMode]!,
+      'avgBitrateKbps': instance.avgBitrateKbps,
+      'twoPass': instance.twoPass,
+      'turboFirstPass': instance.turboFirstPass,
+      'extraParams': instance.extraParams,
     };
 
 const _$VideoEncoderEnumMap = {
@@ -148,4 +160,9 @@ const _$DeinterlaceEnumMap = {
   Deinterlace.yadifField: 'yadifField',
   Deinterlace.bwdifFrame: 'bwdifFrame',
   Deinterlace.bwdifField: 'bwdifField',
+};
+
+const _$QualityModeEnumMap = {
+  QualityMode.crf: 'crf',
+  QualityMode.avgBitrate: 'avgBitrate',
 };

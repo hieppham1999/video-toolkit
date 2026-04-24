@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/app/languages.dart';
+import 'package:video_toolkit/core/utils/bitrate_formatter.dart';
 import 'package:video_toolkit/core/utils/date_formatter.dart';
 import 'package:video_toolkit/core/utils/video_utils.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
@@ -88,19 +89,6 @@ class MacosHomeRenderer extends StatelessWidget {
               onTap: data.onStop,
             ),
           ),
-          if (data.hasFiles) ...[
-            const ToolBarDivider(),
-            CustomToolbarItem(
-              tooltipMessage: l10n.clearAll,
-              inToolbarBuilder: (_) => AppToolbarButton(
-                macosIcon: CupertinoIcons.trash,
-                fluentIcon: CupertinoIcons.trash,
-                label: l10n.clearAll,
-                tooltip: l10n.clearAll,
-                onTap: () => _confirmClearAll(context),
-              ),
-            ),
-          ],
           const ToolBarDivider(),
           CustomToolbarItem(
             tooltipMessage: l10n.settings,
@@ -155,6 +143,7 @@ class MacosHomeRenderer extends StatelessWidget {
                             encodeState: data.encodeState,
                             onSelect: data.onSelectVideo,
                             onRemove: data.onRemoveFile,
+                            onRemoveAll: () => _confirmClearAll(context),
                             onOpenFileSettings: (file) => _openFileSettings(
                               context,
                               file,
@@ -240,7 +229,7 @@ class MacosHomeRenderer extends StatelessWidget {
       context: context,
       builder: (_) => MacosAlertDialog(
         appIcon: const MacosIcon(CupertinoIcons.film, size: 56),
-        title: Text(l10n.clearAll),
+        title: Text(l10n.removeAll),
         message: Text(l10n.clearAllConfirmMessage),
         primaryButton: PushButton(
           controlSize: ControlSize.large,
@@ -248,7 +237,7 @@ class MacosHomeRenderer extends StatelessWidget {
             data.onClearAll();
             Navigator.of(context).pop();
           },
-          child: Text(l10n.delete),
+          child: Text(l10n.remove),
         ),
         secondaryButton: PushButton(
           controlSize: ControlSize.large,
@@ -383,6 +372,13 @@ class _PreviewSection extends StatelessWidget {
                   AppMetadataRow(
                     label: l10n.codec,
                     value: metadata.videoCodec ?? '-',
+                    labelStyle: labelStyle,
+                    valueStyle: valueStyle,
+                  ),
+                  const SizedBox(height: 6),
+                  AppMetadataRow(
+                    label: l10n.bitrate,
+                    value: BitrateFormatter.format(metadata.bitrate),
                     labelStyle: labelStyle,
                     valueStyle: valueStyle,
                   ),

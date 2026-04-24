@@ -20,7 +20,8 @@ class AudioTab extends StatelessWidget {
           label: l10n.audioCodec,
           value: c.audioCodec,
           items: AudioCodec.values,
-          itemLabel: (e) => e.value,
+          itemLabel: (e) =>
+              e == AudioCodec.passthrough ? 'passthrough' : e.value,
           onChanged: c.setAudioCodec,
         ),
         const SizedBox(height: 12),
@@ -30,6 +31,7 @@ class AudioTab extends StatelessWidget {
           items: AudioBitrate.values,
           itemLabel: (e) => e.value,
           onChanged: c.setAudioBitrate,
+          enabled: c.audioCodec != AudioCodec.passthrough,
         ),
       ],
     );

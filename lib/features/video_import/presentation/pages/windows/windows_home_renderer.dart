@@ -2,6 +2,7 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/app/languages.dart';
+import 'package:video_toolkit/core/utils/bitrate_formatter.dart';
 import 'package:video_toolkit/core/utils/date_formatter.dart';
 import 'package:video_toolkit/core/utils/video_utils.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
@@ -72,16 +73,6 @@ class WindowsHomeRenderer extends StatelessWidget {
                 tooltip: l10n.stop,
                 onTap: data.onStop,
               ),
-              if (data.hasFiles) ...[
-                _toolbarDivider(theme),
-                AppToolbarButton(
-                  macosIcon: FluentIcons.delete,
-                  fluentIcon: FluentIcons.delete,
-                  label: l10n.clearAll,
-                  tooltip: l10n.clearAll,
-                  onTap: () => _confirmClearAll(context),
-                ),
-              ],
               _toolbarDivider(theme),
               AppToolbarButton(
                 macosIcon: FluentIcons.settings,
@@ -127,6 +118,7 @@ class WindowsHomeRenderer extends StatelessWidget {
                     encodeState: data.encodeState,
                     onSelect: data.onSelectVideo,
                     onRemove: data.onRemoveFile,
+                    onRemoveAll: () => _confirmClearAll(context),
                     onOpenFileSettings: (file) => _openFileSettings(
                       context,
                       file,
@@ -216,7 +208,7 @@ class WindowsHomeRenderer extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (_) => ContentDialog(
-        title: Text(l10n.clearAll),
+        title: Text(l10n.removeAll),
         content: Text(l10n.clearAllConfirmMessage),
         actions: [
           Button(
@@ -228,7 +220,7 @@ class WindowsHomeRenderer extends StatelessWidget {
               data.onClearAll();
               Navigator.of(context).pop();
             },
-            child: Text(l10n.delete),
+            child: Text(l10n.remove),
           ),
         ],
       ),
@@ -337,6 +329,8 @@ class _PreviewSection extends StatelessWidget {
                   AppMetadataRow(label: l10n.resolution, value: metadata.width != null && metadata.height != null ? '${metadata.width}x${metadata.height}' : '-', labelStyle: labelStyle, valueStyle: valueStyle),
                   const SizedBox(height: 6),
                   AppMetadataRow(label: l10n.codec, value: metadata.videoCodec ?? '-', labelStyle: labelStyle, valueStyle: valueStyle),
+                  const SizedBox(height: 6),
+                  AppMetadataRow(label: l10n.bitrate, value: BitrateFormatter.format(metadata.bitrate), labelStyle: labelStyle, valueStyle: valueStyle),
                   const SizedBox(height: 6),
                   AppMetadataRow(label: l10n.aspectRatio, value: computeAspectRatio(metadata.width, metadata.height) ?? '-', labelStyle: labelStyle, valueStyle: valueStyle),
                   const SizedBox(height: 6),

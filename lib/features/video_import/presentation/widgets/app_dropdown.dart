@@ -13,6 +13,7 @@ class AppDropdown<T> extends StatelessWidget {
     required this.items,
     required this.itemLabel,
     required this.onChanged,
+    this.enabled = true,
   });
 
   final String label;
@@ -20,6 +21,7 @@ class AppDropdown<T> extends StatelessWidget {
   final List<T> items;
   final String Function(T) itemLabel;
   final ValueChanged<T> onChanged;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,7 @@ class AppDropdown<T> extends StatelessWidget {
         items: items,
         itemLabel: itemLabel,
         onChanged: onChanged,
+        enabled: enabled,
       );
     }
     return _MacosDropdown<T>(
@@ -38,6 +41,7 @@ class AppDropdown<T> extends StatelessWidget {
       items: items,
       itemLabel: itemLabel,
       onChanged: onChanged,
+      enabled: enabled,
     );
   }
 }
@@ -49,6 +53,7 @@ class _MacosDropdown<T> extends StatelessWidget {
     required this.items,
     required this.itemLabel,
     required this.onChanged,
+    required this.enabled,
   });
 
   final String label;
@@ -56,25 +61,31 @@ class _MacosDropdown<T> extends StatelessWidget {
   final List<T> items;
   final String Function(T) itemLabel;
   final ValueChanged<T> onChanged;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     final theme = MacosTheme.of(context);
-    return Row(
-      children: [
-        SizedBox(width: 100, child: Text(label, style: theme.typography.body)),
-        const SizedBox(width: 8),
-        MacosPopupButton<T>(
-          value: value,
-          onChanged: (v) {
-            if (v != null) onChanged(v);
-          },
-          items: items
-              .map((e) =>
-                  MacosPopupMenuItem(value: e, child: Text(itemLabel(e))))
-              .toList(),
-        ),
-      ],
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.4,
+      child: Row(
+        children: [
+          SizedBox(width: 100, child: Text(label, style: theme.typography.body)),
+          const SizedBox(width: 8),
+          MacosPopupButton<T>(
+            value: value,
+            onChanged: enabled
+                ? (v) {
+                    if (v != null) onChanged(v);
+                  }
+                : null,
+            items: items
+                .map((e) =>
+                    MacosPopupMenuItem(value: e, child: Text(itemLabel(e))))
+                .toList(),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -86,6 +97,7 @@ class _FluentDropdown<T> extends StatelessWidget {
     required this.items,
     required this.itemLabel,
     required this.onChanged,
+    required this.enabled,
   });
 
   final String label;
@@ -93,25 +105,31 @@ class _FluentDropdown<T> extends StatelessWidget {
   final List<T> items;
   final String Function(T) itemLabel;
   final ValueChanged<T> onChanged;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     final theme = fluent.FluentTheme.of(context);
-    return Row(
-      children: [
-        SizedBox(width: 100, child: Text(label, style: theme.typography.body)),
-        const SizedBox(width: 8),
-        fluent.ComboBox<T>(
-          value: value,
-          onChanged: (v) {
-            if (v != null) onChanged(v);
-          },
-          items: items
-              .map((e) =>
-                  fluent.ComboBoxItem(value: e, child: Text(itemLabel(e))))
-              .toList(),
-        ),
-      ],
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.4,
+      child: Row(
+        children: [
+          SizedBox(width: 100, child: Text(label, style: theme.typography.body)),
+          const SizedBox(width: 8),
+          fluent.ComboBox<T>(
+            value: value,
+            onChanged: enabled
+                ? (v) {
+                    if (v != null) onChanged(v);
+                  }
+                : null,
+            items: items
+                .map((e) =>
+                    fluent.ComboBoxItem(value: e, child: Text(itemLabel(e))))
+                .toList(),
+          ),
+        ],
+      ),
     );
   }
 }

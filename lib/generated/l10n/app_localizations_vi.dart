@@ -33,6 +33,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get clearAll => 'Xóa tất cả';
 
   @override
+  String get remove => 'Gỡ';
+
+  @override
+  String get removeAll => 'Gỡ tất cả';
+
+  @override
   String get noVideos => 'Chưa có video nào';
 
   @override
@@ -151,6 +157,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get tabContainer => 'Container';
 
   @override
+  String get tabVideoCodec => 'Codec video';
+
+  @override
   String get tabSizing => 'Kích thước';
 
   @override
@@ -158,6 +167,33 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get tabAudio => 'Âm thanh';
+
+  @override
+  String get quality => 'Chất lượng';
+
+  @override
+  String get avgBitrateKbps => 'Bitrate trung bình (kbps)';
+
+  @override
+  String get constantQuality => 'Chất lượng cố định';
+
+  @override
+  String get twoPassEncoding => 'Mã hoá hai lượt';
+
+  @override
+  String get turboFirstPass => 'Turbo lượt đầu';
+
+  @override
+  String get moreSettings => 'Cấu hình thêm';
+
+  @override
+  String get moreSettingsHintX265 => 'VD: keyint=60:bframes=3';
+
+  @override
+  String get moreSettingsHintX264 => 'VD: keyint=60:bframes=3';
+
+  @override
+  String get moreSettingsHintVpx => 'VD: -row-mt 1 -tile-columns 2';
 
   @override
   String get outputName => 'Mẫu tên file';

@@ -123,7 +123,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     emitNormal(currentData.copyWith(
       currentIndex: index + 1,
       completedCount: success ? currentData.completedCount + 1 : currentData.completedCount,
-      failedFiles: success ? currentData.failedFiles : [...currentData.failedFiles, file.name],
+      failedFiles: success ? currentData.failedFiles : [...currentData.failedFiles, file.path],
     ));
 
     await _encodeNext();
@@ -139,7 +139,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
               ? EncodeStatus.done
               : EncodeStatus.error,
       errorMessage: failed.isNotEmpty
-          ? '${failed.length} file(s) failed: ${failed.join(', ')}'
+          ? '${failed.length} file(s) failed: ${failed.map(p.basename).join(', ')}'
           : null,
       currentFilePath: null,
     ));

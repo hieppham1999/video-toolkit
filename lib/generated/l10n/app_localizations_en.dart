@@ -33,6 +33,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearAll => 'Clear all';
 
   @override
+  String get remove => 'Remove';
+
+  @override
+  String get removeAll => 'Remove all';
+
+  @override
   String get noVideos => 'No videos yet';
 
   @override
@@ -152,6 +158,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabContainer => 'Container';
 
   @override
+  String get tabVideoCodec => 'Video Codec';
+
+  @override
   String get tabSizing => 'Sizing';
 
   @override
@@ -159,6 +168,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tabAudio => 'Audio';
+
+  @override
+  String get quality => 'Quality';
+
+  @override
+  String get avgBitrateKbps => 'Avg bitrate (kbps)';
+
+  @override
+  String get constantQuality => 'Constant quality';
+
+  @override
+  String get twoPassEncoding => 'Two-pass encoding';
+
+  @override
+  String get turboFirstPass => 'Turbo first pass';
+
+  @override
+  String get moreSettings => 'More settings';
+
+  @override
+  String get moreSettingsHintX265 => 'e.g. keyint=60:bframes=3';
+
+  @override
+  String get moreSettingsHintX264 => 'e.g. keyint=60:bframes=3';
+
+  @override
+  String get moreSettingsHintVpx => 'e.g. -row-mt 1 -tile-columns 2';
 
   @override
   String get outputName => 'Name template';

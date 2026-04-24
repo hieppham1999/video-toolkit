@@ -20,6 +20,11 @@ class ToolExecutionException extends CliException {
 
   final int exitCode;
   final String stderr;
+
+  @override
+  String toString() => stderr.trim().isEmpty
+      ? '$runtimeType: $message'
+      : '$runtimeType: $message\nstderr: ${stderr.trim()}';
 }
 
 class ToolTimeoutException extends CliException {

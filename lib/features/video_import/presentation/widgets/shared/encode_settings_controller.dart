@@ -38,6 +38,11 @@ class EncodeSettingsController extends ChangeNotifier {
   late List<TextOverlay> textOverlays;
   late String outputNameTemplate;
   late Deinterlace deinterlace;
+  late QualityMode qualityMode;
+  late int avgBitrateKbps;
+  late bool twoPass;
+  late bool turboFirstPass;
+  late String extraParams;
   String resWidth = '';
   String resHeight = '';
   String aspectNum = '';
@@ -58,6 +63,11 @@ class EncodeSettingsController extends ChangeNotifier {
     textOverlays = List.of(s.textOverlays);
     outputNameTemplate = s.outputNameTemplate;
     deinterlace = s.deinterlace;
+    qualityMode = s.qualityMode;
+    avgBitrateKbps = s.avgBitrateKbps;
+    twoPass = s.twoPass;
+    turboFirstPass = s.turboFirstPass;
+    extraParams = s.extraParams;
 
     resWidth = '';
     resHeight = '';
@@ -94,6 +104,11 @@ class EncodeSettingsController extends ChangeNotifier {
       outputNameTemplate: outputNameTemplate,
       cropAspectRatio: cropAspectRatio,
       deinterlace: deinterlace,
+      qualityMode: qualityMode,
+      avgBitrateKbps: avgBitrateKbps,
+      twoPass: twoPass,
+      turboFirstPass: turboFirstPass,
+      extraParams: extraParams,
     );
   }
 
@@ -107,6 +122,15 @@ class EncodeSettingsController extends ChangeNotifier {
   void setAudioBitrate(AudioBitrate v) { audioBitrate = v; notifyListeners(); }
   void setOutputNameTemplate(String v) { outputNameTemplate = v; notifyListeners(); }
   void setDeinterlace(Deinterlace v) { deinterlace = v; notifyListeners(); }
+  void setQualityMode(QualityMode v) { qualityMode = v; notifyListeners(); }
+  void setAvgBitrateKbps(int v) { avgBitrateKbps = v; notifyListeners(); }
+  void setTwoPass(bool v) {
+    twoPass = v;
+    if (!v) turboFirstPass = false;
+    notifyListeners();
+  }
+  void setTurboFirstPass(bool v) { turboFirstPass = v; notifyListeners(); }
+  void setExtraParams(String v) { extraParams = v; notifyListeners(); }
   void appendNameTag(String tag) {
     outputNameTemplate = '$outputNameTemplate{$tag}';
     notifyListeners();

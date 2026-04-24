@@ -22,6 +22,7 @@ import 'package:video_toolkit/features/video_import/presentation/widgets/shared/
 import 'package:video_toolkit/features/video_import/presentation/widgets/shared/tabs/container_tab.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/shared/tabs/file_tab.dart';
 import 'package:video_toolkit/features/video_import/presentation/widgets/shared/tabs/sizing_tab.dart';
+import 'package:video_toolkit/features/video_import/presentation/widgets/shared/tabs/video_codec_tab.dart';
 import 'package:video_toolkit/presentation/base/app_state.dart';
 import 'package:video_toolkit/presentation/widgets/color_picker_button.dart';
 
@@ -239,6 +240,7 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
     final tabs = [
       l10n.tabFile,
       l10n.tabContainer,
+      l10n.tabVideoCodec,
       l10n.tabSizing,
       l10n.tabFilter,
       l10n.tabAudio,
@@ -344,13 +346,14 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                                         widget.sampleCreationDate,
                                   ),
                                 1 => ContainerTab(controller: _c),
-                                2 => SizingTab(
+                                2 => VideoCodecTab(controller: _c),
+                                3 => SizingTab(
                                     controller: _c,
                                     sampleWidth: widget.sampleWidth,
                                     sampleHeight: widget.sampleHeight,
                                   ),
-                                3 => _buildFilterTab(theme, l10n),
-                                4 => AudioTab(controller: _c),
+                                4 => _buildFilterTab(theme, l10n),
+                                5 => AudioTab(controller: _c),
                                 _ => const SizedBox.shrink(),
                               },
                             ),

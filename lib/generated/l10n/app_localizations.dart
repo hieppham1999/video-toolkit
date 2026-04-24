@@ -146,6 +146,18 @@ abstract class AppLocalizations {
   /// **'Clear all'**
   String get clearAll;
 
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @removeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove all'**
+  String get removeAll;
+
   /// No description provided for @noVideos.
   ///
   /// In en, this message translates to:
@@ -380,6 +392,12 @@ abstract class AppLocalizations {
   /// **'Container'**
   String get tabContainer;
 
+  /// No description provided for @tabVideoCodec.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Codec'**
+  String get tabVideoCodec;
+
   /// No description provided for @tabSizing.
   ///
   /// In en, this message translates to:
@@ -397,6 +415,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Audio'**
   String get tabAudio;
+
+  /// No description provided for @quality.
+  ///
+  /// In en, this message translates to:
+  /// **'Quality'**
+  String get quality;
+
+  /// No description provided for @avgBitrateKbps.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg bitrate (kbps)'**
+  String get avgBitrateKbps;
+
+  /// No description provided for @constantQuality.
+  ///
+  /// In en, this message translates to:
+  /// **'Constant quality'**
+  String get constantQuality;
+
+  /// No description provided for @twoPassEncoding.
+  ///
+  /// In en, this message translates to:
+  /// **'Two-pass encoding'**
+  String get twoPassEncoding;
+
+  /// No description provided for @turboFirstPass.
+  ///
+  /// In en, this message translates to:
+  /// **'Turbo first pass'**
+  String get turboFirstPass;
+
+  /// No description provided for @moreSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'More settings'**
+  String get moreSettings;
+
+  /// No description provided for @moreSettingsHintX265.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. keyint=60:bframes=3'**
+  String get moreSettingsHintX265;
+
+  /// No description provided for @moreSettingsHintX264.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. keyint=60:bframes=3'**
+  String get moreSettingsHintX264;
+
+  /// No description provided for @moreSettingsHintVpx.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. -row-mt 1 -tile-columns 2'**
+  String get moreSettingsHintVpx;
 
   /// No description provided for @outputName.
   ///

@@ -44,22 +44,39 @@ class FfmpegDatasource {
           process = await Process.start(ffmpegPath, args);
 
 
-    // ffmpeg writes progress to stderr
+    // ffmpeg writes progress AND errors to stderr. Keep a rolling tail so we
+    // can surface the actual error message when exit code != 0.
+    final stderrTail = <String>[];
+    const maxTailLines = 40;
+
+    // Drain stdout in parallel to avoid blocking ffmpeg on a full pipe buffer.
+    final stdoutDrain = process.stdout.drain<void>();
+
     await for (final chunk in process.stderr.transform(const SystemEncoding().decoder)) {
+      for (final line in chunk.split('\n')) {
+        if (line.trim().isEmpty) continue;
+        stderrTail.add(line);
+        if (stderrTail.length > maxTailLines) {
+          stderrTail.removeAt(0);
+        }
+      }
       final progress = _parseProgress(chunk, totalDuration, stopwatch.elapsed);
       if (progress != null) {
         yield progress;
       }
     }
 
+    await stdoutDrain;
     final exitCode = await process.exitCode;
     stopwatch.stop();
 
     if (exitCode != 0) {
+      final tail = stderrTail.join('\n');
+      appLogger.e('ffmpeg failed (exit $exitCode):\n$tail');
       throw ToolExecutionException(
         tool: _executable,
         exitCode: exitCode,
-        stderr: 'Encoding failed with exit code $exitCode',
+        stderr: tail.isEmpty ? 'exit code $exitCode' : tail,
       );
     }
 
@@ -153,10 +170,16 @@ class FfmpegDatasource {
 
     final result = await Process.run(ffmpegPath, args);
     if (result.exitCode != 0) {
+      final stderr = result.stderr?.toString() ?? '';
+      appLogger.e(
+        'ffmpeg extractFrame failed (exit ${result.exitCode}):\n'
+        'args: ${args.join(' ')}\n'
+        'stderr: ${stderr.trim()}',
+      );
       throw ToolExecutionException(
         tool: _executable,
         exitCode: result.exitCode,
-        stderr: result.stderr?.toString() ?? '',
+        stderr: stderr,
       );
     }
     return outputPath;

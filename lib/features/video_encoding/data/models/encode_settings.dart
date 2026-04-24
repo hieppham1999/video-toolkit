@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'generated/encode_settings.freezed.dart';
@@ -153,6 +155,12 @@ abstract class EncodeSettings with _$EncodeSettings {
     String? cropAspectRatio,
     /// Deinterlacing filter applied before text overlays.
     @Default(Deinterlace.off) Deinterlace deinterlace,
+    @Default(QualityMode.crf) QualityMode qualityMode,
+    @Default(4000) int avgBitrateKbps,
+    @Default(false) bool twoPass,
+    @Default(false) bool turboFirstPass,
+    /// Raw extra params forwarded via codec-specific flag (e.g. `-x265-params`).
+    @Default('') String extraParams,
   }) = _EncodeSettings;
 
   factory EncodeSettings.fromJson(Map<String, dynamic> json) => _$EncodeSettingsFromJson(json);
@@ -190,21 +198,77 @@ abstract class EncodeSettings with _$EncodeSettings {
   }
 
   /// Builds ffmpeg arguments from these settings.
-  List<String> buildArgs(String inputPath, String outputPath, {DateTime? creationDate}) {
+  ///
+  /// [pass] controls two-pass behavior: `null` = single pass; `1` or `2` =
+  /// corresponding pass of a 2-pass encode. Pass 1 writes to a null sink and
+  /// drops audio. Pass 2 writes the real file. The caller is responsible for
+  /// running pass 1 then pass 2 when `twoPass` is true.
+  List<String> buildArgs(
+    String inputPath,
+    String outputPath, {
+    DateTime? creationDate,
+    int? pass,
+    String? passLogPrefix,
+  }) {
     final filterChain = buildVideoFilterChain(creationDate: creationDate);
+    final nullSink = Platform.isWindows ? 'NUL' : '/dev/null';
+    final codecParamsFlag = _codecParamsFlag;
+    final mergedParams = _mergedCodecParams(pass: pass);
 
     return [
       '-i', inputPath,
       '-c:v', codec.value,
       if (preset.value.isNotEmpty) ...['-preset', preset.value],
-      '-crf', '$crf',
+      if (qualityMode == QualityMode.crf)
+        ...['-crf', '$crf']
+      else
+        ...['-b:v', '${avgBitrateKbps}k'],
+      if (pass != null) ...['-pass', '$pass'],
+      if (pass != null && passLogPrefix != null)
+        ...['-passlogfile', passLogPrefix],
+      if (codecParamsFlag != null && mergedParams.isNotEmpty)
+        ...[codecParamsFlag, mergedParams],
+      if (codecParamsFlag == null && extraParams.trim().isNotEmpty)
+        ...extraParams.trim().split(RegExp(r'\s+')),
       if (filterChain != null) ...['-vf', filterChain],
-      '-c:a', audioCodec.value,
-      '-b:a', audioBitrate.value,
+      if (pass == 1) ...['-an', '-f', 'null']
+      else ...[
+        '-c:a', audioCodec.value,
+        if (audioCodec != AudioCodec.passthrough)
+          ...['-b:a', audioBitrate.value],
+      ],
       '-y',
-      outputPath,
+      pass == 1 ? nullSink : outputPath,
     ];
   }
+
+  String? get _codecParamsFlag => switch (codec) {
+        VideoEncoder.h264 => '-x264-params',
+        VideoEncoder.h265 => '-x265-params',
+        VideoEncoder.vp9 => null,
+      };
+
+  /// Merges user [extraParams] with the codec-specific turbo-first-pass string
+  /// when [pass] is 1 and [turboFirstPass] is on.
+  String _mergedCodecParams({int? pass}) {
+    final user = extraParams.trim();
+    final useTurbo = pass == 1 && turboFirstPass;
+    final turbo = useTurbo ? _turboParams : '';
+    if (user.isEmpty) return turbo;
+    if (turbo.isEmpty) return user;
+    return '$user:$turbo';
+  }
+
+  // Pass-1-only speedups. Keep to options x264/x265 tolerate differing between
+  // passes; skip anything that changes stats format (e.g. `weightp`, `8x8dct`)
+  // — x264 aborts pass 2 with "different X setting than first pass" otherwise.
+  String get _turboParams => switch (codec) {
+        VideoEncoder.h264 =>
+          'ref=1:me=dia:subme=1:trellis=0:mixed-refs=0:fast-pskip=1',
+        VideoEncoder.h265 =>
+          'no-rect=1:no-amp=1:max-merge=1:early-skip=1:fast-intra=1:ref=1:rd=2:subme=1',
+        VideoEncoder.vp9 => '',
+      };
 }
 
 extension StringOnWindows on String {
@@ -279,6 +343,11 @@ enum Deinterlace {
 
   final String filter;
 }
+
+/// How the encoder picks a bitrate.
+/// - [crf]: constant quality, variable bitrate (`-crf <N>`).
+/// - [avgBitrate]: target average bitrate in kbps (`-b:v <N>k`), optional 2-pass.
+enum QualityMode { crf, avgBitrate }
 
 enum AudioBitrate {
   k64('64k'),
