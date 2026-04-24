@@ -42,7 +42,7 @@ class AppVideoTableSection extends StatefulWidget {
 }
 
 class _AppVideoTableSectionState extends State<AppVideoTableSection> {
-  static const _minColWidth = 60.0;
+  static const _minColWidth = 40.0;
   static const _gapWidth = 8.0;
   static const _actionWidth = 72.0;
   static const _statusWidth = 140.0;
@@ -50,37 +50,74 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
   static const _outputSizeColWidth = 40.0;
   static const _ratioColWidth = 52.0;
   static const _headerHeight = 32.0;
-  // Proportional columns: Name, Path, Output.
+  // Column indices in display order:
+  // 0: Name (prop), 1: Path (prop), 2: Size (fixed), 3: Output (prop),
+  // 4: OutputSize (fixed), 5: Ratio (fixed), 6: Status (fixed).
   static const _proportions = [0.28, 0.34, 0.38];
+  static const _propIndices = [0, 1, 3];
 
   static const _greenColor = AppColors.success;
   static const _redColor = AppColors.error;
 
-  final List<double> _dragOffsets = [0, 0, 0];
+  final List<double> _dragOffsets = [0, 0, 0, 0, 0, 0, 0];
   final Map<String, int?> _outputSizeCache = {};
+  List<double> _lastColWidths = const [];
 
+  double _fixedWidth(int idx, double base) =>
+      (base + _dragOffsets[idx]).clamp(_minColWidth, double.infinity);
+
+  /// Returns widths in display order (indices 0..6). Status columns are 0 when
+  /// hidden.
   List<double> _computeWidths(double viewportWidth, bool showStatus) {
-    final statusSpace = showStatus
-        ? (_statusWidth + _outputSizeColWidth + _ratioColWidth + _gapWidth * 3)
-        : 0.0;
-    // Fixed columns consumed: horizontal padding (32) + size col + 3 gaps
-    // between the 3 proportional columns and the size column.
+    final size = _fixedWidth(2, _sizeColWidth);
+    final outSize =
+        showStatus ? _fixedWidth(4, _outputSizeColWidth) : 0.0;
+    final ratio = showStatus ? _fixedWidth(5, _ratioColWidth) : 0.0;
+    final status = showStatus ? _fixedWidth(6, _statusWidth) : 0.0;
+    final gapCount = showStatus ? 6 : 3;
     final available = viewportWidth -
         _actionWidth -
-        statusSpace -
-        _sizeColWidth -
+        size -
+        outSize -
+        ratio -
+        status -
         32 -
-        (_gapWidth * 3);
-    return List.generate(3, (i) {
-      return (available * _proportions[i] + _dragOffsets[i])
+        (_gapWidth * gapCount);
+    final props = List<double>.generate(3, (j) {
+      return (available * _proportions[j] + _dragOffsets[_propIndices[j]])
           .clamp(_minColWidth, double.infinity);
     });
+    _lastColWidths = [props[0], props[1], size, props[2], outSize, ratio, status];
+    return _lastColWidths;
   }
 
-  void _onResizeColumn(int index, double dx) {
+  void _onResizeColumn(int leftIdx, double dx) {
+    if (_lastColWidths.length <= leftIdx + 1) return;
+    final leftW = _lastColWidths[leftIdx];
+    final rightW = _lastColWidths[leftIdx + 1];
+    double effective = dx;
+    if (effective < 0 && leftW + effective < _minColWidth) {
+      effective = _minColWidth - leftW;
+    }
+    if (effective > 0 && rightW - effective < _minColWidth) {
+      effective = rightW - _minColWidth;
+    }
+    if (effective == 0) return;
+    // If a fixed column is involved, `available` changes and every
+    // proportional column would redistribute. Compensate each proportional
+    // column's offset so only L and R actually change width.
+    const fixedCols = {2, 4, 5, 6};
+    double f = 0;
+    if (fixedCols.contains(leftIdx)) f += effective;
+    if (fixedCols.contains(leftIdx + 1)) f -= effective;
     setState(() {
-      _dragOffsets[index] += dx;
-      _dragOffsets[index + 1] -= dx;
+      _dragOffsets[leftIdx] += effective;
+      _dragOffsets[leftIdx + 1] -= effective;
+      if (f != 0) {
+        for (var j = 0; j < _propIndices.length; j++) {
+          _dragOffsets[_propIndices[j]] += _proportions[j] * f;
+        }
+      }
     });
   }
 
@@ -112,17 +149,9 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final colWidths = _computeWidths(constraints.maxWidth, showStatus);
-        // Layout: [name] [path] [size(fixed)] [output] + optional
-        // [outputSize][ratio][status] + actions. Gaps between every cell.
+        final gapCount = showStatus ? 6 : 3;
         final contentWidth = colWidths.fold(0.0, (s, w) => s + w) +
-            _sizeColWidth +
-            (_gapWidth * 3) +
-            (showStatus
-                ? (_outputSizeColWidth +
-                    _ratioColWidth +
-                    _statusWidth +
-                    _gapWidth * 3)
-                : 0) +
+            (_gapWidth * gapCount) +
             _actionWidth +
             32;
         final effectiveWidth =
@@ -191,17 +220,28 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
             dividerColor: palette.divider,
             onDrag: (dx) => _onResizeColumn(1, dx),
           ),
-          headerCell(l10n.columnSize, _sizeColWidth, alignEnd: true),
-          const SizedBox(width: _gapWidth),
-          headerCell(l10n.columnOutput, colWidths[2]),
+          headerCell(l10n.columnSize, colWidths[2], alignEnd: true),
+          AppColumnResizeHandle(
+            dividerColor: palette.divider,
+            onDrag: (dx) => _onResizeColumn(2, dx),
+          ),
+          headerCell(l10n.columnOutput, colWidths[3]),
           if (showStatus) ...[
-            const SizedBox(width: _gapWidth),
-            headerCell(l10n.columnOutputSize, _outputSizeColWidth,
-                alignEnd: true),
-            const SizedBox(width: _gapWidth),
-            headerCell(l10n.columnSizeRatio, _ratioColWidth, alignEnd: true),
-            const SizedBox(width: _gapWidth),
-            headerCell(l10n.columnStatus, _statusWidth),
+            AppColumnResizeHandle(
+              dividerColor: palette.divider,
+              onDrag: (dx) => _onResizeColumn(3, dx),
+            ),
+            headerCell(l10n.columnOutputSize, colWidths[4], alignEnd: true),
+            AppColumnResizeHandle(
+              dividerColor: palette.divider,
+              onDrag: (dx) => _onResizeColumn(4, dx),
+            ),
+            headerCell(l10n.columnSizeRatio, colWidths[5], alignEnd: true),
+            AppColumnResizeHandle(
+              dividerColor: palette.divider,
+              onDrag: (dx) => _onResizeColumn(5, dx),
+            ),
+            headerCell(l10n.columnStatus, colWidths[6]),
           ],
           const SizedBox(width: _actionWidth),
         ],
@@ -298,7 +338,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
             ),
             const SizedBox(width: _gapWidth),
             SizedBox(
-              width: _sizeColWidth,
+              width: colWidths[2],
               child: Text(
                 FileSizeFormatter.format(file.sizeInBytes),
                 style: captionStyle,
@@ -306,18 +346,20 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
               ),
             ),
             const SizedBox(width: _gapWidth),
-            SizedBox(
-              width: colWidths[2],
-              child: Text(
-                outputPath,
-                style: subtleCaptionStyle,
-                overflow: TextOverflow.ellipsis,
+            fluent.Expanded(
+              child: SizedBox(
+                width: colWidths[3],
+                child: Text(
+                  outputPath,
+                  style: subtleCaptionStyle,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             if (showStatus) ...[
               const SizedBox(width: _gapWidth),
               SizedBox(
-                width: _outputSizeColWidth,
+                width: colWidths[4],
                 child: Text(
                   outputSizeLabel,
                   style: captionStyle,
@@ -327,7 +369,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
               ),
               const SizedBox(width: _gapWidth),
               SizedBox(
-                width: _ratioColWidth,
+                width: colWidths[5],
                 child: Text(
                   ratioLabel,
                   style: captionStyle,
@@ -337,7 +379,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
               ),
               const SizedBox(width: _gapWidth),
               SizedBox(
-                width: _statusWidth,
+                width: colWidths[6],
                 child: _statusCell(palette, rowStatus!, captionStyle),
               ),
             ],
