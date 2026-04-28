@@ -181,6 +181,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get twoPassEncoding => 'Mã hoá hai lượt';
 
   @override
+  String get copySourceMetadata => 'Sao chép metadata từ video gốc';
+
+  @override
   String get turboFirstPass => 'Turbo lượt đầu';
 
   @override

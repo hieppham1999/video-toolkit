@@ -43,6 +43,7 @@ class EncodeSettingsController extends ChangeNotifier {
   late bool twoPass;
   late bool turboFirstPass;
   late String extraParams;
+  late bool copySourceMetadata;
   String resWidth = '';
   String resHeight = '';
   String aspectNum = '';
@@ -68,6 +69,7 @@ class EncodeSettingsController extends ChangeNotifier {
     twoPass = s.twoPass;
     turboFirstPass = s.turboFirstPass;
     extraParams = s.extraParams;
+    copySourceMetadata = s.copySourceMetadata;
 
     resWidth = '';
     resHeight = '';
@@ -109,6 +111,7 @@ class EncodeSettingsController extends ChangeNotifier {
       twoPass: twoPass,
       turboFirstPass: turboFirstPass,
       extraParams: extraParams,
+      copySourceMetadata: copySourceMetadata,
     );
   }
 
@@ -131,6 +134,7 @@ class EncodeSettingsController extends ChangeNotifier {
   }
   void setTurboFirstPass(bool v) { turboFirstPass = v; notifyListeners(); }
   void setExtraParams(String v) { extraParams = v; notifyListeners(); }
+  void setCopySourceMetadata(bool v) { copySourceMetadata = v; notifyListeners(); }
   void appendNameTag(String tag) {
     outputNameTemplate = '$outputNameTemplate{$tag}';
     notifyListeners();

@@ -56,6 +56,7 @@
   "avgBitrateKbps": "Bitrate trung bình (kbps)",
   "constantQuality": "Chất lượng cố định",
   "twoPassEncoding": "Mã hoá hai lượt",
+  "copySourceMetadata": "Sao chép metadata từ video gốc",
   "turboFirstPass": "Turbo lượt đầu",
   "moreSettings": "Cấu hình thêm",
   "moreSettingsHintX265": "VD: keyint=60:bframes=3",

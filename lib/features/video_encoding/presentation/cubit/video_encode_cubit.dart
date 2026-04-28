@@ -9,17 +9,19 @@ import 'package:video_toolkit/features/video_encoding/data/models/encode_setting
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart';
 import 'package:video_toolkit/features/home/data/models/video_file.dart';
 import 'package:video_toolkit/features/home/presentation/cubit/preview_cubit.dart';
+import 'package:video_toolkit/features/video_metadata/data/datasources/exiftool_datasource.dart';
 import 'package:video_toolkit/app/base/base_cubit.dart';
 
 import 'video_encode_state.dart';
 
 @lazySingleton
 class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
-  VideoEncodeCubit(this._repository, this._previewCubit)
+  VideoEncodeCubit(this._repository, this._previewCubit, this._exiftool)
       : super.normal(const VideoEncodeState());
 
   final VideoEncodeRepository _repository;
   final PreviewCubit _previewCubit;
+  final ExiftoolDatasource _exiftool;
   StreamSubscription<void>? _encodeSub;
   bool _cancelled = false;
   int _lastLoggedBucket = -1;
@@ -119,6 +121,13 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     final success = await completer.future;
 
     if (_cancelled) return;
+
+    if (success && settings.copySourceMetadata) {
+      await _exiftool.copyMetadata(
+        sourcePath: file.path,
+        targetPath: outputPath,
+      );
+    }
 
     emitNormal(currentData.copyWith(
       currentIndex: index + 1,

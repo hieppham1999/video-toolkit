@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:video_toolkit/core/navigation/app_routes.dart';
 import 'package:video_toolkit/core/utils/app_logger.dart';
-import 'package:video_toolkit/features/video_encoding/presentation/pages/encode_page.dart';
 import 'package:video_toolkit/features/home/presentation/pages/home_page.dart';
 
 class AppRouter {
@@ -24,12 +23,6 @@ class AppRouter {
 
     return switch (args) {
       HomeRoute() => _buildRoute(const HomePage()),
-      EncodeRoute(:final filePath, :final totalDuration) => _buildRoute(
-          EncodePage(
-            filePath: filePath,
-            totalDuration: totalDuration,
-          ),
-        ),
     };
   }
 

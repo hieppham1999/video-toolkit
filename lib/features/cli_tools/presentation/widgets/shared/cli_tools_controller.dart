@@ -35,7 +35,7 @@ class CliToolsController extends ChangeNotifier {
   late final TextEditingController argsController;
   late final ScrollController outputScrollController;
 
-  CliTool tool = CliTool.ffprobe;
+  CliTool tool = CliTool.exiftool;
   CliPreset? selectedPreset;
 
   final List<String> _output = <String>[];

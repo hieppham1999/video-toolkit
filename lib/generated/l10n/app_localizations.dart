@@ -440,6 +440,12 @@ abstract class AppLocalizations {
   /// **'Two-pass encoding'**
   String get twoPassEncoding;
 
+  /// No description provided for @copySourceMetadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy metadata from source'**
+  String get copySourceMetadata;
+
   /// No description provided for @turboFirstPass.
   ///
   /// In en, this message translates to:

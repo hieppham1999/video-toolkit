@@ -98,6 +98,48 @@ class ExiftoolDatasource {
     return null;
   }
 
+  Future<bool> copyMetadata({
+    required String sourcePath,
+    required String targetPath,
+  }) async {
+    if (!await isAvailable) {
+      appLogger.w('exiftool not available, skip copyMetadata');
+      return false;
+    }
+
+    final now = DateTime.now();
+    final nowStr = DateFormat("yyyy:MM:dd HH:mm:ssZZZZZ").format(now);
+
+    final args = [
+      '-TagsFromFile',
+      sourcePath,
+      '-all:all',
+      '-MediaModifyDate=$nowStr',
+      '-TrackModifyDate=$nowStr',
+      '-ModifyDate=$nowStr',
+      '-overwrite_original',
+      targetPath,
+    ];
+
+    appLogger.i('exiftool copyMetadata: $_executable ${args.join(' ')}');
+    try {
+      final result = await _runner.run(
+        _executable,
+        args,
+        timeout: const Duration(minutes: 2),
+      );
+      if (!result.isSuccess) {
+        appLogger.w('exiftool copyMetadata failed: ${result.stderr}');
+        return false;
+      }
+      appLogger.i('exiftool copyMetadata success for $targetPath');
+      return true;
+    } catch (e) {
+      appLogger.e('exiftool copyMetadata error: $e');
+      return false;
+    }
+  }
+
   double? _parseDouble(dynamic value) {
     if (value == null) return null;
     if (value is num) return value.toDouble();

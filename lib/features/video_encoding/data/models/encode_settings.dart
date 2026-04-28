@@ -161,6 +161,7 @@ abstract class EncodeSettings with _$EncodeSettings {
     @Default(false) bool turboFirstPass,
     /// Raw extra params forwarded via codec-specific flag (e.g. `-x265-params`).
     @Default('') String extraParams,
+    @Default(true) bool copySourceMetadata,
   }) = _EncodeSettings;
 
   factory EncodeSettings.fromJson(Map<String, dynamic> json) => _$EncodeSettingsFromJson(json);

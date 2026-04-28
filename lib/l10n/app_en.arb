@@ -56,6 +56,7 @@
   "avgBitrateKbps": "Avg bitrate (kbps)",
   "constantQuality": "Constant quality",
   "twoPassEncoding": "Two-pass encoding",
+  "copySourceMetadata": "Copy metadata from source",
   "turboFirstPass": "Turbo first pass",
   "moreSettings": "More settings",
   "moreSettingsHintX265": "e.g. keyint=60:bframes=3",

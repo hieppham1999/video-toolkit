@@ -182,6 +182,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get twoPassEncoding => 'Two-pass encoding';
 
   @override
+  String get copySourceMetadata => 'Copy metadata from source';
+
+  @override
   String get turboFirstPass => 'Turbo first pass';
 
   @override

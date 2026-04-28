@@ -6,6 +6,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
+import 'package:video_toolkit/widgets/app_checkbox.dart';
 import 'package:video_toolkit/widgets/app_field.dart';
 import 'package:video_toolkit/widgets/app_tag_chip.dart';
 import 'package:video_toolkit/features/home/presentation/widgets/shared/encode_settings_controller.dart';
@@ -69,6 +70,12 @@ class FileTab extends StatelessWidget {
               for (final tag in FilenameTemplate.tags)
                 AppTagChip(tag: '{$tag}', onTap: () => c.appendNameTag(tag)),
             ],
+          ),
+          const SizedBox(height: 16),
+          AppCheckbox(
+            value: c.copySourceMetadata,
+            onChanged: c.setCopySourceMetadata,
+            label: Text(l10n.copySourceMetadata),
           ),
         ],
       ),

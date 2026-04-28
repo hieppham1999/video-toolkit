@@ -7,11 +7,3 @@ sealed class AppRoutes {
 class HomeRoute extends AppRoutes {
   const HomeRoute() : super(path: '/');
 }
-
-class EncodeRoute extends AppRoutes {
-  const EncodeRoute({required this.filePath, required this.totalDuration})
-      : super(path: '/encode');
-
-  final String filePath;
-  final Duration totalDuration;
-}

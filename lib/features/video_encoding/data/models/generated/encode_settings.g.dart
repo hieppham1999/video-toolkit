@@ -93,6 +93,7 @@ _EncodeSettings _$EncodeSettingsFromJson(Map<String, dynamic> json) =>
       twoPass: json['twoPass'] as bool? ?? false,
       turboFirstPass: json['turboFirstPass'] as bool? ?? false,
       extraParams: json['extraParams'] as String? ?? '',
+      copySourceMetadata: json['copySourceMetadata'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
@@ -113,6 +114,7 @@ Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
       'twoPass': instance.twoPass,
       'turboFirstPass': instance.turboFirstPass,
       'extraParams': instance.extraParams,
+      'copySourceMetadata': instance.copySourceMetadata,
     };
 
 const _$VideoEncoderEnumMap = {
