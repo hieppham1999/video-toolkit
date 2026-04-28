@@ -28,9 +28,12 @@ class FontRepositoryImpl implements FontRepository {
     final system = results[0];
     final bundled = results[1];
 
+    // Bundled first so that on name collisions (e.g. user installed the same
+    // VCR font system-wide), the bundled copy wins — settings picker filters
+    // by isBundled, so losing bundled to system would hide it entirely.
     final seenNames = <String>{};
     final merged = <FontInfo>[];
-    for (final f in [...system, ...bundled]) {
+    for (final f in [...bundled, ...system]) {
       final key = f.name.toLowerCase();
       if (seenNames.add(key)) merged.add(f);
     }
