@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/widgets/app_checkbox.dart';
 import 'package:video_toolkit/widgets/app_dropdown.dart';
 import 'package:video_toolkit/features/home/presentation/widgets/shared/encode_settings_controller.dart';
 
@@ -22,6 +23,12 @@ class ContainerTab extends StatelessWidget {
           items: OutputExtension.values,
           itemLabel: (e) => e.value,
           onChanged: c.setOutputExtension,
+        ),
+        const SizedBox(height: 12),
+        AppCheckbox(
+          value: c.webOptimized,
+          onChanged: c.setWebOptimized,
+          label: Text(l10n.webOptimized),
         ),
       ],
     );

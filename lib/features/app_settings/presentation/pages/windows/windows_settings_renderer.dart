@@ -7,6 +7,7 @@ import 'package:video_toolkit/widgets/app_accent_swatch.dart';
 import 'package:video_toolkit/widgets/app_button.dart';
 import 'package:video_toolkit/widgets/app_dialog_title_bar.dart';
 
+import '../../widgets/output_directory_section.dart';
 import '../settings_view_data.dart';
 
 class WindowsSettingsRenderer extends StatelessWidget {
@@ -21,27 +22,43 @@ class WindowsSettingsRenderer extends StatelessWidget {
     return ContentDialog(
       constraints: const BoxConstraints(maxWidth: 560),
       title: AppDialogTitleBar(title: Text(l10n.settings)),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _section(
-            theme,
-            l10n.appearance,
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _AccentRow(data: data),
-                const SizedBox(height: 12),
-                _ThemeModeCombo(data: data),
-              ],
-            ),
+      content: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height - 220,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _section(
+                theme,
+                l10n.appearance,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _AccentRow(data: data),
+                    const SizedBox(height: 12),
+                    _ThemeModeCombo(data: data),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              _section(
+                theme,
+                l10n.outputDirectory,
+                AppOutputDirectorySection(
+                  value: data.outputDirectory,
+                  onChanged: data.onOutputDirectoryChanged,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _section(theme, l10n.language, _LanguageCombo(data: data)),
+              const SizedBox(height: 16),
+              _section(theme, l10n.defaultFont, _DefaultFontCombo(data: data)),
+            ],
           ),
-          const SizedBox(height: 16),
-          _section(theme, l10n.language, _LanguageCombo(data: data)),
-          const SizedBox(height: 16),
-          _section(theme, l10n.defaultFont, _DefaultFontCombo(data: data)),
-        ],
+        ),
       ),
       actions: [
         AppButton(onPressed: data.onClose, child: Text(l10n.save)),

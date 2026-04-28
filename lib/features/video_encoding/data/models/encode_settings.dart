@@ -162,6 +162,7 @@ abstract class EncodeSettings with _$EncodeSettings {
     /// Raw extra params forwarded via codec-specific flag (e.g. `-x265-params`).
     @Default('') String extraParams,
     @Default(true) bool copySourceMetadata,
+    @Default(true) bool webOptimized,
   }) = _EncodeSettings;
 
   factory EncodeSettings.fromJson(Map<String, dynamic> json) => _$EncodeSettingsFromJson(json);
@@ -238,6 +239,11 @@ abstract class EncodeSettings with _$EncodeSettings {
         if (audioCodec != AudioCodec.passthrough)
           ...['-b:a', audioBitrate.value],
       ],
+      if (pass != 1 &&
+          webOptimized &&
+          (outputExtension == OutputExtension.mp4 ||
+              outputExtension == OutputExtension.mov))
+        ...['-movflags', '+faststart'],
       '-y',
       pass == 1 ? nullSink : outputPath,
     ];

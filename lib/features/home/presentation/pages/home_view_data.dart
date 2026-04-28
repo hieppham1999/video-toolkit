@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/home/data/models/video_file.dart';
 
@@ -12,6 +13,7 @@ class HomeViewData {
     required this.previewFraction,
     required this.selectedFile,
     required this.encodeSettings,
+    required this.outputDirectory,
     required this.encodeState,
     required this.currentPresetName,
     required this.isPresetModified,
@@ -34,6 +36,7 @@ class HomeViewData {
   final double previewFraction;
   final VideoFile? selectedFile;
   final EncodeSettings encodeSettings;
+  final OutputDirectorySettings outputDirectory;
   final VideoEncodeState encodeState;
   /// Name of the currently selected preset, null if no preset is selected.
   final String? currentPresetName;

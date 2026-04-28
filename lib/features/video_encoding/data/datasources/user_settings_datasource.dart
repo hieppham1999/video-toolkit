@@ -9,6 +9,7 @@ import 'package:video_toolkit/core/theme/app_accent.dart';
 import 'package:video_toolkit/core/theme/app_theme_mode.dart';
 import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/user_settings.dart';
 
 /// Persists [UserSettings] (current encode settings + selected preset id) to
@@ -97,6 +98,17 @@ class UserSettingsDatasource {
             language: language,
           )
         : current.copyWith(language: language);
+    await save(next);
+  }
+
+  Future<void> saveOutputDirectory(OutputDirectorySettings settings) async {
+    final current = _cache ?? await load();
+    final next = current == null
+        ? UserSettings(
+            encodeSettings: const EncodeSettings(),
+            outputDirectory: settings,
+          )
+        : current.copyWith(outputDirectory: settings);
     await save(next);
   }
 

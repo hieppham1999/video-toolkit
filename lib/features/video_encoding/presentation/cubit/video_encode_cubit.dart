@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
@@ -6,7 +7,9 @@ import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart';
+import 'package:video_toolkit/features/video_encoding/domain/output_path_resolver.dart';
 import 'package:video_toolkit/features/home/data/models/video_file.dart';
 import 'package:video_toolkit/features/home/presentation/cubit/preview_cubit.dart';
 import 'package:video_toolkit/features/video_metadata/data/datasources/exiftool_datasource.dart';
@@ -28,18 +31,21 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
 
   List<VideoFile> _queue = [];
   late EncodeSettings _globalSettings;
+  OutputDirectorySettings _outputDirectory = const OutputDirectorySettings();
 
   /// Start encoding all [files] sequentially.
   /// Each file uses its own [overrideSettings] if set, otherwise [globalSettings].
   Future<void> startBatchEncode({
     required List<VideoFile> files,
     required EncodeSettings globalSettings,
+    OutputDirectorySettings outputDirectory = const OutputDirectorySettings(),
   }) async {
     if (files.isEmpty) return;
     await _encodeSub?.cancel();
 
     _queue = List.of(files);
     _globalSettings = globalSettings;
+    _outputDirectory = outputDirectory;
     _cancelled = false;
 
     emitNormal(currentData.copyWith(
@@ -66,7 +72,10 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     _lastLoggedBucket = -1;
     final file = _queue[index];
     final settings = file.overrideSettings ?? _globalSettings;
-    final dir = p.dirname(file.path);
+    final dir = OutputPathResolver.resolveDir(
+      inputPath: file.path,
+      settings: _outputDirectory,
+    );
     final baseName = p.basenameWithoutExtension(file.path);
     final outName = FilenameTemplate.apply(
       settings.outputNameTemplate,
@@ -74,6 +83,12 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       creationDate: file.metadata?.creationDate,
     );
     final outputPath = p.join(dir, '$outName.${settings.outputExtension.value}');
+
+    try {
+      await Directory(dir).create(recursive: true);
+    } catch (e) {
+      appLogger.w('Failed to create output dir $dir: $e');
+    }
 
     emitNormal(currentData.copyWith(
       currentFilePath: file.path,
@@ -88,6 +103,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
           inputPath: file.path,
           settings: settings,
           totalDuration: file.metadata?.duration ?? Duration.zero,
+          outputDir: dir,
           creationDate: file.metadata?.creationDate,
         )
         .listen(

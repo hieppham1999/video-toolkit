@@ -184,6 +184,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get copySourceMetadata => 'Sao chép metadata từ video gốc';
 
   @override
+  String get webOptimized => 'Tối ưu cho web (MP4 faststart)';
+
+  @override
   String get turboFirstPass => 'Turbo lượt đầu';
 
   @override
@@ -474,4 +477,28 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get cliToolFormatJson => 'JSON';
+
+  @override
+  String get outputDirectory => 'Thư mục output';
+
+  @override
+  String get outputDirSameAsSource => 'Cùng thư mục với file gốc';
+
+  @override
+  String get outputDirCustom => 'Thư mục tuỳ chọn';
+
+  @override
+  String get outputDirSubfolder => 'Lưu vào thư mục con';
+
+  @override
+  String get outputDirSubfolderHint => 'Tên thư mục con';
+
+  @override
+  String get outputDirChooseFolder => 'Chọn thư mục…';
+
+  @override
+  String get outputDirPreview => 'Xem trước';
+
+  @override
+  String get outputDirCustomNotSet => 'Chưa chọn thư mục';
 }

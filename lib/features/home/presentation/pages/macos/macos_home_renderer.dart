@@ -153,6 +153,7 @@ class MacosHomeRenderer extends StatelessWidget {
                           child: AppVideoTableSection(
                             files: data.files,
                             globalSettings: data.encodeSettings,
+                            outputDirectory: data.outputDirectory,
                             selectedFilePath: data.selectedFile?.path,
                             encodeState: data.encodeState,
                             onSelect: data.onSelectVideo,

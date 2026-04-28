@@ -9,6 +9,8 @@ import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/core/utils/file_size_formatter.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
+import 'package:video_toolkit/features/video_encoding/domain/output_path_resolver.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/home/data/models/video_file.dart';
 import 'package:video_toolkit/widgets/app_column_resize_handle.dart';
@@ -23,6 +25,7 @@ class AppVideoTableSection extends StatefulWidget {
     super.key,
     required this.files,
     required this.globalSettings,
+    required this.outputDirectory,
     required this.selectedFilePath,
     required this.encodeState,
     required this.onSelect,
@@ -33,6 +36,7 @@ class AppVideoTableSection extends StatefulWidget {
 
   final List<VideoFile> files;
   final EncodeSettings globalSettings;
+  final OutputDirectorySettings outputDirectory;
   final String? selectedFilePath;
   final VideoEncodeState encodeState;
   final ValueChanged<String> onSelect;
@@ -282,7 +286,10 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       originalName: baseName,
       creationDate: file.metadata?.creationDate,
     );
-    final outputDir = p.dirname(file.path);
+    final outputDir = OutputPathResolver.resolveDir(
+      inputPath: file.path,
+      settings: widget.outputDirectory,
+    );
     final outputFileName =
         '$outName.${effectiveSettings.outputExtension.value}';
     final outputPath = p.join(outputDir, outputFileName);

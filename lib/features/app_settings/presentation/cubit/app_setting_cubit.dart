@@ -4,6 +4,7 @@ import 'package:video_toolkit/core/theme/app_accent.dart';
 import 'package:video_toolkit/core/theme/app_theme_mode.dart';
 import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/video_encoding/data/datasources/user_settings_datasource.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 import 'package:video_toolkit/app/base/base_cubit.dart';
 
 import 'app_setting_state.dart';
@@ -29,6 +30,7 @@ class AppSettingCubit extends BaseCubit<AppSettingState> {
           language: settings.language,
           themeMode: settings.themeMode,
           defaultFontPath: settings.defaultFontPath,
+          outputDirectory: settings.outputDirectory,
         ),
       );
     } catch (e) {
@@ -54,5 +56,10 @@ class AppSettingCubit extends BaseCubit<AppSettingState> {
   Future<void> setDefaultFont(String? path) async {
     emitNormal(currentData.copyWith(defaultFontPath: path));
     await _datasource.saveDefaultFontPath(path);
+  }
+
+  Future<void> setOutputDirectory(OutputDirectorySettings settings) async {
+    emitNormal(currentData.copyWith(outputDirectory: settings));
+    await _datasource.saveOutputDirectory(settings);
   }
 }

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppSettingState {
 
- AppAccent get accent; AppLanguage get language; AppThemeMode get themeMode; String? get defaultFontPath;
+ AppAccent get accent; AppLanguage get language; AppThemeMode get themeMode; String? get defaultFontPath; OutputDirectorySettings get outputDirectory;
 /// Create a copy of AppSettingState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $AppSettingStateCopyWith<AppSettingState> get copyWith => _$AppSettingStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettingState&&(identical(other.accent, accent) || other.accent == accent)&&(identical(other.language, language) || other.language == language)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.defaultFontPath, defaultFontPath) || other.defaultFontPath == defaultFontPath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettingState&&(identical(other.accent, accent) || other.accent == accent)&&(identical(other.language, language) || other.language == language)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.defaultFontPath, defaultFontPath) || other.defaultFontPath == defaultFontPath)&&(identical(other.outputDirectory, outputDirectory) || other.outputDirectory == outputDirectory));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,accent,language,themeMode,defaultFontPath);
+int get hashCode => Object.hash(runtimeType,accent,language,themeMode,defaultFontPath,outputDirectory);
 
 @override
 String toString() {
-  return 'AppSettingState(accent: $accent, language: $language, themeMode: $themeMode, defaultFontPath: $defaultFontPath)';
+  return 'AppSettingState(accent: $accent, language: $language, themeMode: $themeMode, defaultFontPath: $defaultFontPath, outputDirectory: $outputDirectory)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $AppSettingStateCopyWith<$Res>  {
   factory $AppSettingStateCopyWith(AppSettingState value, $Res Function(AppSettingState) _then) = _$AppSettingStateCopyWithImpl;
 @useResult
 $Res call({
- AppAccent accent, AppLanguage language, AppThemeMode themeMode, String? defaultFontPath
+ AppAccent accent, AppLanguage language, AppThemeMode themeMode, String? defaultFontPath, OutputDirectorySettings outputDirectory
 });
 
 
-
+$OutputDirectorySettingsCopyWith<$Res> get outputDirectory;
 
 }
 /// @nodoc
@@ -62,16 +62,26 @@ class _$AppSettingStateCopyWithImpl<$Res>
 
 /// Create a copy of AppSettingState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? accent = null,Object? language = null,Object? themeMode = null,Object? defaultFontPath = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? accent = null,Object? language = null,Object? themeMode = null,Object? defaultFontPath = freezed,Object? outputDirectory = null,}) {
   return _then(_self.copyWith(
 accent: null == accent ? _self.accent : accent // ignore: cast_nullable_to_non_nullable
 as AppAccent,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
 as AppLanguage,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
 as AppThemeMode,defaultFontPath: freezed == defaultFontPath ? _self.defaultFontPath : defaultFontPath // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,outputDirectory: null == outputDirectory ? _self.outputDirectory : outputDirectory // ignore: cast_nullable_to_non_nullable
+as OutputDirectorySettings,
   ));
 }
-
+/// Create a copy of AppSettingState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$OutputDirectorySettingsCopyWith<$Res> get outputDirectory {
+  
+  return $OutputDirectorySettingsCopyWith<$Res>(_self.outputDirectory, (value) {
+    return _then(_self.copyWith(outputDirectory: value));
+  });
+}
 }
 
 
@@ -153,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AppAccent accent,  AppLanguage language,  AppThemeMode themeMode,  String? defaultFontPath)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AppAccent accent,  AppLanguage language,  AppThemeMode themeMode,  String? defaultFontPath,  OutputDirectorySettings outputDirectory)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppSettingState() when $default != null:
-return $default(_that.accent,_that.language,_that.themeMode,_that.defaultFontPath);case _:
+return $default(_that.accent,_that.language,_that.themeMode,_that.defaultFontPath,_that.outputDirectory);case _:
   return orElse();
 
 }
@@ -174,10 +184,10 @@ return $default(_that.accent,_that.language,_that.themeMode,_that.defaultFontPat
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AppAccent accent,  AppLanguage language,  AppThemeMode themeMode,  String? defaultFontPath)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AppAccent accent,  AppLanguage language,  AppThemeMode themeMode,  String? defaultFontPath,  OutputDirectorySettings outputDirectory)  $default,) {final _that = this;
 switch (_that) {
 case _AppSettingState():
-return $default(_that.accent,_that.language,_that.themeMode,_that.defaultFontPath);case _:
+return $default(_that.accent,_that.language,_that.themeMode,_that.defaultFontPath,_that.outputDirectory);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +204,10 @@ return $default(_that.accent,_that.language,_that.themeMode,_that.defaultFontPat
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AppAccent accent,  AppLanguage language,  AppThemeMode themeMode,  String? defaultFontPath)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AppAccent accent,  AppLanguage language,  AppThemeMode themeMode,  String? defaultFontPath,  OutputDirectorySettings outputDirectory)?  $default,) {final _that = this;
 switch (_that) {
 case _AppSettingState() when $default != null:
-return $default(_that.accent,_that.language,_that.themeMode,_that.defaultFontPath);case _:
+return $default(_that.accent,_that.language,_that.themeMode,_that.defaultFontPath,_that.outputDirectory);case _:
   return null;
 
 }
@@ -209,13 +219,14 @@ return $default(_that.accent,_that.language,_that.themeMode,_that.defaultFontPat
 
 
 class _AppSettingState implements AppSettingState {
-  const _AppSettingState({this.accent = AppAccent.blue, this.language = AppLanguage.system, this.themeMode = AppThemeMode.system, this.defaultFontPath});
+  const _AppSettingState({this.accent = AppAccent.blue, this.language = AppLanguage.system, this.themeMode = AppThemeMode.system, this.defaultFontPath, this.outputDirectory = const OutputDirectorySettings()});
   
 
 @override@JsonKey() final  AppAccent accent;
 @override@JsonKey() final  AppLanguage language;
 @override@JsonKey() final  AppThemeMode themeMode;
 @override final  String? defaultFontPath;
+@override@JsonKey() final  OutputDirectorySettings outputDirectory;
 
 /// Create a copy of AppSettingState
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +238,16 @@ _$AppSettingStateCopyWith<_AppSettingState> get copyWith => __$AppSettingStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettingState&&(identical(other.accent, accent) || other.accent == accent)&&(identical(other.language, language) || other.language == language)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.defaultFontPath, defaultFontPath) || other.defaultFontPath == defaultFontPath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettingState&&(identical(other.accent, accent) || other.accent == accent)&&(identical(other.language, language) || other.language == language)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.defaultFontPath, defaultFontPath) || other.defaultFontPath == defaultFontPath)&&(identical(other.outputDirectory, outputDirectory) || other.outputDirectory == outputDirectory));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,accent,language,themeMode,defaultFontPath);
+int get hashCode => Object.hash(runtimeType,accent,language,themeMode,defaultFontPath,outputDirectory);
 
 @override
 String toString() {
-  return 'AppSettingState(accent: $accent, language: $language, themeMode: $themeMode, defaultFontPath: $defaultFontPath)';
+  return 'AppSettingState(accent: $accent, language: $language, themeMode: $themeMode, defaultFontPath: $defaultFontPath, outputDirectory: $outputDirectory)';
 }
 
 
@@ -247,11 +258,11 @@ abstract mixin class _$AppSettingStateCopyWith<$Res> implements $AppSettingState
   factory _$AppSettingStateCopyWith(_AppSettingState value, $Res Function(_AppSettingState) _then) = __$AppSettingStateCopyWithImpl;
 @override @useResult
 $Res call({
- AppAccent accent, AppLanguage language, AppThemeMode themeMode, String? defaultFontPath
+ AppAccent accent, AppLanguage language, AppThemeMode themeMode, String? defaultFontPath, OutputDirectorySettings outputDirectory
 });
 
 
-
+@override $OutputDirectorySettingsCopyWith<$Res> get outputDirectory;
 
 }
 /// @nodoc
@@ -264,17 +275,27 @@ class __$AppSettingStateCopyWithImpl<$Res>
 
 /// Create a copy of AppSettingState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? accent = null,Object? language = null,Object? themeMode = null,Object? defaultFontPath = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? accent = null,Object? language = null,Object? themeMode = null,Object? defaultFontPath = freezed,Object? outputDirectory = null,}) {
   return _then(_AppSettingState(
 accent: null == accent ? _self.accent : accent // ignore: cast_nullable_to_non_nullable
 as AppAccent,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
 as AppLanguage,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
 as AppThemeMode,defaultFontPath: freezed == defaultFontPath ? _self.defaultFontPath : defaultFontPath // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,outputDirectory: null == outputDirectory ? _self.outputDirectory : outputDirectory // ignore: cast_nullable_to_non_nullable
+as OutputDirectorySettings,
   ));
 }
 
-
+/// Create a copy of AppSettingState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$OutputDirectorySettingsCopyWith<$Res> get outputDirectory {
+  
+  return $OutputDirectorySettingsCopyWith<$Res>(_self.outputDirectory, (value) {
+    return _then(_self.copyWith(outputDirectory: value));
+  });
+}
 }
 
 // dart format on

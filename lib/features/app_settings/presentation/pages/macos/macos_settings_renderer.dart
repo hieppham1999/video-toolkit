@@ -9,6 +9,7 @@ import 'package:video_toolkit/widgets/app_accent_swatch.dart';
 import 'package:video_toolkit/widgets/app_button.dart';
 import 'package:video_toolkit/widgets/app_dialog_title_bar.dart';
 
+import '../../widgets/output_directory_section.dart';
 import '../settings_view_data.dart';
 
 class MacosSettingsRenderer extends StatelessWidget {
@@ -24,45 +25,69 @@ class MacosSettingsRenderer extends StatelessWidget {
       shrinkWrap: true,
       draggable: true,
       insetPadding: const EdgeInsets.symmetric(horizontal: 150, vertical: 80),
-      child: SizedBox(
-        width: 350,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height - 220,
+        ),
+        child: SizedBox(
+          width: 420,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _section(
-                context,
-                title: l10n.appearance,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _AccentRow(data: data),
-                    const SizedBox(height: 12),
-                    _ThemeModeDropdown(data: data),
-                  ],
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _section(
+                        context,
+                        title: l10n.appearance,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _AccentRow(data: data),
+                            const SizedBox(height: 12),
+                            _ThemeModeDropdown(data: data),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      _section(
+                        context,
+                        title: l10n.outputDirectory,
+                        child: AppOutputDirectorySection(
+                          value: data.outputDirectory,
+                          onChanged: data.onOutputDirectoryChanged,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      _section(
+                        context,
+                        title: l10n.language,
+                        child: _LanguageDropdown(data: data),
+                      ),
+                      const SizedBox(height: 20),
+                      _section(
+                        context,
+                        title: l10n.defaultFont,
+                        child: _DefaultFontDropdown(data: data),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
-              _section(
-                context,
-                title: l10n.language,
-                child: _LanguageDropdown(data: data),
-              ),
-              const SizedBox(height: 20),
-              _section(
-                context,
-                title: l10n.defaultFont,
-                child: _DefaultFontDropdown(data: data),
-              ),
-              const SizedBox(height: 24),
-              Align(
-                alignment: Alignment.centerRight,
-                child: AppButton(
-                  size: AppButtonSize.large,
-                  onPressed: data.onClose,
-                  child: Text(l10n.save),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: AppButton(
+                    size: AppButtonSize.large,
+                    onPressed: data.onClose,
+                    child: Text(l10n.save),
+                  ),
                 ),
               ),
             ],

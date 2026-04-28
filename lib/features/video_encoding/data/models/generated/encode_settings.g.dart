@@ -94,6 +94,7 @@ _EncodeSettings _$EncodeSettingsFromJson(Map<String, dynamic> json) =>
       turboFirstPass: json['turboFirstPass'] as bool? ?? false,
       extraParams: json['extraParams'] as String? ?? '',
       copySourceMetadata: json['copySourceMetadata'] as bool? ?? true,
+      webOptimized: json['webOptimized'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
@@ -115,6 +116,7 @@ Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
       'turboFirstPass': instance.turboFirstPass,
       'extraParams': instance.extraParams,
       'copySourceMetadata': instance.copySourceMetadata,
+      'webOptimized': instance.webOptimized,
     };
 
 const _$VideoEncoderEnumMap = {

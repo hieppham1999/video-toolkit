@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_toolkit/app/injection.dart';
+import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_cubit.dart';
+import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_state.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_state.dart';
@@ -29,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   final _encodeCubit = getIt<VideoEncodeCubit>();
   final _presetCubit = getIt<PresetCubit>();
   final _previewCubit = getIt<PreviewCubit>();
+  final _appSettingCubit = getIt<AppSettingCubit>();
 
   double _previewFraction = 0.6;
   static const _minFraction = 0.2;
@@ -94,6 +97,7 @@ class _HomePageState extends State<HomePage> {
     _encodeCubit.startBatchEncode(
       files: importState.files,
       globalSettings: importState.encodeSettings,
+      outputDirectory: _appSettingCubit.currentData.outputDirectory,
     );
   }
 
@@ -119,7 +123,10 @@ class _HomePageState extends State<HomePage> {
           builder: (context, encodeState) {
             final isEncoding = encodeState.status == EncodeStatus.encoding;
 
-            return CubitStateBuilder<PresetState>(
+            return CubitStateBuilder<AppSettingState>(
+              cubit: _appSettingCubit,
+              builder: (context, appSettingState) {
+                return CubitStateBuilder<PresetState>(
               cubit: _presetCubit,
               builder: (context, presetState) {
                 final selectedPreset = presetState.selectedId == null
@@ -136,6 +143,7 @@ class _HomePageState extends State<HomePage> {
                   previewFraction: _previewFraction,
                   selectedFile: selectedFile,
                   encodeSettings: importState.encodeSettings,
+                  outputDirectory: appSettingState.outputDirectory,
                   encodeState: encodeState,
                   currentPresetName: selectedPreset?.name,
                   isPresetModified: isPresetModified,
@@ -154,6 +162,8 @@ class _HomePageState extends State<HomePage> {
 
                 if (Platform.isWindows) return WindowsHomeRenderer(data: viewData);
                 return MacosHomeRenderer(data: viewData);
+              },
+            );
               },
             );
           },

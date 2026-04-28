@@ -3,6 +3,7 @@ import 'package:video_toolkit/core/i18n/app_language.dart';
 import 'package:video_toolkit/core/theme/app_accent.dart';
 import 'package:video_toolkit/core/theme/app_theme_mode.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 
 part 'generated/user_settings.freezed.dart';
 part 'generated/user_settings.g.dart';
@@ -22,6 +23,7 @@ abstract class UserSettings with _$UserSettings {
     @Default(AppAccent.blue) AppAccent accentColor,
     @Default(AppLanguage.system) AppLanguage language,
     @Default(AppThemeMode.system) AppThemeMode themeMode,
+    @Default(OutputDirectorySettings()) OutputDirectorySettings outputDirectory,
   }) = _UserSettings;
 
   factory UserSettings.fromJson(Map<String, dynamic> json) =>

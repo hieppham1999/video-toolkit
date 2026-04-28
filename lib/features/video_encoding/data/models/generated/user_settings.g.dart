@@ -22,6 +22,11 @@ _UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) =>
       themeMode:
           $enumDecodeNullable(_$AppThemeModeEnumMap, json['themeMode']) ??
           AppThemeMode.system,
+      outputDirectory: json['outputDirectory'] == null
+          ? const OutputDirectorySettings()
+          : OutputDirectorySettings.fromJson(
+              json['outputDirectory'] as Map<String, dynamic>,
+            ),
     );
 
 Map<String, dynamic> _$UserSettingsToJson(_UserSettings instance) =>
@@ -32,6 +37,7 @@ Map<String, dynamic> _$UserSettingsToJson(_UserSettings instance) =>
       'accentColor': _$AppAccentEnumMap[instance.accentColor]!,
       'language': _$AppLanguageEnumMap[instance.language]!,
       'themeMode': _$AppThemeModeEnumMap[instance.themeMode]!,
+      'outputDirectory': instance.outputDirectory,
     };
 
 const _$AppAccentEnumMap = {

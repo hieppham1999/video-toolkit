@@ -57,6 +57,7 @@
   "constantQuality": "Chất lượng cố định",
   "twoPassEncoding": "Mã hoá hai lượt",
   "copySourceMetadata": "Sao chép metadata từ video gốc",
+  "webOptimized": "Tối ưu cho web (MP4 faststart)",
   "turboFirstPass": "Turbo lượt đầu",
   "moreSettings": "Cấu hình thêm",
   "moreSettingsHintX265": "VD: keyint=60:bframes=3",
@@ -163,5 +164,13 @@
   "cliToolNoOutput": "Chưa có kết quả. Bấm Chạy để thực thi lệnh.",
   "cliToolCopied": "Đã sao chép",
   "cliToolFormatRaw": "Raw",
-  "cliToolFormatJson": "JSON"
+  "cliToolFormatJson": "JSON",
+  "outputDirectory": "Thư mục output",
+  "outputDirSameAsSource": "Cùng thư mục với file gốc",
+  "outputDirCustom": "Thư mục tuỳ chọn",
+  "outputDirSubfolder": "Lưu vào thư mục con",
+  "outputDirSubfolderHint": "Tên thư mục con",
+  "outputDirChooseFolder": "Chọn thư mục…",
+  "outputDirPreview": "Xem trước",
+  "outputDirCustomNotSet": "Chưa chọn thư mục"
 }

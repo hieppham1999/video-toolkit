@@ -57,6 +57,7 @@
   "constantQuality": "Constant quality",
   "twoPassEncoding": "Two-pass encoding",
   "copySourceMetadata": "Copy metadata from source",
+  "webOptimized": "Web Optimized (MP4 faststart)",
   "turboFirstPass": "Turbo first pass",
   "moreSettings": "More settings",
   "moreSettingsHintX265": "e.g. keyint=60:bframes=3",
@@ -163,5 +164,13 @@
   "cliToolNoOutput": "No output yet. Click Execute to run the command.",
   "cliToolCopied": "Copied",
   "cliToolFormatRaw": "Raw",
-  "cliToolFormatJson": "JSON"
+  "cliToolFormatJson": "JSON",
+  "outputDirectory": "Output directory",
+  "outputDirSameAsSource": "Same as source file",
+  "outputDirCustom": "Custom directory",
+  "outputDirSubfolder": "Save into sub-folder",
+  "outputDirSubfolderHint": "Sub-folder name",
+  "outputDirChooseFolder": "Choose folder…",
+  "outputDirPreview": "Preview",
+  "outputDirCustomNotSet": "No folder selected"
 }

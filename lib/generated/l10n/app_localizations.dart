@@ -446,6 +446,12 @@ abstract class AppLocalizations {
   /// **'Copy metadata from source'**
   String get copySourceMetadata;
 
+  /// No description provided for @webOptimized.
+  ///
+  /// In en, this message translates to:
+  /// **'Web Optimized (MP4 faststart)'**
+  String get webOptimized;
+
   /// No description provided for @turboFirstPass.
   ///
   /// In en, this message translates to:
@@ -1009,6 +1015,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'JSON'**
   String get cliToolFormatJson;
+
+  /// No description provided for @outputDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Output directory'**
+  String get outputDirectory;
+
+  /// No description provided for @outputDirSameAsSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as source file'**
+  String get outputDirSameAsSource;
+
+  /// No description provided for @outputDirCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom directory'**
+  String get outputDirCustom;
+
+  /// No description provided for @outputDirSubfolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Save into sub-folder'**
+  String get outputDirSubfolder;
+
+  /// No description provided for @outputDirSubfolderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-folder name'**
+  String get outputDirSubfolderHint;
+
+  /// No description provided for @outputDirChooseFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose folder…'**
+  String get outputDirChooseFolder;
+
+  /// No description provided for @outputDirPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get outputDirPreview;
+
+  /// No description provided for @outputDirCustomNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'No folder selected'**
+  String get outputDirCustomNotSet;
 }
 
 class _AppLocalizationsDelegate

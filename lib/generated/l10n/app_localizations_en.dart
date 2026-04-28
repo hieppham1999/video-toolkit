@@ -185,6 +185,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copySourceMetadata => 'Copy metadata from source';
 
   @override
+  String get webOptimized => 'Web Optimized (MP4 faststart)';
+
+  @override
   String get turboFirstPass => 'Turbo first pass';
 
   @override
@@ -476,4 +479,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cliToolFormatJson => 'JSON';
+
+  @override
+  String get outputDirectory => 'Output directory';
+
+  @override
+  String get outputDirSameAsSource => 'Same as source file';
+
+  @override
+  String get outputDirCustom => 'Custom directory';
+
+  @override
+  String get outputDirSubfolder => 'Save into sub-folder';
+
+  @override
+  String get outputDirSubfolderHint => 'Sub-folder name';
+
+  @override
+  String get outputDirChooseFolder => 'Choose folder…';
+
+  @override
+  String get outputDirPreview => 'Preview';
+
+  @override
+  String get outputDirCustomNotSet => 'No folder selected';
 }
