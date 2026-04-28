@@ -101,6 +101,7 @@ class ExiftoolDatasource {
   Future<bool> copyMetadata({
     required String sourcePath,
     required String targetPath,
+    VideoMetadata? metadata,
   }) async {
     if (!await isAvailable) {
       appLogger.w('exiftool not available, skip copyMetadata');
@@ -108,7 +109,11 @@ class ExiftoolDatasource {
     }
 
     final now = DateTime.now();
-    final nowStr = DateFormat("yyyy:MM:dd HH:mm:ssZZZZZ").format(now);
+
+    final dateFormatter = DateFormat("yyyy:MM:dd HH:mm:ssZZZZZ");
+
+    final nowStr = dateFormatter.format(now);
+    final creationDateStr = metadata?.creationDate != null ? dateFormatter.format(metadata!.creationDate!) : null;
 
     final args = [
       '-TagsFromFile',
@@ -117,6 +122,10 @@ class ExiftoolDatasource {
       '-MediaModifyDate=$nowStr',
       '-TrackModifyDate=$nowStr',
       '-ModifyDate=$nowStr',
+      if (creationDateStr != null) '-MediaCreateDate=$creationDateStr',
+      if (creationDateStr != null) '-TrackCreateDate=$creationDateStr',
+      if (creationDateStr != null) '-QuickTime:CreateDate=$creationDateStr',
+      if (metadata?.cameraModel != null) '-Model=${metadata!.cameraModel}',
       '-overwrite_original',
       targetPath,
     ];

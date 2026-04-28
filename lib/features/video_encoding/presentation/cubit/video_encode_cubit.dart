@@ -142,6 +142,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       await _exiftool.copyMetadata(
         sourcePath: file.path,
         targetPath: outputPath,
+        metadata: file.metadata,
       );
     }
 
