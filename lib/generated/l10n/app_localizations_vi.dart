@@ -265,6 +265,34 @@ class AppLocalizationsVi extends AppLocalizations {
   String get afterCrop => 'Sau khi crop';
 
   @override
+  String get rotation => 'Xoay';
+
+  @override
+  String get rotationNone => 'Không';
+
+  @override
+  String get rotation90Cw => '90° theo chiều kim đồng hồ';
+
+  @override
+  String get rotation180 => '180°';
+
+  @override
+  String get rotation90Ccw => '90° ngược chiều kim đồng hồ';
+
+  @override
+  String get displayRotateOnly => 'Chỉ xoay metadata hiển thị';
+
+  @override
+  String get displayRotateTooltip =>
+      'Chỉ ghi metadata xoay, không re-encode pixel. Nhanh hơn nhưng phụ thuộc trình phát và hoạt động tốt nhất với MP4/MOV.';
+
+  @override
+  String get flipHorizontal => 'Lật ngang';
+
+  @override
+  String get flipVertical => 'Lật dọc';
+
+  @override
   String get textOverlays => 'Lớp văn bản';
 
   @override

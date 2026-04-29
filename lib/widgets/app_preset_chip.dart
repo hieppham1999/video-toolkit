@@ -55,7 +55,7 @@ class _MacosPresetChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         alignment: Alignment.center,
         decoration: ShapeDecoration(
           shape: const StadiumBorder(),
@@ -64,7 +64,11 @@ class _MacosPresetChip extends StatelessWidget {
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: theme.typography.caption1.copyWith(color: fg, height: 1.0),
+          style: theme.typography.caption1.copyWith(
+            color: fg,
+            height: 1.0,
+            fontSize: 11,
+          ),
         ),
       ),
     );
@@ -92,7 +96,7 @@ class _FluentPresetChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         alignment: Alignment.center,
         decoration: ShapeDecoration(
           shape: const StadiumBorder(),
@@ -101,7 +105,11 @@ class _FluentPresetChip extends StatelessWidget {
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: theme.typography.caption?.copyWith(color: fg, height: 1.0),
+          style: theme.typography.caption?.copyWith(
+            color: fg,
+            height: 1.0,
+            fontSize: 11,
+          ),
         ),
       ),
     );

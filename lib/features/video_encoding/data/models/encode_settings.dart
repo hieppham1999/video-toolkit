@@ -207,6 +207,12 @@ abstract class EncodeSettings with _$EncodeSettings {
     /// Apple cameras. Null = fall back to the encoding machine's local TZ.
     String? sourceTimezoneOffset,
     @Default(true) bool webOptimized,
+    @Default(Rotation.none) Rotation rotation,
+    /// When true and [rotation] != none, write rotation as display metadata
+    /// only (no pixel re-encode). Best with MP4/MOV containers.
+    @Default(false) bool useDisplayRotation,
+    @Default(false) bool flipHorizontal,
+    @Default(false) bool flipVertical,
   }) = _EncodeSettings;
 
   factory EncodeSettings.fromJson(Map<String, dynamic> json) => _$EncodeSettingsFromJson(json);
@@ -237,6 +243,29 @@ abstract class EncodeSettings with _$EncodeSettings {
         final den = parts[1].trim();
         filters.insert(0, 'crop=min(iw\\,ih*$num/$den):min(ih\\,iw*$den/$num)');
       }
+    }
+
+    final transformFilters = <String>[];
+    if (!useDisplayRotation) {
+      switch (rotation) {
+        case Rotation.none:
+          break;
+        case Rotation.cw90:
+          transformFilters.add('transpose=1');
+          break;
+        case Rotation.ccw90:
+          transformFilters.add('transpose=2');
+          break;
+        case Rotation.deg180:
+          transformFilters.add('transpose=1');
+          transformFilters.add('transpose=1');
+          break;
+      }
+    }
+    if (flipHorizontal) transformFilters.add('hflip');
+    if (flipVertical) transformFilters.add('vflip');
+    for (var i = transformFilters.length - 1; i >= 0; i--) {
+      filters.insert(0, transformFilters[i]);
     }
 
     if (deinterlace.filter.isNotEmpty) {
@@ -292,6 +321,10 @@ abstract class EncodeSettings with _$EncodeSettings {
           (outputExtension == OutputExtension.mp4 ||
               outputExtension == OutputExtension.mov))
         ...['-movflags', '+faststart'],
+      if (pass != 1 &&
+          useDisplayRotation &&
+          rotation != Rotation.none)
+        ...['-metadata:s:v:0', 'rotate=${rotation.degrees}'],
       '-y',
       pass == 1 ? nullSink : outputPath,
     ];
@@ -397,6 +430,20 @@ enum Deinterlace {
   const Deinterlace(this.filter);
 
   final String filter;
+}
+
+/// Rotation applied to the video.
+/// Pixel-rotation maps to ffmpeg `transpose` filters; metadata-only rotation
+/// is emitted via `-metadata:s:v:0 rotate=<degrees>` in [EncodeSettings.buildArgs].
+enum Rotation {
+  none(0),
+  cw90(90),
+  deg180(180),
+  ccw90(270);
+
+  const Rotation(this.degrees);
+
+  final int degrees;
 }
 
 /// How the encoder picks a bitrate.

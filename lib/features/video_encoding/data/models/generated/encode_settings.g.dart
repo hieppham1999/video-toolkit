@@ -56,49 +56,52 @@ const _$TextOverlayPositionEnumMap = {
   TextOverlayPosition.center: 'center',
 };
 
-_EncodeSettings _$EncodeSettingsFromJson(Map<String, dynamic> json) =>
-    _EncodeSettings(
-      codec:
-          $enumDecodeNullable(_$VideoEncoderEnumMap, json['codec']) ??
-          VideoEncoder.h264,
-      preset:
-          $enumDecodeNullable(_$EncodePresetEnumMap, json['preset']) ??
-          EncodePreset.veryfast,
-      crf: (json['crf'] as num?)?.toInt() ?? 23,
-      outputExtension:
-          $enumDecodeNullable(
-            _$OutputExtensionEnumMap,
-            json['outputExtension'],
-          ) ??
-          OutputExtension.mp4,
-      resolution: json['resolution'] as String?,
-      audioCodec:
-          $enumDecodeNullable(_$AudioCodecEnumMap, json['audioCodec']) ??
-          AudioCodec.passthrough,
-      audioBitrate:
-          $enumDecodeNullable(_$AudioBitrateEnumMap, json['audioBitrate']) ??
-          AudioBitrate.k128,
-      textOverlays:
-          (json['textOverlays'] as List<dynamic>?)
-              ?.map((e) => TextOverlay.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
-      outputNameTemplate: json['outputNameTemplate'] as String? ?? '',
-      cropAspectRatio: json['cropAspectRatio'] as String?,
-      deinterlace:
-          $enumDecodeNullable(_$DeinterlaceEnumMap, json['deinterlace']) ??
-          Deinterlace.off,
-      qualityMode:
-          $enumDecodeNullable(_$QualityModeEnumMap, json['qualityMode']) ??
-          QualityMode.crf,
-      avgBitrateKbps: (json['avgBitrateKbps'] as num?)?.toInt() ?? 4000,
-      twoPass: json['twoPass'] as bool? ?? false,
-      turboFirstPass: json['turboFirstPass'] as bool? ?? false,
-      extraParams: json['extraParams'] as String? ?? '',
-      copySourceMetadata: json['copySourceMetadata'] as bool? ?? true,
-      sourceTimezoneOffset: json['sourceTimezoneOffset'] as String?,
-      webOptimized: json['webOptimized'] as bool? ?? true,
-    );
+_EncodeSettings _$EncodeSettingsFromJson(
+  Map<String, dynamic> json,
+) => _EncodeSettings(
+  codec:
+      $enumDecodeNullable(_$VideoEncoderEnumMap, json['codec']) ??
+      VideoEncoder.h264,
+  preset:
+      $enumDecodeNullable(_$EncodePresetEnumMap, json['preset']) ??
+      EncodePreset.veryfast,
+  crf: (json['crf'] as num?)?.toInt() ?? 23,
+  outputExtension:
+      $enumDecodeNullable(_$OutputExtensionEnumMap, json['outputExtension']) ??
+      OutputExtension.mp4,
+  resolution: json['resolution'] as String?,
+  audioCodec:
+      $enumDecodeNullable(_$AudioCodecEnumMap, json['audioCodec']) ??
+      AudioCodec.passthrough,
+  audioBitrate:
+      $enumDecodeNullable(_$AudioBitrateEnumMap, json['audioBitrate']) ??
+      AudioBitrate.k128,
+  textOverlays:
+      (json['textOverlays'] as List<dynamic>?)
+          ?.map((e) => TextOverlay.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  outputNameTemplate: json['outputNameTemplate'] as String? ?? '',
+  cropAspectRatio: json['cropAspectRatio'] as String?,
+  deinterlace:
+      $enumDecodeNullable(_$DeinterlaceEnumMap, json['deinterlace']) ??
+      Deinterlace.off,
+  qualityMode:
+      $enumDecodeNullable(_$QualityModeEnumMap, json['qualityMode']) ??
+      QualityMode.crf,
+  avgBitrateKbps: (json['avgBitrateKbps'] as num?)?.toInt() ?? 4000,
+  twoPass: json['twoPass'] as bool? ?? false,
+  turboFirstPass: json['turboFirstPass'] as bool? ?? false,
+  extraParams: json['extraParams'] as String? ?? '',
+  copySourceMetadata: json['copySourceMetadata'] as bool? ?? true,
+  sourceTimezoneOffset: json['sourceTimezoneOffset'] as String?,
+  webOptimized: json['webOptimized'] as bool? ?? true,
+  rotation:
+      $enumDecodeNullable(_$RotationEnumMap, json['rotation']) ?? Rotation.none,
+  useDisplayRotation: json['useDisplayRotation'] as bool? ?? false,
+  flipHorizontal: json['flipHorizontal'] as bool? ?? false,
+  flipVertical: json['flipVertical'] as bool? ?? false,
+);
 
 Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
     <String, dynamic>{
@@ -121,6 +124,10 @@ Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
       'copySourceMetadata': instance.copySourceMetadata,
       'sourceTimezoneOffset': instance.sourceTimezoneOffset,
       'webOptimized': instance.webOptimized,
+      'rotation': _$RotationEnumMap[instance.rotation]!,
+      'useDisplayRotation': instance.useDisplayRotation,
+      'flipHorizontal': instance.flipHorizontal,
+      'flipVertical': instance.flipVertical,
     };
 
 const _$VideoEncoderEnumMap = {
@@ -173,4 +180,11 @@ const _$DeinterlaceEnumMap = {
 const _$QualityModeEnumMap = {
   QualityMode.crf: 'crf',
   QualityMode.avgBitrate: 'avgBitrate',
+};
+
+const _$RotationEnumMap = {
+  Rotation.none: 'none',
+  Rotation.cw90: 'cw90',
+  Rotation.deg180: 'deg180',
+  Rotation.ccw90: 'ccw90',
 };

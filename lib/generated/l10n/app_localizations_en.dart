@@ -266,6 +266,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get afterCrop => 'After crop';
 
   @override
+  String get rotation => 'Rotation';
+
+  @override
+  String get rotationNone => 'None';
+
+  @override
+  String get rotation90Cw => '90° clockwise';
+
+  @override
+  String get rotation180 => '180°';
+
+  @override
+  String get rotation90Ccw => '90° counter-clockwise';
+
+  @override
+  String get displayRotateOnly => 'Display rotate only';
+
+  @override
+  String get displayRotateTooltip =>
+      'Only writes rotation metadata; pixels are not re-encoded. Faster, but depends on player support and works best with MP4/MOV.';
+
+  @override
+  String get flipHorizontal => 'Flip horizontally';
+
+  @override
+  String get flipVertical => 'Flip vertically';
+
+  @override
   String get textOverlays => 'Text Overlays';
 
   @override

@@ -193,7 +193,16 @@ class WindowsHomeRenderer extends StatelessWidget {
     EncodeSettings globalSettings,
     void Function(String path, EncodeSettings? settings) onUpdate,
   ) {
-    final effective = file.overrideSettings ?? globalSettings;
+    final base = file.overrideSettings ?? globalSettings;
+    final w = file.metadata?.width;
+    final h = file.metadata?.height;
+    final effective = (base.resolution == null &&
+            w != null &&
+            h != null &&
+            w > 0 &&
+            h > 0)
+        ? base.copyWith(resolution: '$w:$h')
+        : base;
     showDialog<void>(
       context: context,
       builder: (_) => WindowsEncodeSettingsDialog(

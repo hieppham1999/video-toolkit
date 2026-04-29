@@ -63,6 +63,10 @@ class EncodeSettingsController extends ChangeNotifier {
   String resHeight = '';
   String aspectNum = '';
   String aspectDen = '';
+  late Rotation rotation;
+  late bool useDisplayRotation;
+  late bool flipHorizontal;
+  late bool flipVertical;
 
   // UI state
   int selectedTab = 0;
@@ -87,6 +91,10 @@ class EncodeSettingsController extends ChangeNotifier {
     copySourceMetadata = s.copySourceMetadata;
     sourceTimezoneOffset = s.sourceTimezoneOffset;
     webOptimized = s.webOptimized;
+    rotation = s.rotation;
+    useDisplayRotation = s.useDisplayRotation;
+    flipHorizontal = s.flipHorizontal;
+    flipVertical = s.flipVertical;
 
     resWidth = '';
     resHeight = '';
@@ -131,6 +139,10 @@ class EncodeSettingsController extends ChangeNotifier {
       copySourceMetadata: copySourceMetadata,
       sourceTimezoneOffset: sourceTimezoneOffset,
       webOptimized: webOptimized,
+      rotation: rotation,
+      useDisplayRotation: useDisplayRotation,
+      flipHorizontal: flipHorizontal,
+      flipVertical: flipVertical,
     );
   }
 
@@ -189,10 +201,38 @@ class EncodeSettingsController extends ChangeNotifier {
     _syncResolutionFromAspect();
     notifyListeners();
   }
+  void swapResolution() {
+    final tmp = resWidth;
+    resWidth = resHeight;
+    resHeight = tmp;
+    _syncAspectFromResolution();
+    notifyListeners();
+  }
+
   void clearAspect() {
     aspectNum = '';
     aspectDen = '';
     notifyListeners();
+  }
+
+  void setRotation(Rotation v) {
+    rotation = v;
+    if (v == Rotation.none) useDisplayRotation = false;
+    notifyListeners();
+  }
+  void setUseDisplayRotation(bool v) { useDisplayRotation = v; notifyListeners(); }
+  void setFlipHorizontal(bool v) { flipHorizontal = v; notifyListeners(); }
+  void setFlipVertical(bool v) { flipVertical = v; notifyListeners(); }
+
+  /// Localized label for a [Rotation] enum value.
+  static String rotationLabel(Rotation r) {
+    final l10n = Languages.translate;
+    return switch (r) {
+      Rotation.none => l10n.rotationNone,
+      Rotation.cw90 => l10n.rotation90Cw,
+      Rotation.deg180 => l10n.rotation180,
+      Rotation.ccw90 => l10n.rotation90Ccw,
+    };
   }
 
   int _gcd(int a, int b) => b == 0 ? a : _gcd(b, a % b);

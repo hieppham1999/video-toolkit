@@ -332,7 +332,9 @@ mixin _$EncodeSettings {
  String get extraParams; bool get copySourceMetadata;/// Override for the source video's timezone offset (e.g. "+07:00"). Used
 /// when the source MP4 doesn't carry an offset itself — typical for non-
 /// Apple cameras. Null = fall back to the encoding machine's local TZ.
- String? get sourceTimezoneOffset; bool get webOptimized;
+ String? get sourceTimezoneOffset; bool get webOptimized; Rotation get rotation;/// When true and [rotation] != none, write rotation as display metadata
+/// only (no pixel re-encode). Best with MP4/MOV containers.
+ bool get useDisplayRotation; bool get flipHorizontal; bool get flipVertical;
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -345,16 +347,16 @@ $EncodeSettingsCopyWith<EncodeSettings> get copyWith => _$EncodeSettingsCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EncodeSettings&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.preset, preset) || other.preset == preset)&&(identical(other.crf, crf) || other.crf == crf)&&(identical(other.outputExtension, outputExtension) || other.outputExtension == outputExtension)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.audioBitrate, audioBitrate) || other.audioBitrate == audioBitrate)&&const DeepCollectionEquality().equals(other.textOverlays, textOverlays)&&(identical(other.outputNameTemplate, outputNameTemplate) || other.outputNameTemplate == outputNameTemplate)&&(identical(other.cropAspectRatio, cropAspectRatio) || other.cropAspectRatio == cropAspectRatio)&&(identical(other.deinterlace, deinterlace) || other.deinterlace == deinterlace)&&(identical(other.qualityMode, qualityMode) || other.qualityMode == qualityMode)&&(identical(other.avgBitrateKbps, avgBitrateKbps) || other.avgBitrateKbps == avgBitrateKbps)&&(identical(other.twoPass, twoPass) || other.twoPass == twoPass)&&(identical(other.turboFirstPass, turboFirstPass) || other.turboFirstPass == turboFirstPass)&&(identical(other.extraParams, extraParams) || other.extraParams == extraParams)&&(identical(other.copySourceMetadata, copySourceMetadata) || other.copySourceMetadata == copySourceMetadata)&&(identical(other.sourceTimezoneOffset, sourceTimezoneOffset) || other.sourceTimezoneOffset == sourceTimezoneOffset)&&(identical(other.webOptimized, webOptimized) || other.webOptimized == webOptimized));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EncodeSettings&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.preset, preset) || other.preset == preset)&&(identical(other.crf, crf) || other.crf == crf)&&(identical(other.outputExtension, outputExtension) || other.outputExtension == outputExtension)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.audioBitrate, audioBitrate) || other.audioBitrate == audioBitrate)&&const DeepCollectionEquality().equals(other.textOverlays, textOverlays)&&(identical(other.outputNameTemplate, outputNameTemplate) || other.outputNameTemplate == outputNameTemplate)&&(identical(other.cropAspectRatio, cropAspectRatio) || other.cropAspectRatio == cropAspectRatio)&&(identical(other.deinterlace, deinterlace) || other.deinterlace == deinterlace)&&(identical(other.qualityMode, qualityMode) || other.qualityMode == qualityMode)&&(identical(other.avgBitrateKbps, avgBitrateKbps) || other.avgBitrateKbps == avgBitrateKbps)&&(identical(other.twoPass, twoPass) || other.twoPass == twoPass)&&(identical(other.turboFirstPass, turboFirstPass) || other.turboFirstPass == turboFirstPass)&&(identical(other.extraParams, extraParams) || other.extraParams == extraParams)&&(identical(other.copySourceMetadata, copySourceMetadata) || other.copySourceMetadata == copySourceMetadata)&&(identical(other.sourceTimezoneOffset, sourceTimezoneOffset) || other.sourceTimezoneOffset == sourceTimezoneOffset)&&(identical(other.webOptimized, webOptimized) || other.webOptimized == webOptimized)&&(identical(other.rotation, rotation) || other.rotation == rotation)&&(identical(other.useDisplayRotation, useDisplayRotation) || other.useDisplayRotation == useDisplayRotation)&&(identical(other.flipHorizontal, flipHorizontal) || other.flipHorizontal == flipHorizontal)&&(identical(other.flipVertical, flipVertical) || other.flipVertical == flipVertical));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,codec,preset,crf,outputExtension,resolution,audioCodec,audioBitrate,const DeepCollectionEquality().hash(textOverlays),outputNameTemplate,cropAspectRatio,deinterlace,qualityMode,avgBitrateKbps,twoPass,turboFirstPass,extraParams,copySourceMetadata,sourceTimezoneOffset,webOptimized]);
+int get hashCode => Object.hashAll([runtimeType,codec,preset,crf,outputExtension,resolution,audioCodec,audioBitrate,const DeepCollectionEquality().hash(textOverlays),outputNameTemplate,cropAspectRatio,deinterlace,qualityMode,avgBitrateKbps,twoPass,turboFirstPass,extraParams,copySourceMetadata,sourceTimezoneOffset,webOptimized,rotation,useDisplayRotation,flipHorizontal,flipVertical]);
 
 @override
 String toString() {
-  return 'EncodeSettings(codec: $codec, preset: $preset, crf: $crf, outputExtension: $outputExtension, resolution: $resolution, audioCodec: $audioCodec, audioBitrate: $audioBitrate, textOverlays: $textOverlays, outputNameTemplate: $outputNameTemplate, cropAspectRatio: $cropAspectRatio, deinterlace: $deinterlace, qualityMode: $qualityMode, avgBitrateKbps: $avgBitrateKbps, twoPass: $twoPass, turboFirstPass: $turboFirstPass, extraParams: $extraParams, copySourceMetadata: $copySourceMetadata, sourceTimezoneOffset: $sourceTimezoneOffset, webOptimized: $webOptimized)';
+  return 'EncodeSettings(codec: $codec, preset: $preset, crf: $crf, outputExtension: $outputExtension, resolution: $resolution, audioCodec: $audioCodec, audioBitrate: $audioBitrate, textOverlays: $textOverlays, outputNameTemplate: $outputNameTemplate, cropAspectRatio: $cropAspectRatio, deinterlace: $deinterlace, qualityMode: $qualityMode, avgBitrateKbps: $avgBitrateKbps, twoPass: $twoPass, turboFirstPass: $turboFirstPass, extraParams: $extraParams, copySourceMetadata: $copySourceMetadata, sourceTimezoneOffset: $sourceTimezoneOffset, webOptimized: $webOptimized, rotation: $rotation, useDisplayRotation: $useDisplayRotation, flipHorizontal: $flipHorizontal, flipVertical: $flipVertical)';
 }
 
 
@@ -365,7 +367,7 @@ abstract mixin class $EncodeSettingsCopyWith<$Res>  {
   factory $EncodeSettingsCopyWith(EncodeSettings value, $Res Function(EncodeSettings) _then) = _$EncodeSettingsCopyWithImpl;
 @useResult
 $Res call({
- VideoEncoder codec, EncodePreset preset, int crf, OutputExtension outputExtension, String? resolution, AudioCodec audioCodec, AudioBitrate audioBitrate, List<TextOverlay> textOverlays, String outputNameTemplate, String? cropAspectRatio, Deinterlace deinterlace, QualityMode qualityMode, int avgBitrateKbps, bool twoPass, bool turboFirstPass, String extraParams, bool copySourceMetadata, String? sourceTimezoneOffset, bool webOptimized
+ VideoEncoder codec, EncodePreset preset, int crf, OutputExtension outputExtension, String? resolution, AudioCodec audioCodec, AudioBitrate audioBitrate, List<TextOverlay> textOverlays, String outputNameTemplate, String? cropAspectRatio, Deinterlace deinterlace, QualityMode qualityMode, int avgBitrateKbps, bool twoPass, bool turboFirstPass, String extraParams, bool copySourceMetadata, String? sourceTimezoneOffset, bool webOptimized, Rotation rotation, bool useDisplayRotation, bool flipHorizontal, bool flipVertical
 });
 
 
@@ -382,7 +384,7 @@ class _$EncodeSettingsCopyWithImpl<$Res>
 
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? codec = null,Object? preset = null,Object? crf = null,Object? outputExtension = null,Object? resolution = freezed,Object? audioCodec = null,Object? audioBitrate = null,Object? textOverlays = null,Object? outputNameTemplate = null,Object? cropAspectRatio = freezed,Object? deinterlace = null,Object? qualityMode = null,Object? avgBitrateKbps = null,Object? twoPass = null,Object? turboFirstPass = null,Object? extraParams = null,Object? copySourceMetadata = null,Object? sourceTimezoneOffset = freezed,Object? webOptimized = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? codec = null,Object? preset = null,Object? crf = null,Object? outputExtension = null,Object? resolution = freezed,Object? audioCodec = null,Object? audioBitrate = null,Object? textOverlays = null,Object? outputNameTemplate = null,Object? cropAspectRatio = freezed,Object? deinterlace = null,Object? qualityMode = null,Object? avgBitrateKbps = null,Object? twoPass = null,Object? turboFirstPass = null,Object? extraParams = null,Object? copySourceMetadata = null,Object? sourceTimezoneOffset = freezed,Object? webOptimized = null,Object? rotation = null,Object? useDisplayRotation = null,Object? flipHorizontal = null,Object? flipVertical = null,}) {
   return _then(_self.copyWith(
 codec: null == codec ? _self.codec : codec // ignore: cast_nullable_to_non_nullable
 as VideoEncoder,preset: null == preset ? _self.preset : preset // ignore: cast_nullable_to_non_nullable
@@ -403,6 +405,10 @@ as bool,extraParams: null == extraParams ? _self.extraParams : extraParams // ig
 as String,copySourceMetadata: null == copySourceMetadata ? _self.copySourceMetadata : copySourceMetadata // ignore: cast_nullable_to_non_nullable
 as bool,sourceTimezoneOffset: freezed == sourceTimezoneOffset ? _self.sourceTimezoneOffset : sourceTimezoneOffset // ignore: cast_nullable_to_non_nullable
 as String?,webOptimized: null == webOptimized ? _self.webOptimized : webOptimized // ignore: cast_nullable_to_non_nullable
+as bool,rotation: null == rotation ? _self.rotation : rotation // ignore: cast_nullable_to_non_nullable
+as Rotation,useDisplayRotation: null == useDisplayRotation ? _self.useDisplayRotation : useDisplayRotation // ignore: cast_nullable_to_non_nullable
+as bool,flipHorizontal: null == flipHorizontal ? _self.flipHorizontal : flipHorizontal // ignore: cast_nullable_to_non_nullable
+as bool,flipVertical: null == flipVertical ? _self.flipVertical : flipVertical // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -488,10 +494,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio,  Deinterlace deinterlace,  QualityMode qualityMode,  int avgBitrateKbps,  bool twoPass,  bool turboFirstPass,  String extraParams,  bool copySourceMetadata,  String? sourceTimezoneOffset,  bool webOptimized)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio,  Deinterlace deinterlace,  QualityMode qualityMode,  int avgBitrateKbps,  bool twoPass,  bool turboFirstPass,  String extraParams,  bool copySourceMetadata,  String? sourceTimezoneOffset,  bool webOptimized,  Rotation rotation,  bool useDisplayRotation,  bool flipHorizontal,  bool flipVertical)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EncodeSettings() when $default != null:
-return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio,_that.deinterlace,_that.qualityMode,_that.avgBitrateKbps,_that.twoPass,_that.turboFirstPass,_that.extraParams,_that.copySourceMetadata,_that.sourceTimezoneOffset,_that.webOptimized);case _:
+return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio,_that.deinterlace,_that.qualityMode,_that.avgBitrateKbps,_that.twoPass,_that.turboFirstPass,_that.extraParams,_that.copySourceMetadata,_that.sourceTimezoneOffset,_that.webOptimized,_that.rotation,_that.useDisplayRotation,_that.flipHorizontal,_that.flipVertical);case _:
   return orElse();
 
 }
@@ -509,10 +515,10 @@ return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.r
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio,  Deinterlace deinterlace,  QualityMode qualityMode,  int avgBitrateKbps,  bool twoPass,  bool turboFirstPass,  String extraParams,  bool copySourceMetadata,  String? sourceTimezoneOffset,  bool webOptimized)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio,  Deinterlace deinterlace,  QualityMode qualityMode,  int avgBitrateKbps,  bool twoPass,  bool turboFirstPass,  String extraParams,  bool copySourceMetadata,  String? sourceTimezoneOffset,  bool webOptimized,  Rotation rotation,  bool useDisplayRotation,  bool flipHorizontal,  bool flipVertical)  $default,) {final _that = this;
 switch (_that) {
 case _EncodeSettings():
-return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio,_that.deinterlace,_that.qualityMode,_that.avgBitrateKbps,_that.twoPass,_that.turboFirstPass,_that.extraParams,_that.copySourceMetadata,_that.sourceTimezoneOffset,_that.webOptimized);case _:
+return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio,_that.deinterlace,_that.qualityMode,_that.avgBitrateKbps,_that.twoPass,_that.turboFirstPass,_that.extraParams,_that.copySourceMetadata,_that.sourceTimezoneOffset,_that.webOptimized,_that.rotation,_that.useDisplayRotation,_that.flipHorizontal,_that.flipVertical);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -529,10 +535,10 @@ return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.r
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio,  Deinterlace deinterlace,  QualityMode qualityMode,  int avgBitrateKbps,  bool twoPass,  bool turboFirstPass,  String extraParams,  bool copySourceMetadata,  String? sourceTimezoneOffset,  bool webOptimized)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( VideoEncoder codec,  EncodePreset preset,  int crf,  OutputExtension outputExtension,  String? resolution,  AudioCodec audioCodec,  AudioBitrate audioBitrate,  List<TextOverlay> textOverlays,  String outputNameTemplate,  String? cropAspectRatio,  Deinterlace deinterlace,  QualityMode qualityMode,  int avgBitrateKbps,  bool twoPass,  bool turboFirstPass,  String extraParams,  bool copySourceMetadata,  String? sourceTimezoneOffset,  bool webOptimized,  Rotation rotation,  bool useDisplayRotation,  bool flipHorizontal,  bool flipVertical)?  $default,) {final _that = this;
 switch (_that) {
 case _EncodeSettings() when $default != null:
-return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio,_that.deinterlace,_that.qualityMode,_that.avgBitrateKbps,_that.twoPass,_that.turboFirstPass,_that.extraParams,_that.copySourceMetadata,_that.sourceTimezoneOffset,_that.webOptimized);case _:
+return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.resolution,_that.audioCodec,_that.audioBitrate,_that.textOverlays,_that.outputNameTemplate,_that.cropAspectRatio,_that.deinterlace,_that.qualityMode,_that.avgBitrateKbps,_that.twoPass,_that.turboFirstPass,_that.extraParams,_that.copySourceMetadata,_that.sourceTimezoneOffset,_that.webOptimized,_that.rotation,_that.useDisplayRotation,_that.flipHorizontal,_that.flipVertical);case _:
   return null;
 
 }
@@ -544,7 +550,7 @@ return $default(_that.codec,_that.preset,_that.crf,_that.outputExtension,_that.r
 @JsonSerializable()
 
 class _EncodeSettings extends EncodeSettings {
-  const _EncodeSettings({this.codec = VideoEncoder.h264, this.preset = EncodePreset.veryfast, this.crf = 23, this.outputExtension = OutputExtension.mp4, this.resolution, this.audioCodec = AudioCodec.passthrough, this.audioBitrate = AudioBitrate.k128, final  List<TextOverlay> textOverlays = const [], this.outputNameTemplate = '', this.cropAspectRatio, this.deinterlace = Deinterlace.off, this.qualityMode = QualityMode.crf, this.avgBitrateKbps = 4000, this.twoPass = false, this.turboFirstPass = false, this.extraParams = '', this.copySourceMetadata = true, this.sourceTimezoneOffset, this.webOptimized = true}): _textOverlays = textOverlays,super._();
+  const _EncodeSettings({this.codec = VideoEncoder.h264, this.preset = EncodePreset.veryfast, this.crf = 23, this.outputExtension = OutputExtension.mp4, this.resolution, this.audioCodec = AudioCodec.passthrough, this.audioBitrate = AudioBitrate.k128, final  List<TextOverlay> textOverlays = const [], this.outputNameTemplate = '', this.cropAspectRatio, this.deinterlace = Deinterlace.off, this.qualityMode = QualityMode.crf, this.avgBitrateKbps = 4000, this.twoPass = false, this.turboFirstPass = false, this.extraParams = '', this.copySourceMetadata = true, this.sourceTimezoneOffset, this.webOptimized = true, this.rotation = Rotation.none, this.useDisplayRotation = false, this.flipHorizontal = false, this.flipVertical = false}): _textOverlays = textOverlays,super._();
   factory _EncodeSettings.fromJson(Map<String, dynamic> json) => _$EncodeSettingsFromJson(json);
 
 @override@JsonKey() final  VideoEncoder codec;
@@ -582,6 +588,12 @@ class _EncodeSettings extends EncodeSettings {
 /// Apple cameras. Null = fall back to the encoding machine's local TZ.
 @override final  String? sourceTimezoneOffset;
 @override@JsonKey() final  bool webOptimized;
+@override@JsonKey() final  Rotation rotation;
+/// When true and [rotation] != none, write rotation as display metadata
+/// only (no pixel re-encode). Best with MP4/MOV containers.
+@override@JsonKey() final  bool useDisplayRotation;
+@override@JsonKey() final  bool flipHorizontal;
+@override@JsonKey() final  bool flipVertical;
 
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -596,16 +608,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EncodeSettings&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.preset, preset) || other.preset == preset)&&(identical(other.crf, crf) || other.crf == crf)&&(identical(other.outputExtension, outputExtension) || other.outputExtension == outputExtension)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.audioBitrate, audioBitrate) || other.audioBitrate == audioBitrate)&&const DeepCollectionEquality().equals(other._textOverlays, _textOverlays)&&(identical(other.outputNameTemplate, outputNameTemplate) || other.outputNameTemplate == outputNameTemplate)&&(identical(other.cropAspectRatio, cropAspectRatio) || other.cropAspectRatio == cropAspectRatio)&&(identical(other.deinterlace, deinterlace) || other.deinterlace == deinterlace)&&(identical(other.qualityMode, qualityMode) || other.qualityMode == qualityMode)&&(identical(other.avgBitrateKbps, avgBitrateKbps) || other.avgBitrateKbps == avgBitrateKbps)&&(identical(other.twoPass, twoPass) || other.twoPass == twoPass)&&(identical(other.turboFirstPass, turboFirstPass) || other.turboFirstPass == turboFirstPass)&&(identical(other.extraParams, extraParams) || other.extraParams == extraParams)&&(identical(other.copySourceMetadata, copySourceMetadata) || other.copySourceMetadata == copySourceMetadata)&&(identical(other.sourceTimezoneOffset, sourceTimezoneOffset) || other.sourceTimezoneOffset == sourceTimezoneOffset)&&(identical(other.webOptimized, webOptimized) || other.webOptimized == webOptimized));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EncodeSettings&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.preset, preset) || other.preset == preset)&&(identical(other.crf, crf) || other.crf == crf)&&(identical(other.outputExtension, outputExtension) || other.outputExtension == outputExtension)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.audioBitrate, audioBitrate) || other.audioBitrate == audioBitrate)&&const DeepCollectionEquality().equals(other._textOverlays, _textOverlays)&&(identical(other.outputNameTemplate, outputNameTemplate) || other.outputNameTemplate == outputNameTemplate)&&(identical(other.cropAspectRatio, cropAspectRatio) || other.cropAspectRatio == cropAspectRatio)&&(identical(other.deinterlace, deinterlace) || other.deinterlace == deinterlace)&&(identical(other.qualityMode, qualityMode) || other.qualityMode == qualityMode)&&(identical(other.avgBitrateKbps, avgBitrateKbps) || other.avgBitrateKbps == avgBitrateKbps)&&(identical(other.twoPass, twoPass) || other.twoPass == twoPass)&&(identical(other.turboFirstPass, turboFirstPass) || other.turboFirstPass == turboFirstPass)&&(identical(other.extraParams, extraParams) || other.extraParams == extraParams)&&(identical(other.copySourceMetadata, copySourceMetadata) || other.copySourceMetadata == copySourceMetadata)&&(identical(other.sourceTimezoneOffset, sourceTimezoneOffset) || other.sourceTimezoneOffset == sourceTimezoneOffset)&&(identical(other.webOptimized, webOptimized) || other.webOptimized == webOptimized)&&(identical(other.rotation, rotation) || other.rotation == rotation)&&(identical(other.useDisplayRotation, useDisplayRotation) || other.useDisplayRotation == useDisplayRotation)&&(identical(other.flipHorizontal, flipHorizontal) || other.flipHorizontal == flipHorizontal)&&(identical(other.flipVertical, flipVertical) || other.flipVertical == flipVertical));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,codec,preset,crf,outputExtension,resolution,audioCodec,audioBitrate,const DeepCollectionEquality().hash(_textOverlays),outputNameTemplate,cropAspectRatio,deinterlace,qualityMode,avgBitrateKbps,twoPass,turboFirstPass,extraParams,copySourceMetadata,sourceTimezoneOffset,webOptimized]);
+int get hashCode => Object.hashAll([runtimeType,codec,preset,crf,outputExtension,resolution,audioCodec,audioBitrate,const DeepCollectionEquality().hash(_textOverlays),outputNameTemplate,cropAspectRatio,deinterlace,qualityMode,avgBitrateKbps,twoPass,turboFirstPass,extraParams,copySourceMetadata,sourceTimezoneOffset,webOptimized,rotation,useDisplayRotation,flipHorizontal,flipVertical]);
 
 @override
 String toString() {
-  return 'EncodeSettings(codec: $codec, preset: $preset, crf: $crf, outputExtension: $outputExtension, resolution: $resolution, audioCodec: $audioCodec, audioBitrate: $audioBitrate, textOverlays: $textOverlays, outputNameTemplate: $outputNameTemplate, cropAspectRatio: $cropAspectRatio, deinterlace: $deinterlace, qualityMode: $qualityMode, avgBitrateKbps: $avgBitrateKbps, twoPass: $twoPass, turboFirstPass: $turboFirstPass, extraParams: $extraParams, copySourceMetadata: $copySourceMetadata, sourceTimezoneOffset: $sourceTimezoneOffset, webOptimized: $webOptimized)';
+  return 'EncodeSettings(codec: $codec, preset: $preset, crf: $crf, outputExtension: $outputExtension, resolution: $resolution, audioCodec: $audioCodec, audioBitrate: $audioBitrate, textOverlays: $textOverlays, outputNameTemplate: $outputNameTemplate, cropAspectRatio: $cropAspectRatio, deinterlace: $deinterlace, qualityMode: $qualityMode, avgBitrateKbps: $avgBitrateKbps, twoPass: $twoPass, turboFirstPass: $turboFirstPass, extraParams: $extraParams, copySourceMetadata: $copySourceMetadata, sourceTimezoneOffset: $sourceTimezoneOffset, webOptimized: $webOptimized, rotation: $rotation, useDisplayRotation: $useDisplayRotation, flipHorizontal: $flipHorizontal, flipVertical: $flipVertical)';
 }
 
 
@@ -616,7 +628,7 @@ abstract mixin class _$EncodeSettingsCopyWith<$Res> implements $EncodeSettingsCo
   factory _$EncodeSettingsCopyWith(_EncodeSettings value, $Res Function(_EncodeSettings) _then) = __$EncodeSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- VideoEncoder codec, EncodePreset preset, int crf, OutputExtension outputExtension, String? resolution, AudioCodec audioCodec, AudioBitrate audioBitrate, List<TextOverlay> textOverlays, String outputNameTemplate, String? cropAspectRatio, Deinterlace deinterlace, QualityMode qualityMode, int avgBitrateKbps, bool twoPass, bool turboFirstPass, String extraParams, bool copySourceMetadata, String? sourceTimezoneOffset, bool webOptimized
+ VideoEncoder codec, EncodePreset preset, int crf, OutputExtension outputExtension, String? resolution, AudioCodec audioCodec, AudioBitrate audioBitrate, List<TextOverlay> textOverlays, String outputNameTemplate, String? cropAspectRatio, Deinterlace deinterlace, QualityMode qualityMode, int avgBitrateKbps, bool twoPass, bool turboFirstPass, String extraParams, bool copySourceMetadata, String? sourceTimezoneOffset, bool webOptimized, Rotation rotation, bool useDisplayRotation, bool flipHorizontal, bool flipVertical
 });
 
 
@@ -633,7 +645,7 @@ class __$EncodeSettingsCopyWithImpl<$Res>
 
 /// Create a copy of EncodeSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? codec = null,Object? preset = null,Object? crf = null,Object? outputExtension = null,Object? resolution = freezed,Object? audioCodec = null,Object? audioBitrate = null,Object? textOverlays = null,Object? outputNameTemplate = null,Object? cropAspectRatio = freezed,Object? deinterlace = null,Object? qualityMode = null,Object? avgBitrateKbps = null,Object? twoPass = null,Object? turboFirstPass = null,Object? extraParams = null,Object? copySourceMetadata = null,Object? sourceTimezoneOffset = freezed,Object? webOptimized = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? codec = null,Object? preset = null,Object? crf = null,Object? outputExtension = null,Object? resolution = freezed,Object? audioCodec = null,Object? audioBitrate = null,Object? textOverlays = null,Object? outputNameTemplate = null,Object? cropAspectRatio = freezed,Object? deinterlace = null,Object? qualityMode = null,Object? avgBitrateKbps = null,Object? twoPass = null,Object? turboFirstPass = null,Object? extraParams = null,Object? copySourceMetadata = null,Object? sourceTimezoneOffset = freezed,Object? webOptimized = null,Object? rotation = null,Object? useDisplayRotation = null,Object? flipHorizontal = null,Object? flipVertical = null,}) {
   return _then(_EncodeSettings(
 codec: null == codec ? _self.codec : codec // ignore: cast_nullable_to_non_nullable
 as VideoEncoder,preset: null == preset ? _self.preset : preset // ignore: cast_nullable_to_non_nullable
@@ -654,6 +666,10 @@ as bool,extraParams: null == extraParams ? _self.extraParams : extraParams // ig
 as String,copySourceMetadata: null == copySourceMetadata ? _self.copySourceMetadata : copySourceMetadata // ignore: cast_nullable_to_non_nullable
 as bool,sourceTimezoneOffset: freezed == sourceTimezoneOffset ? _self.sourceTimezoneOffset : sourceTimezoneOffset // ignore: cast_nullable_to_non_nullable
 as String?,webOptimized: null == webOptimized ? _self.webOptimized : webOptimized // ignore: cast_nullable_to_non_nullable
+as bool,rotation: null == rotation ? _self.rotation : rotation // ignore: cast_nullable_to_non_nullable
+as Rotation,useDisplayRotation: null == useDisplayRotation ? _self.useDisplayRotation : useDisplayRotation // ignore: cast_nullable_to_non_nullable
+as bool,flipHorizontal: null == flipHorizontal ? _self.flipHorizontal : flipHorizontal // ignore: cast_nullable_to_non_nullable
+as bool,flipVertical: null == flipVertical ? _self.flipVertical : flipVertical // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

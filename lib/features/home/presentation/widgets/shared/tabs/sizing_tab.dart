@@ -1,10 +1,15 @@
 import 'dart:io';
 
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
+import 'package:flutter/material.dart' show Tooltip;
 import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/widgets/app_checkbox.dart';
+import 'package:video_toolkit/widgets/app_dropdown.dart';
 import 'package:video_toolkit/widgets/app_preset_chip.dart';
 import 'package:video_toolkit/widgets/app_twin_field.dart';
 import 'package:video_toolkit/features/home/presentation/widgets/shared/encode_settings_controller.dart';
@@ -52,7 +57,9 @@ class SizingTab extends StatelessWidget {
             onLeftChanged: c.setResWidth,
             onRightChanged: c.setResHeight,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 4),
+          _ResolutionLegendRow(onSwap: c.swapResolution),
+          const SizedBox(height: 4),
           AppTwinField(
             label: l10n.aspectRatio,
             separator: ':',
@@ -88,8 +95,72 @@ class SizingTab extends StatelessWidget {
           _labelRow(l10n.sourceSize, srcLabel, styles),
           const SizedBox(height: 4),
           _labelRow(l10n.afterCrop, cropOut, styles),
+          const SizedBox(height: 16),
+          AppDropdown<Rotation>(
+            label: l10n.rotation,
+            value: c.rotation,
+            items: Rotation.values,
+            itemLabel: EncodeSettingsController.rotationLabel,
+            onChanged: c.setRotation,
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.only(left: 108),
+            child: Row(
+              children: [
+                AppCheckbox(
+                  value: c.useDisplayRotation,
+                  onChanged: c.setUseDisplayRotation,
+                  enabled: c.rotation != Rotation.none,
+                  label: Text(l10n.displayRotateOnly),
+                ),
+                const SizedBox(width: 4),
+                Tooltip(
+                  message: l10n.displayRotateTooltip,
+                  child: _infoIcon(context),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(left: 108),
+            child: Wrap(
+              spacing: 16,
+              runSpacing: 8,
+              children: [
+                AppCheckbox(
+                  value: c.flipHorizontal,
+                  onChanged: c.setFlipHorizontal,
+                  label: Text(l10n.flipHorizontal),
+                ),
+                AppCheckbox(
+                  value: c.flipVertical,
+                  onChanged: c.setFlipVertical,
+                  label: Text(l10n.flipVertical),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _infoIcon(BuildContext context) {
+    if (Platform.isWindows) {
+      final theme = fluent.FluentTheme.of(context);
+      return fluent.Icon(
+        fluent.FluentIcons.info,
+        size: 14,
+        color: theme.resources.textFillColorSecondary,
+      );
+    }
+    final theme = MacosTheme.of(context);
+    return MacosIcon(
+      CupertinoIcons.info_circle,
+      size: 14,
+      color: AppColors.textTertiary(theme.brightness),
     );
   }
 
@@ -103,6 +174,81 @@ class SizingTab extends StatelessWidget {
         const SizedBox(width: 8),
         Text(value, style: styles.monoBody),
       ],
+    );
+  }
+}
+
+/// Header row sitting between the Resolution and Aspect-Ratio fields:
+/// shows "W" / "H" labels aligned with the resolution columns and a swap
+/// button to flip width ↔ height in one click.
+class _ResolutionLegendRow extends StatelessWidget {
+  const _ResolutionLegendRow({required this.onSwap});
+
+  final VoidCallback onSwap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isWindows = Platform.isWindows;
+    final TextStyle labelStyle;
+    if (isWindows) {
+      final theme = fluent.FluentTheme.of(context);
+      labelStyle = (theme.typography.caption ?? const TextStyle()).copyWith(
+        color: theme.resources.textFillColorSecondary,
+      );
+    } else {
+      final theme = MacosTheme.of(context);
+      labelStyle = theme.typography.caption1.copyWith(
+        color: AppColors.textTertiary(theme.brightness),
+      );
+    }
+    return Row(
+      children: [
+        const SizedBox(width: 108),
+        SizedBox(
+          width: 90,
+          child: Text('W', textAlign: TextAlign.center, style: labelStyle),
+        ),
+        SizedBox(
+          width: 24,
+          child: Center(child: _SwapButton(onTap: onSwap)),
+        ),
+        SizedBox(
+          width: 90,
+          child: Text('H', textAlign: TextAlign.center, style: labelStyle),
+        ),
+      ],
+    );
+  }
+}
+
+class _SwapButton extends StatelessWidget {
+  const _SwapButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (Platform.isWindows) {
+      final theme = fluent.FluentTheme.of(context);
+      return GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: fluent.Icon(
+          fluent.FluentIcons.switch_widget,
+          size: 14,
+          color: theme.resources.textFillColorSecondary,
+        ),
+      );
+    }
+    final theme = MacosTheme.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: MacosIcon(
+        CupertinoIcons.arrow_right_arrow_left,
+        size: 14,
+        color: AppColors.textTertiary(theme.brightness),
+      ),
     );
   }
 }

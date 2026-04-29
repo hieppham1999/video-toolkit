@@ -608,6 +608,60 @@ abstract class AppLocalizations {
   /// **'After crop'**
   String get afterCrop;
 
+  /// No description provided for @rotation.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotation'**
+  String get rotation;
+
+  /// No description provided for @rotationNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get rotationNone;
+
+  /// No description provided for @rotation90Cw.
+  ///
+  /// In en, this message translates to:
+  /// **'90° clockwise'**
+  String get rotation90Cw;
+
+  /// No description provided for @rotation180.
+  ///
+  /// In en, this message translates to:
+  /// **'180°'**
+  String get rotation180;
+
+  /// No description provided for @rotation90Ccw.
+  ///
+  /// In en, this message translates to:
+  /// **'90° counter-clockwise'**
+  String get rotation90Ccw;
+
+  /// No description provided for @displayRotateOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Display rotate only'**
+  String get displayRotateOnly;
+
+  /// No description provided for @displayRotateTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Only writes rotation metadata; pixels are not re-encoded. Faster, but depends on player support and works best with MP4/MOV.'**
+  String get displayRotateTooltip;
+
+  /// No description provided for @flipHorizontal.
+  ///
+  /// In en, this message translates to:
+  /// **'Flip horizontally'**
+  String get flipHorizontal;
+
+  /// No description provided for @flipVertical.
+  ///
+  /// In en, this message translates to:
+  /// **'Flip vertically'**
+  String get flipVertical;
+
   /// No description provided for @textOverlays.
   ///
   /// In en, this message translates to:
