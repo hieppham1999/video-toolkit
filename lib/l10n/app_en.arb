@@ -59,6 +59,7 @@
   "copySourceMetadata": "Copy metadata from source",
   "sourceTimezone": "Source timezone",
   "sourceTimezoneAuto": "Auto (system)",
+  "overlayShowTimezone": "Show timezone after time",
   "webOptimized": "Web Optimized (MP4 faststart)",
   "turboFirstPass": "Turbo first pass",
   "moreSettings": "More settings",

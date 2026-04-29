@@ -74,11 +74,7 @@ class _MacosDropdown<T> extends StatelessWidget {
           const SizedBox(width: 8),
           MacosPopupButton<T>(
             value: value,
-            onChanged: enabled
-                ? (v) {
-                    if (v != null) onChanged(v);
-                  }
-                : null,
+            onChanged: enabled ? (v) => onChanged(v as T) : null,
             items: items
                 .map((e) =>
                     MacosPopupMenuItem(value: e, child: Text(itemLabel(e))))
@@ -118,11 +114,7 @@ class _FluentDropdown<T> extends StatelessWidget {
           const SizedBox(width: 8),
           fluent.ComboBox<T>(
             value: value,
-            onChanged: enabled
-                ? (v) {
-                    if (v != null) onChanged(v);
-                  }
-                : null,
+            onChanged: enabled ? (v) => onChanged(v as T) : null,
             items: items
                 .map((e) =>
                     fluent.ComboBoxItem(value: e, child: Text(itemLabel(e))))

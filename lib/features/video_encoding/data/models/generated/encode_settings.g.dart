@@ -23,6 +23,7 @@ _TextOverlay _$TextOverlayFromJson(Map<String, dynamic> json) => _TextOverlay(
   backgroundColor: json['backgroundColor'] as String? ?? 'black@0.5',
   borderWidth: (json['borderWidth'] as num?)?.toInt() ?? 0,
   borderColor: json['borderColor'] as String? ?? 'black',
+  showTimezone: json['showTimezone'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$TextOverlayToJson(_TextOverlay instance) =>
@@ -39,6 +40,7 @@ Map<String, dynamic> _$TextOverlayToJson(_TextOverlay instance) =>
       'backgroundColor': instance.backgroundColor,
       'borderWidth': instance.borderWidth,
       'borderColor': instance.borderColor,
+      'showTimezone': instance.showTimezone,
     };
 
 const _$TextOverlayTypeEnumMap = {

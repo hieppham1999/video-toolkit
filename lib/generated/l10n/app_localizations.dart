@@ -458,6 +458,12 @@ abstract class AppLocalizations {
   /// **'Auto (system)'**
   String get sourceTimezoneAuto;
 
+  /// No description provided for @overlayShowTimezone.
+  ///
+  /// In en, this message translates to:
+  /// **'Show timezone after time'**
+  String get overlayShowTimezone;
+
   /// No description provided for @webOptimized.
   ///
   /// In en, this message translates to:

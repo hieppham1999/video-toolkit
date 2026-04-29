@@ -35,6 +35,9 @@ abstract class TextOverlay with _$TextOverlay {
     /// Border (stroke) width in pixels around each character. 0 disables.
     @Default(0) int borderWidth,
     @Default('black') String borderColor,
+    /// When [type] is [TextOverlayType.timestamp], appends the timezone offset
+    /// (e.g. " +07:00") after the time line. Ignored for custom overlays.
+    @Default(false) bool showTimezone,
   }) = _TextOverlay;
 
   factory TextOverlay.fromJson(Map<String, dynamic> json) => _$TextOverlayFromJson(json);
@@ -44,9 +47,13 @@ abstract class TextOverlay with _$TextOverlay {
 ///
 /// Returns a list because [TextOverlayType.timestamp] produces two filters
 /// (time + date), while [TextOverlayType.custom] produces one.
-List<String> textOverlayToFilter(TextOverlay t, {DateTime? creationDate}) {
+List<String> textOverlayToFilter(
+  TextOverlay t, {
+  DateTime? creationDate,
+  String? sourceTimezoneOffset,
+}) {
   if (t.type == TextOverlayType.timestamp) {
-    return _timestampFilters(t, creationDate);
+    return _timestampFilters(t, creationDate, sourceTimezoneOffset);
   }
   return [_customFilter(t)];
 }
@@ -75,8 +82,23 @@ String _customFilter(TextOverlay t) {
   return 'drawtext=${parts.join(':')}';
 }
 
-List<String> _timestampFilters(TextOverlay t, DateTime? creationDate) {
-  final unixTs = (creationDate ?? DateTime.now()).toUtc().millisecondsSinceEpoch ~/ 1000;
+List<String> _timestampFilters(
+  TextOverlay t,
+  DateTime? creationDate,
+  String? sourceTimezoneOffset,
+) {
+  // When the user has chosen a source TZ override, shift the unix timestamp
+  // by that offset and use ffmpeg's `gmtime` (raw, no machine TZ shift) so
+  // the rendered wall-clock matches the source's local time. Otherwise fall
+  // back to `localtime`, which uses the encode machine's TZ.
+  final baseUtcSec = (creationDate ?? DateTime.now()).toUtc().millisecondsSinceEpoch ~/ 1000;
+  final offsetDuration = _parseOffsetDuration(sourceTimezoneOffset);
+  final useGmtime = offsetDuration != null;
+  final unixTs = useGmtime ? baseUtcSec + offsetDuration.inSeconds : baseUtcSec;
+  final timeFn = useGmtime ? 'gmtime' : 'localtime';
+  // Resolve the offset string actually shown in the overlay: source override
+  // when present, else the encode machine's local offset.
+  final tzLabel = sourceTimezoneOffset ?? _formatLocalOffset(DateTime.now().timeZoneOffset);
   final x = _xExpr(t);
   // Time line sits above the date line; spacing = fontSize + 10.
   final yBase = _yExpr(t);
@@ -98,12 +120,12 @@ List<String> _timestampFilters(TextOverlay t, DateTime? creationDate) {
     return parts;
   }
 
-  final timeParts = buildParts(
-    '%{pts:localtime:$unixTs:%H\\:%M\\:%S}',
-    yTime,
-  );
+  final timeText = t.showTimezone
+      ? '%{pts:$timeFn:$unixTs:%H\\:%M\\:%S}$tzLabel'
+      : '%{pts:$timeFn:$unixTs:%H\\:%M\\:%S}';
+  final timeParts = buildParts(timeText, yTime);
   final dateParts = buildParts(
-    '%{pts:localtime:$unixTs:%b.%d %Y}',
+    '%{pts:$timeFn:$unixTs:%b.%d %Y}',
     yBase,
   );
 
@@ -111,6 +133,24 @@ List<String> _timestampFilters(TextOverlay t, DateTime? creationDate) {
     'drawtext=${timeParts.join(':')}',
     'drawtext=${dateParts.join(':')}',
   ];
+}
+
+Duration? _parseOffsetDuration(String? offset) {
+  if (offset == null) return null;
+  final match = RegExp(r'^([+-])(\d{2}):(\d{2})$').firstMatch(offset);
+  if (match == null) return null;
+  final sign = match.group(1) == '-' ? -1 : 1;
+  final h = int.parse(match.group(2)!);
+  final m = int.parse(match.group(3)!);
+  return Duration(hours: sign * h, minutes: sign * m);
+}
+
+String _formatLocalOffset(Duration offset) {
+  final sign = offset.isNegative ? '-' : '+';
+  final abs = offset.abs();
+  final h = abs.inHours.toString().padLeft(2, '0');
+  final m = (abs.inMinutes % 60).toString().padLeft(2, '0');
+  return '$sign$h:$m';
 }
 
 String _xExpr(TextOverlay t) => switch (t.position) {
@@ -178,7 +218,11 @@ abstract class EncodeSettings with _$EncodeSettings {
   /// exact same chain as the real encode.
   String? buildVideoFilterChain({DateTime? creationDate}) {
     final overlayFilters = textOverlays
-        .expand((t) => textOverlayToFilter(t, creationDate: creationDate))
+        .expand((t) => textOverlayToFilter(
+              t,
+              creationDate: creationDate,
+              sourceTimezoneOffset: sourceTimezoneOffset,
+            ))
         .toList();
     final filters = [...overlayFilters];
 

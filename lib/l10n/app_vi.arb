@@ -59,6 +59,7 @@
   "copySourceMetadata": "Sao chép metadata từ video gốc",
   "sourceTimezone": "Múi giờ video gốc",
   "sourceTimezoneAuto": "Tự động (theo máy)",
+  "overlayShowTimezone": "Hiển thị múi giờ sau giờ",
   "webOptimized": "Tối ưu cho web (MP4 faststart)",
   "turboFirstPass": "Turbo lượt đầu",
   "moreSettings": "Cấu hình thêm",

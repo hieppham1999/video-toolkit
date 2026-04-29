@@ -12,6 +12,7 @@ import 'package:video_toolkit/features/video_encoding/data/models/settings_prese
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_state.dart';
 import 'package:video_toolkit/widgets/app_button.dart';
+import 'package:video_toolkit/widgets/app_checkbox.dart';
 import 'package:video_toolkit/widgets/app_dialog_title_bar.dart';
 import 'package:video_toolkit/widgets/app_dropdown.dart';
 import 'package:video_toolkit/widgets/app_field.dart';
@@ -533,6 +534,17 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                           _c.textOverlays[i].copyWith(text: v),
                         ),
                         hint: l10n.textHintTimestamp,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (_c.textOverlays[i].type == TextOverlayType.timestamp) ...[
+                      AppCheckbox(
+                        value: _c.textOverlays[i].showTimezone,
+                        onChanged: (v) => _c.updateOverlay(
+                          i,
+                          _c.textOverlays[i].copyWith(showTimezone: v),
+                        ),
+                        label: Text(l10n.overlayShowTimezone),
                       ),
                       const SizedBox(height: 8),
                     ],

@@ -190,6 +190,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get sourceTimezoneAuto => 'Tự động (theo máy)';
 
   @override
+  String get overlayShowTimezone => 'Hiển thị múi giờ sau giờ';
+
+  @override
   String get webOptimized => 'Tối ưu cho web (MP4 faststart)';
 
   @override

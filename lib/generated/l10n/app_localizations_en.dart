@@ -191,6 +191,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sourceTimezoneAuto => 'Auto (system)';
 
   @override
+  String get overlayShowTimezone => 'Show timezone after time';
+
+  @override
   String get webOptimized => 'Web Optimized (MP4 faststart)';
 
   @override
