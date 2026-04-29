@@ -14,7 +14,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EncodeProgress {
 
- double get percent; Duration get elapsed; Duration? get estimatedRemaining; double get fps; double get speed;
+ double get percent; Duration get elapsed; Duration? get estimatedRemaining; double get fps; double get speed;/// Current pass for two-pass encoding (1 or 2). Null for single-pass.
+ int? get pass;
 /// Create a copy of EncodeProgress
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +26,16 @@ $EncodeProgressCopyWith<EncodeProgress> get copyWith => _$EncodeProgressCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EncodeProgress&&(identical(other.percent, percent) || other.percent == percent)&&(identical(other.elapsed, elapsed) || other.elapsed == elapsed)&&(identical(other.estimatedRemaining, estimatedRemaining) || other.estimatedRemaining == estimatedRemaining)&&(identical(other.fps, fps) || other.fps == fps)&&(identical(other.speed, speed) || other.speed == speed));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EncodeProgress&&(identical(other.percent, percent) || other.percent == percent)&&(identical(other.elapsed, elapsed) || other.elapsed == elapsed)&&(identical(other.estimatedRemaining, estimatedRemaining) || other.estimatedRemaining == estimatedRemaining)&&(identical(other.fps, fps) || other.fps == fps)&&(identical(other.speed, speed) || other.speed == speed)&&(identical(other.pass, pass) || other.pass == pass));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,percent,elapsed,estimatedRemaining,fps,speed);
+int get hashCode => Object.hash(runtimeType,percent,elapsed,estimatedRemaining,fps,speed,pass);
 
 @override
 String toString() {
-  return 'EncodeProgress(percent: $percent, elapsed: $elapsed, estimatedRemaining: $estimatedRemaining, fps: $fps, speed: $speed)';
+  return 'EncodeProgress(percent: $percent, elapsed: $elapsed, estimatedRemaining: $estimatedRemaining, fps: $fps, speed: $speed, pass: $pass)';
 }
 
 
@@ -45,7 +46,7 @@ abstract mixin class $EncodeProgressCopyWith<$Res>  {
   factory $EncodeProgressCopyWith(EncodeProgress value, $Res Function(EncodeProgress) _then) = _$EncodeProgressCopyWithImpl;
 @useResult
 $Res call({
- double percent, Duration elapsed, Duration? estimatedRemaining, double fps, double speed
+ double percent, Duration elapsed, Duration? estimatedRemaining, double fps, double speed, int? pass
 });
 
 
@@ -62,14 +63,15 @@ class _$EncodeProgressCopyWithImpl<$Res>
 
 /// Create a copy of EncodeProgress
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? percent = null,Object? elapsed = null,Object? estimatedRemaining = freezed,Object? fps = null,Object? speed = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? percent = null,Object? elapsed = null,Object? estimatedRemaining = freezed,Object? fps = null,Object? speed = null,Object? pass = freezed,}) {
   return _then(_self.copyWith(
 percent: null == percent ? _self.percent : percent // ignore: cast_nullable_to_non_nullable
 as double,elapsed: null == elapsed ? _self.elapsed : elapsed // ignore: cast_nullable_to_non_nullable
 as Duration,estimatedRemaining: freezed == estimatedRemaining ? _self.estimatedRemaining : estimatedRemaining // ignore: cast_nullable_to_non_nullable
 as Duration?,fps: null == fps ? _self.fps : fps // ignore: cast_nullable_to_non_nullable
 as double,speed: null == speed ? _self.speed : speed // ignore: cast_nullable_to_non_nullable
-as double,
+as double,pass: freezed == pass ? _self.pass : pass // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -154,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double percent,  Duration elapsed,  Duration? estimatedRemaining,  double fps,  double speed)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double percent,  Duration elapsed,  Duration? estimatedRemaining,  double fps,  double speed,  int? pass)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EncodeProgress() when $default != null:
-return $default(_that.percent,_that.elapsed,_that.estimatedRemaining,_that.fps,_that.speed);case _:
+return $default(_that.percent,_that.elapsed,_that.estimatedRemaining,_that.fps,_that.speed,_that.pass);case _:
   return orElse();
 
 }
@@ -175,10 +177,10 @@ return $default(_that.percent,_that.elapsed,_that.estimatedRemaining,_that.fps,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double percent,  Duration elapsed,  Duration? estimatedRemaining,  double fps,  double speed)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double percent,  Duration elapsed,  Duration? estimatedRemaining,  double fps,  double speed,  int? pass)  $default,) {final _that = this;
 switch (_that) {
 case _EncodeProgress():
-return $default(_that.percent,_that.elapsed,_that.estimatedRemaining,_that.fps,_that.speed);case _:
+return $default(_that.percent,_that.elapsed,_that.estimatedRemaining,_that.fps,_that.speed,_that.pass);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +197,10 @@ return $default(_that.percent,_that.elapsed,_that.estimatedRemaining,_that.fps,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double percent,  Duration elapsed,  Duration? estimatedRemaining,  double fps,  double speed)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double percent,  Duration elapsed,  Duration? estimatedRemaining,  double fps,  double speed,  int? pass)?  $default,) {final _that = this;
 switch (_that) {
 case _EncodeProgress() when $default != null:
-return $default(_that.percent,_that.elapsed,_that.estimatedRemaining,_that.fps,_that.speed);case _:
+return $default(_that.percent,_that.elapsed,_that.estimatedRemaining,_that.fps,_that.speed,_that.pass);case _:
   return null;
 
 }
@@ -210,7 +212,7 @@ return $default(_that.percent,_that.elapsed,_that.estimatedRemaining,_that.fps,_
 
 
 class _EncodeProgress implements EncodeProgress {
-  const _EncodeProgress({this.percent = 0, this.elapsed = Duration.zero, this.estimatedRemaining, this.fps = 0, this.speed = 0});
+  const _EncodeProgress({this.percent = 0, this.elapsed = Duration.zero, this.estimatedRemaining, this.fps = 0, this.speed = 0, this.pass});
   
 
 @override@JsonKey() final  double percent;
@@ -218,6 +220,8 @@ class _EncodeProgress implements EncodeProgress {
 @override final  Duration? estimatedRemaining;
 @override@JsonKey() final  double fps;
 @override@JsonKey() final  double speed;
+/// Current pass for two-pass encoding (1 or 2). Null for single-pass.
+@override final  int? pass;
 
 /// Create a copy of EncodeProgress
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +233,16 @@ _$EncodeProgressCopyWith<_EncodeProgress> get copyWith => __$EncodeProgressCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EncodeProgress&&(identical(other.percent, percent) || other.percent == percent)&&(identical(other.elapsed, elapsed) || other.elapsed == elapsed)&&(identical(other.estimatedRemaining, estimatedRemaining) || other.estimatedRemaining == estimatedRemaining)&&(identical(other.fps, fps) || other.fps == fps)&&(identical(other.speed, speed) || other.speed == speed));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EncodeProgress&&(identical(other.percent, percent) || other.percent == percent)&&(identical(other.elapsed, elapsed) || other.elapsed == elapsed)&&(identical(other.estimatedRemaining, estimatedRemaining) || other.estimatedRemaining == estimatedRemaining)&&(identical(other.fps, fps) || other.fps == fps)&&(identical(other.speed, speed) || other.speed == speed)&&(identical(other.pass, pass) || other.pass == pass));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,percent,elapsed,estimatedRemaining,fps,speed);
+int get hashCode => Object.hash(runtimeType,percent,elapsed,estimatedRemaining,fps,speed,pass);
 
 @override
 String toString() {
-  return 'EncodeProgress(percent: $percent, elapsed: $elapsed, estimatedRemaining: $estimatedRemaining, fps: $fps, speed: $speed)';
+  return 'EncodeProgress(percent: $percent, elapsed: $elapsed, estimatedRemaining: $estimatedRemaining, fps: $fps, speed: $speed, pass: $pass)';
 }
 
 
@@ -249,7 +253,7 @@ abstract mixin class _$EncodeProgressCopyWith<$Res> implements $EncodeProgressCo
   factory _$EncodeProgressCopyWith(_EncodeProgress value, $Res Function(_EncodeProgress) _then) = __$EncodeProgressCopyWithImpl;
 @override @useResult
 $Res call({
- double percent, Duration elapsed, Duration? estimatedRemaining, double fps, double speed
+ double percent, Duration elapsed, Duration? estimatedRemaining, double fps, double speed, int? pass
 });
 
 
@@ -266,14 +270,15 @@ class __$EncodeProgressCopyWithImpl<$Res>
 
 /// Create a copy of EncodeProgress
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? percent = null,Object? elapsed = null,Object? estimatedRemaining = freezed,Object? fps = null,Object? speed = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? percent = null,Object? elapsed = null,Object? estimatedRemaining = freezed,Object? fps = null,Object? speed = null,Object? pass = freezed,}) {
   return _then(_EncodeProgress(
 percent: null == percent ? _self.percent : percent // ignore: cast_nullable_to_non_nullable
 as double,elapsed: null == elapsed ? _self.elapsed : elapsed // ignore: cast_nullable_to_non_nullable
 as Duration,estimatedRemaining: freezed == estimatedRemaining ? _self.estimatedRemaining : estimatedRemaining // ignore: cast_nullable_to_non_nullable
 as Duration?,fps: null == fps ? _self.fps : fps // ignore: cast_nullable_to_non_nullable
 as double,speed: null == speed ? _self.speed : speed // ignore: cast_nullable_to_non_nullable
-as double,
+as double,pass: freezed == pass ? _self.pass : pass // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

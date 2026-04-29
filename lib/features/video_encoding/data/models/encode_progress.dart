@@ -10,5 +10,7 @@ abstract class EncodeProgress with _$EncodeProgress {
     Duration? estimatedRemaining,
     @Default(0) double fps,
     @Default(0) double speed,
+    /// Current pass for two-pass encoding (1 or 2). Null for single-pass.
+    int? pass,
   }) = _EncodeProgress;
 }

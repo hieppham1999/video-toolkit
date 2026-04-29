@@ -60,13 +60,23 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
               passLogPrefix: logPrefix,
             );
             appLogger.d('2-pass: prefix=$logPrefix');
-            await _ffmpeg
-                .encode(
-                  inputPath: inputPath,
-                  args: pass1Args,
-                  totalDuration: totalDuration,
-                )
-                .drain<void>();
+            // Pass 1 → maps into [0%, 50%]. estimatedRemaining is doubled to
+            // approximate the remaining time across BOTH passes (rough — pass 2
+            // is usually slower than a turbo pass 1).
+            await for (final p in _ffmpeg.encode(
+              inputPath: inputPath,
+              args: pass1Args,
+              totalDuration: totalDuration,
+            )) {
+              if (controller.isClosed) return;
+              controller.add(p.copyWith(
+                percent: (p.percent * 0.5).clamp(0.0, 0.5),
+                estimatedRemaining: p.estimatedRemaining == null
+                    ? null
+                    : p.estimatedRemaining! * 2,
+                pass: 1,
+              ));
+            }
 
             final statsFile = File('$logPrefix-0.log');
             final statsExists = await statsFile.exists();
@@ -90,11 +100,18 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
               passLogPrefix: logPrefix,
             );
             appLogger.i('ffmpeg pass2 args: ${pass2Args.join(' ')}');
-            await controller.addStream(_ffmpeg.encode(
+            // Pass 2 → maps into [50%, 100%].
+            await for (final p in _ffmpeg.encode(
               inputPath: inputPath,
               args: pass2Args,
               totalDuration: totalDuration,
-            ));
+            )) {
+              if (controller.isClosed) return;
+              controller.add(p.copyWith(
+                percent: (0.5 + p.percent * 0.5).clamp(0.5, 1.0),
+                pass: 2,
+              ));
+            }
           } finally {
             await _cleanupPassLogs(logPrefix);
           }

@@ -503,16 +503,17 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
         final percentLabel =
             '${(progress.percent * 100).toStringAsFixed(0)}%';
         final etaLabel = _formatEta(progress.estimatedRemaining);
+        final passLabel = progress.pass == null ? null : 'P${progress.pass}/2';
+        final parts = [
+          if (passLabel != null) passLabel,
+          percentLabel,
+          if (etaLabel != null) etaLabel,
+        ];
         return Row(
           children: [
             Expanded(child: _progressBar(progress.percent)),
             const SizedBox(width: 6),
-            Text(
-              etaLabel == null
-                  ? percentLabel
-                  : '$percentLabel  ·  $etaLabel',
-              style: captionStyle,
-            ),
+            Text(parts.join('  ·  '), style: captionStyle),
           ],
         );
     }
