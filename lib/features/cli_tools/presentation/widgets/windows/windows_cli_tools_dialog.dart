@@ -63,7 +63,6 @@ class _WindowsCliToolsDialogState extends State<WindowsCliToolsDialog> {
       title: AppDialogTitleBar(title: Text(l10n.cliTools)),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
         children: [
           AppDropdown<CliTool>(
             label: l10n.cliToolSelectTool,
@@ -120,8 +119,7 @@ class _WindowsCliToolsDialogState extends State<WindowsCliToolsDialog> {
             enabled: !_c.isRunning,
           ),
           const SizedBox(height: 16),
-          SizedBox(
-            height: 320,
+          Expanded(
             child: _OutputPanel(controller: _c),
           ),
         ],
@@ -163,27 +161,42 @@ class _OutputPanel extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
             child: Row(
               children: [
-                Text(
-                  l10n.cliToolOutput,
-                  style: theme.typography.caption?.copyWith(color: subtle),
+                Flexible(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          l10n.cliToolOutput,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.typography.caption
+                              ?.copyWith(color: subtle),
+                        ),
+                      ),
+                      if (controller.isRunning) ...[
+                        const SizedBox(width: 8),
+                        const SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: ProgressRing(strokeWidth: 2),
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            l10n.cliToolRunning,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.typography.caption
+                                ?.copyWith(color: subtle),
+                          ),
+                        ),
+                      ] else if (controller.exitCode != null) ...[
+                        const SizedBox(width: 8),
+                        _ExitCodeBadge(code: controller.exitCode!),
+                      ],
+                    ],
+                  ),
                 ),
-                if (controller.isRunning) ...[
-                  const SizedBox(width: 8),
-                  const SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: ProgressRing(strokeWidth: 2),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    l10n.cliToolRunning,
-                    style: theme.typography.caption?.copyWith(color: subtle),
-                  ),
-                ] else if (controller.exitCode != null) ...[
-                  const SizedBox(width: 8),
-                  _ExitCodeBadge(code: controller.exitCode!),
-                ],
-                const Spacer(),
+                const SizedBox(width: 8),
                 _FormatSegmented(controller: controller),
                 const SizedBox(width: 8),
                 AppIconButton(
