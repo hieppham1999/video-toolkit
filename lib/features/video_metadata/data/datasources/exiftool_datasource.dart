@@ -25,25 +25,25 @@ class ExiftoolDatasource {
     // Request only the tags we use instead of dumping everything (faster + smaller output).
     // Do NOT pass -n: it converts QuickTime dates to raw epoch numbers, breaking date parsing.
     final args = [
-      '-fast2',
+      // '-fast2',
       '-json',
       '-c', '%+.6f',
       // Keys:CreationDate is the only QuickTime tag that preserves the source
       // timezone offset literally — read it first so we can round-trip the
       // exact offset on encode.
-      '-Keys:CreationDate',
-      '-CreateDate',
-      '-MediaCreateDate',
-      '-DateTimeOriginal',
-      '-TrackCreateDate',
-      // Filesystem date fallbacks for containers without embedded creation
-      // dates (e.g. AVCHD .MTS from Sony cameras). FileCreateDate typically
-      // matches the recording start; FileModifyDate matches recording end.
-      '-FileCreateDate',
-      '-FileModifyDate',
-      '-GPSLatitude',
-      '-GPSLongitude',
-      '-Model',
+      // '-Keys:CreationDate',
+      // '-CreateDate',
+      // '-MediaCreateDate',
+      // '-DateTimeOriginal',
+      // '-TrackCreateDate',
+      // // Filesystem date fallbacks for containers without embedded creation
+      // // dates (e.g. AVCHD .MTS from Sony cameras). FileCreateDate typically
+      // // matches the recording start; FileModifyDate matches recording end.
+      // '-FileCreateDate',
+      // '-FileModifyDate',
+      // '-GPSLatitude',
+      // '-GPSLongitude',
+      // '-Model',
       filePath,
     ];
     appLogger.i('exiftool command: $_executable ${args.join(' ')}');
@@ -67,6 +67,8 @@ class ExiftoolDatasource {
           data['FileCreateDate'] ??
           data['FileModifyDate'];
 
+      final model = data['Model'] ?? data['DeviceModelName'];
+
       // Prefer Keys:CreationDate for offset detection — Apple devices store
       // the source TZ literally there, while QuickTime atoms strip it.
       final offsetSource = data['CreationDate'] as String? ?? rawDate;
@@ -76,7 +78,7 @@ class ExiftoolDatasource {
         timezoneOffset: _extractTimezoneOffset(offsetSource),
         gpsLatitude: _parseDouble(data['GPSLatitude']),
         gpsLongitude: _parseDouble(data['GPSLongitude']),
-        cameraModel: data['Model'] as String?,
+        cameraModel: model as String?,
         rawExif: data.map((k, v) => MapEntry(k, v.toString())),
       );
 
@@ -172,7 +174,7 @@ class ExiftoolDatasource {
     // offset is preserved verbatim instead of being normalized to +00:00.
     String? keysCreationDateStr;
     if (metadata?.creationDate != null) {
-      final iso = DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(metadata!.creationDate!);
+      final iso = DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(metadata!.creationDate!.toLocal());
       keysCreationDateStr = '$iso$sourceOffset';
     }
 

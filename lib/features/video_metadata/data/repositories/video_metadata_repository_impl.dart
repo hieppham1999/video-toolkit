@@ -14,17 +14,18 @@ class VideoMetadataRepositoryImpl implements VideoMetadataRepository {
   @override
   Future<VideoMetadata> extractMetadata(String filePath) async {
     final ffprobeData = await _ffprobe.extract(filePath) ?? const VideoMetadata();
-
-    if (ffprobeData.creationDate != null) return ffprobeData;
-
     final exiftoolData = await _exiftool.extract(filePath);
-    if (exiftoolData?.creationDate == null) return ffprobeData;
+
+    // if (ffprobeData.creationDate != null) return ffprobeData;
+
+
+    // if (exiftoolData?.creationDate == null) return ffprobeData;
 
     return ffprobeData.copyWith(
-      creationDate: exiftoolData!.creationDate,
-      gpsLatitude: ffprobeData.gpsLatitude ?? exiftoolData.gpsLatitude,
-      gpsLongitude: ffprobeData.gpsLongitude ?? exiftoolData.gpsLongitude,
-      cameraModel: ffprobeData.cameraModel ?? exiftoolData.cameraModel,
+      creationDate: exiftoolData?.creationDate,
+      gpsLatitude: ffprobeData.gpsLatitude ?? exiftoolData?.gpsLatitude,
+      gpsLongitude: ffprobeData.gpsLongitude ?? exiftoolData?.gpsLongitude,
+      cameraModel: ffprobeData.cameraModel ?? exiftoolData?.cameraModel,
     );
   }
 
