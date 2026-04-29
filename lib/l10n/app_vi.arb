@@ -57,6 +57,8 @@
   "constantQuality": "Chất lượng cố định",
   "twoPassEncoding": "Mã hoá hai lượt",
   "copySourceMetadata": "Sao chép metadata từ video gốc",
+  "sourceTimezone": "Múi giờ video gốc",
+  "sourceTimezoneAuto": "Tự động (theo máy)",
   "webOptimized": "Tối ưu cho web (MP4 faststart)",
   "turboFirstPass": "Turbo lượt đầu",
   "moreSettings": "Cấu hình thêm",

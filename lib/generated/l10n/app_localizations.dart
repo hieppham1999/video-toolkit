@@ -446,6 +446,18 @@ abstract class AppLocalizations {
   /// **'Copy metadata from source'**
   String get copySourceMetadata;
 
+  /// No description provided for @sourceTimezone.
+  ///
+  /// In en, this message translates to:
+  /// **'Source timezone'**
+  String get sourceTimezone;
+
+  /// No description provided for @sourceTimezoneAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto (system)'**
+  String get sourceTimezoneAuto;
+
   /// No description provided for @webOptimized.
   ///
   /// In en, this message translates to:

@@ -81,6 +81,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       settings.outputNameTemplate,
       originalName: baseName,
       creationDate: file.metadata?.creationDate,
+      sourceTimezoneOffset: settings.sourceTimezoneOffset,
     );
     final outputPath = p.join(dir, '$outName.${settings.outputExtension.value}');
 
@@ -139,10 +140,16 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     if (_cancelled) return;
 
     if (success && settings.copySourceMetadata) {
+      // User-chosen source timezone overrides whatever was extracted from the
+      // source file. Falls back to extracted value (or machine local TZ at
+      // exiftool-write time) when no override is set.
+      final effectiveMetadata = settings.sourceTimezoneOffset != null
+          ? file.metadata?.copyWith(timezoneOffset: settings.sourceTimezoneOffset)
+          : file.metadata;
       await _exiftool.copyMetadata(
         sourcePath: file.path,
         targetPath: outputPath,
-        metadata: file.metadata,
+        metadata: effectiveMetadata,
       );
     }
 

@@ -13,6 +13,7 @@ abstract class VideoMetadata with _$VideoMetadata {
     int? bitrate,
     double? frameRate,
     DateTime? creationDate,
+    String? timezoneOffset,
     double? gpsLatitude,
     double? gpsLongitude,
     String? cameraModel,

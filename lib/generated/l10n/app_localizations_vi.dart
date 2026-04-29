@@ -184,6 +184,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get copySourceMetadata => 'Sao chép metadata từ video gốc';
 
   @override
+  String get sourceTimezone => 'Múi giờ video gốc';
+
+  @override
+  String get sourceTimezoneAuto => 'Tự động (theo máy)';
+
+  @override
   String get webOptimized => 'Tối ưu cho web (MP4 faststart)';
 
   @override

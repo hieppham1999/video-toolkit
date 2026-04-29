@@ -28,6 +28,10 @@ class ExiftoolDatasource {
       '-fast2',
       '-json',
       '-c', '%+.6f',
+      // Keys:CreationDate is the only QuickTime tag that preserves the source
+      // timezone offset literally — read it first so we can round-trip the
+      // exact offset on encode.
+      '-Keys:CreationDate',
       '-CreateDate',
       '-MediaCreateDate',
       '-DateTimeOriginal',
@@ -56,15 +60,20 @@ class ExiftoolDatasource {
       if (list.isEmpty) return null;
       final data = list.first as Map<String, dynamic>;
 
+      final rawDate = data['CreateDate'] ??
+          data['MediaCreateDate'] ??
+          data['TrackCreateDate'] ??
+          data['DateTimeOriginal'] ??
+          data['FileCreateDate'] ??
+          data['FileModifyDate'];
+
+      // Prefer Keys:CreationDate for offset detection — Apple devices store
+      // the source TZ literally there, while QuickTime atoms strip it.
+      final offsetSource = data['CreationDate'] as String? ?? rawDate;
+
       final metadata = VideoMetadata(
-        creationDate: _parseDate(
-          data['CreateDate'] ??
-              data['MediaCreateDate'] ??
-              data['TrackCreateDate'] ??
-              data['DateTimeOriginal'] ??
-              data['FileCreateDate'] ??
-              data['FileModifyDate'],
-        ),
+        creationDate: _parseDate(rawDate),
+        timezoneOffset: _extractTimezoneOffset(offsetSource),
         gpsLatitude: _parseDouble(data['GPSLatitude']),
         gpsLongitude: _parseDouble(data['GPSLongitude']),
         cameraModel: data['Model'] as String?,
@@ -93,6 +102,31 @@ class ExiftoolDatasource {
     DateFormat("yyyy:MM:dd HH:mm:ss"),
   ];
 
+  static final _tzOffsetRegex = RegExp(r'(Z|[+-]\d{2}:?\d{2})$');
+
+  // Dart intl's DateFormat does not reliably emit the ZZZZZ offset token, so
+  // we build "+HH:MM" / "-HH:MM" ourselves from a Duration.
+  String _formatOffset(Duration offset) {
+    final sign = offset.isNegative ? '-' : '+';
+    final abs = offset.abs();
+    final h = abs.inHours.toString().padLeft(2, '0');
+    final m = (abs.inMinutes % 60).toString().padLeft(2, '0');
+    return '$sign$h:$m';
+  }
+
+  String? _extractTimezoneOffset(dynamic value) {
+    if (value is! String) return null;
+    final match = _tzOffsetRegex.firstMatch(value.trim());
+    if (match == null) return null;
+    final raw = match.group(1)!;
+    if (raw == 'Z') return '+00:00';
+    // Normalize "+0700" → "+07:00"
+    if (raw.length == 5 && !raw.contains(':')) {
+      return '${raw.substring(0, 3)}:${raw.substring(3)}';
+    }
+    return raw;
+  }
+
   DateTime? _parseDate(dynamic value) {
     appLogger.d('exiftool parse date input: $value (type=${value.runtimeType})');
     if (value == null || value is! String) return null;
@@ -120,10 +154,27 @@ class ExiftoolDatasource {
 
     final now = DateTime.now();
 
-    final dateFormatter = DateFormat("yyyy:MM:dd HH:mm:ssZZZZZ");
+    final dateFormatterNoTz = DateFormat("yyyy:MM:dd HH:mm:ss");
 
-    final nowStr = dateFormatter.format(now);
-    final creationDateStr = metadata?.creationDate != null ? dateFormatter.format(metadata!.creationDate!) : null;
+    // CreateDate fields use the source's original offset when known; otherwise
+    // fall back to the encode machine's local offset (DateFormat.parse for an
+    // offset-less source returns a UTC DateTime whose timeZoneOffset is 0, so
+    // we cannot trust creationDate.timeZoneOffset).
+    final localOffset = _formatOffset(now.timeZoneOffset);
+    final sourceOffset = metadata?.timezoneOffset ?? localOffset;
+    final nowStr = '${dateFormatterNoTz.format(now)}$localOffset';
+    String? creationDateStr;
+    if (metadata?.creationDate != null) {
+      creationDateStr = '${dateFormatterNoTz.format(metadata!.creationDate!)}$sourceOffset';
+    }
+    // Keys:CreationDate stores in ISO 8601 (the format Apple writes natively).
+    // Using "T" separator + offset gives exiftool the unambiguous form so the
+    // offset is preserved verbatim instead of being normalized to +00:00.
+    String? keysCreationDateStr;
+    if (metadata?.creationDate != null) {
+      final iso = DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(metadata!.creationDate!);
+      keysCreationDateStr = '$iso$sourceOffset';
+    }
 
     final args = [
       '-TagsFromFile',
@@ -135,6 +186,10 @@ class ExiftoolDatasource {
       if (creationDateStr != null) '-MediaCreateDate=$creationDateStr',
       if (creationDateStr != null) '-TrackCreateDate=$creationDateStr',
       if (creationDateStr != null) '-QuickTime:CreateDate=$creationDateStr',
+      // Keys:CreationDate (com.apple.quicktime.creationdate) is the one MP4
+      // atom that preserves the timezone offset literally — Photos.app and
+      // Finder read this for "Content created" display.
+      if (keysCreationDateStr != null) '-Keys:CreationDate=$keysCreationDateStr',
       if (metadata?.cameraModel != null) '-Model=${metadata!.cameraModel}',
       '-overwrite_original',
       targetPath,

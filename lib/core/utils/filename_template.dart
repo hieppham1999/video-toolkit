@@ -18,12 +18,22 @@ class FilenameTemplate {
   /// Applies [template] using [originalName] and [creationDate].
   /// If [template] is empty, returns `${originalName}_encoded` (default).
   /// If [creationDate] is null, date tags resolve to an empty string.
-  static String apply(String template, {required String originalName, DateTime? creationDate}) {
+  ///
+  /// [sourceTimezoneOffset] (e.g. "+09:00") shifts [creationDate] into that
+  /// timezone before extracting tag values — so the filename reflects the
+  /// recording's local wall-clock in the source's TZ rather than the encode
+  /// machine's local TZ. Null = use the machine's local TZ (legacy behavior).
+  static String apply(
+    String template, {
+    required String originalName,
+    DateTime? creationDate,
+    String? sourceTimezoneOffset,
+  }) {
     if (template.trim().isEmpty) return '${originalName}_encoded';
 
     final map = <String, String>{'name': originalName};
     if (creationDate != null) {
-      final d = creationDate.toLocal();
+      final d = _shiftDate(creationDate, sourceTimezoneOffset);
       map['year'] = d.year.toString().padLeft(4, '0');
       map['month'] = d.month.toString().padLeft(2, '0');
       map['day'] = d.day.toString().padLeft(2, '0');
@@ -41,5 +51,25 @@ class FilenameTemplate {
       result = result.replaceAll('{$key}', value);
     });
     return result;
+  }
+
+  /// When [offset] is null, falls back to the machine's local TZ. When set
+  /// (e.g. "+09:00"), shifts [date] from UTC to that offset and returns a
+  /// DateTime whose components reflect the wall-clock in that TZ.
+  static DateTime _shiftDate(DateTime date, String? offset) {
+    if (offset == null) return date.toLocal();
+    final parsed = _parseOffset(offset);
+    if (parsed == null) return date.toLocal();
+    return date.toUtc().add(parsed);
+  }
+
+  /// Parses "+HH:MM" / "-HH:MM" into a [Duration]. Returns null on bad input.
+  static Duration? _parseOffset(String offset) {
+    final match = RegExp(r'^([+-])(\d{2}):(\d{2})$').firstMatch(offset);
+    if (match == null) return null;
+    final sign = match.group(1) == '-' ? -1 : 1;
+    final h = int.parse(match.group(2)!);
+    final m = int.parse(match.group(3)!);
+    return Duration(hours: sign * h, minutes: sign * m);
   }
 }

@@ -7,6 +7,7 @@ import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/widgets/app_checkbox.dart';
+import 'package:video_toolkit/widgets/app_dropdown.dart';
 import 'package:video_toolkit/widgets/app_field.dart';
 import 'package:video_toolkit/widgets/app_tag_chip.dart';
 import 'package:video_toolkit/features/home/presentation/widgets/shared/encode_settings_controller.dart';
@@ -32,6 +33,7 @@ class FileTab extends StatelessWidget {
       c.outputNameTemplate,
       originalName: sampleFileName,
       creationDate: sampleCreationDate ?? DateTime.now(),
+      sourceTimezoneOffset: c.sourceTimezoneOffset,
     );
     return SingleChildScrollView(
       child: Column(
@@ -76,6 +78,15 @@ class FileTab extends StatelessWidget {
             value: c.copySourceMetadata,
             onChanged: c.setCopySourceMetadata,
             label: Text(l10n.copySourceMetadata),
+          ),
+          const SizedBox(height: 12),
+          AppDropdown<String?>(
+            label: l10n.sourceTimezone,
+            value: c.sourceTimezoneOffset,
+            items: EncodeSettingsController.timezoneOffsets,
+            itemLabel: (v) => v == null ? l10n.sourceTimezoneAuto : '(GMT$v)',
+            onChanged: c.setSourceTimezoneOffset,
+            enabled: c.copySourceMetadata,
           ),
         ],
       ),

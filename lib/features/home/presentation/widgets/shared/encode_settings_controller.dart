@@ -28,6 +28,18 @@ class EncodeSettingsController extends ChangeNotifier {
   /// Quick-select aspect ratios shown as chips under the aspect input.
   static const List<String> aspectPresets = ['16:9', '9:16', '1:1', '4:3', '3:4'];
 
+  /// Selectable source-timezone offsets for the encode-settings dropdown.
+  /// `null` represents "auto" (use the encoding machine's local TZ).
+  static const List<String?> timezoneOffsets = [
+    null,
+    '-12:00', '-11:00', '-10:00', '-09:00', '-08:00', '-07:00', '-06:00',
+    '-05:00', '-04:00', '-03:30', '-03:00', '-02:00', '-01:00',
+    '+00:00',
+    '+01:00', '+02:00', '+03:00', '+03:30', '+04:00', '+05:00', '+05:30',
+    '+05:45', '+06:00', '+07:00', '+08:00', '+09:00', '+09:30', '+10:00',
+    '+11:00', '+12:00', '+13:00', '+14:00',
+  ];
+
   // Form state
   late VideoEncoder codec;
   late EncodePreset preset;
@@ -44,6 +56,8 @@ class EncodeSettingsController extends ChangeNotifier {
   late bool turboFirstPass;
   late String extraParams;
   late bool copySourceMetadata;
+  /// Null = auto (use the encoding machine's local TZ).
+  String? sourceTimezoneOffset;
   late bool webOptimized;
   String resWidth = '';
   String resHeight = '';
@@ -71,6 +85,7 @@ class EncodeSettingsController extends ChangeNotifier {
     turboFirstPass = s.turboFirstPass;
     extraParams = s.extraParams;
     copySourceMetadata = s.copySourceMetadata;
+    sourceTimezoneOffset = s.sourceTimezoneOffset;
     webOptimized = s.webOptimized;
 
     resWidth = '';
@@ -114,6 +129,7 @@ class EncodeSettingsController extends ChangeNotifier {
       turboFirstPass: turboFirstPass,
       extraParams: extraParams,
       copySourceMetadata: copySourceMetadata,
+      sourceTimezoneOffset: sourceTimezoneOffset,
       webOptimized: webOptimized,
     );
   }
@@ -138,6 +154,7 @@ class EncodeSettingsController extends ChangeNotifier {
   void setTurboFirstPass(bool v) { turboFirstPass = v; notifyListeners(); }
   void setExtraParams(String v) { extraParams = v; notifyListeners(); }
   void setCopySourceMetadata(bool v) { copySourceMetadata = v; notifyListeners(); }
+  void setSourceTimezoneOffset(String? v) { sourceTimezoneOffset = v; notifyListeners(); }
   void setWebOptimized(bool v) { webOptimized = v; notifyListeners(); }
   void appendNameTag(String tag) {
     outputNameTemplate = '$outputNameTemplate{$tag}';

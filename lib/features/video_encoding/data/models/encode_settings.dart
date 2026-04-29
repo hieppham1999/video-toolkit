@@ -162,6 +162,10 @@ abstract class EncodeSettings with _$EncodeSettings {
     /// Raw extra params forwarded via codec-specific flag (e.g. `-x265-params`).
     @Default('') String extraParams,
     @Default(true) bool copySourceMetadata,
+    /// Override for the source video's timezone offset (e.g. "+07:00"). Used
+    /// when the source MP4 doesn't carry an offset itself — typical for non-
+    /// Apple cameras. Null = fall back to the encoding machine's local TZ.
+    String? sourceTimezoneOffset,
     @Default(true) bool webOptimized,
   }) = _EncodeSettings;
 

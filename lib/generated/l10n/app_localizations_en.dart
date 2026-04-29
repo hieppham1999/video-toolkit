@@ -185,6 +185,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copySourceMetadata => 'Copy metadata from source';
 
   @override
+  String get sourceTimezone => 'Source timezone';
+
+  @override
+  String get sourceTimezoneAuto => 'Auto (system)';
+
+  @override
   String get webOptimized => 'Web Optimized (MP4 faststart)';
 
   @override

@@ -38,6 +38,7 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
           settings.outputNameTemplate,
           originalName: baseName,
           creationDate: creationDate,
+          sourceTimezoneOffset: settings.sourceTimezoneOffset,
         );
         final outputPath = p.join(dir, '$outName.${settings.outputExtension.value}');
 

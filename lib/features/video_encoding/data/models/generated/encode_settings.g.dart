@@ -94,6 +94,7 @@ _EncodeSettings _$EncodeSettingsFromJson(Map<String, dynamic> json) =>
       turboFirstPass: json['turboFirstPass'] as bool? ?? false,
       extraParams: json['extraParams'] as String? ?? '',
       copySourceMetadata: json['copySourceMetadata'] as bool? ?? true,
+      sourceTimezoneOffset: json['sourceTimezoneOffset'] as String?,
       webOptimized: json['webOptimized'] as bool? ?? true,
     );
 
@@ -116,6 +117,7 @@ Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
       'turboFirstPass': instance.turboFirstPass,
       'extraParams': instance.extraParams,
       'copySourceMetadata': instance.copySourceMetadata,
+      'sourceTimezoneOffset': instance.sourceTimezoneOffset,
       'webOptimized': instance.webOptimized,
     };
 

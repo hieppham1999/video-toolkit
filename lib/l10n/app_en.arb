@@ -57,6 +57,8 @@
   "constantQuality": "Constant quality",
   "twoPassEncoding": "Two-pass encoding",
   "copySourceMetadata": "Copy metadata from source",
+  "sourceTimezone": "Source timezone",
+  "sourceTimezoneAuto": "Auto (system)",
   "webOptimized": "Web Optimized (MP4 faststart)",
   "turboFirstPass": "Turbo first pass",
   "moreSettings": "More settings",
