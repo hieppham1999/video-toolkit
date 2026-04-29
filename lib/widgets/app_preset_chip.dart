@@ -56,7 +56,6 @@ class _MacosPresetChip extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        alignment: Alignment.center,
         decoration: ShapeDecoration(
           shape: const StadiumBorder(),
           color: bg,
@@ -97,7 +96,6 @@ class _FluentPresetChip extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        alignment: Alignment.center,
         decoration: ShapeDecoration(
           shape: const StadiumBorder(),
           color: bg,
