@@ -272,12 +272,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     final isSelected = file.path == widget.selectedFilePath;
     final rowStatus = showStatus ? _rowStatusFor(index, file) : null;
 
-    Color? bgColor;
-    if (isSelected) {
-      bgColor = palette.selectedBg;
-    } else if (index.isEven) {
-      bgColor = palette.altRowBg;
-    }
+    final Color? bgColor = isSelected ? palette.selectedBg : null;
 
     final effectiveSettings = file.overrideSettings ?? widget.globalSettings;
     final baseName = p.basenameWithoutExtension(file.path);
@@ -596,7 +591,6 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
         subtleText: theme.resources.textFillColorSecondary,
         divider: theme.resources.controlStrokeColorDefault,
         headerBg: theme.cardColor,
-        altRowBg: theme.cardColor.withValues(alpha: 0.4),
         selectedBg: theme.accentColor.withValues(alpha: 0.18),
         bodyStyle: theme.typography.body ?? const TextStyle(),
         captionStyle: theme.typography.caption ?? const TextStyle(),
@@ -613,7 +607,6 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     }
     final theme = MacosTheme.of(context);
     final b = theme.brightness;
-    final isDark = b == Brightness.dark;
     final subtleText = AppColors.textTertiary(b);
     final divider = AppColors.divider(b);
     return _Palette(
@@ -621,7 +614,6 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       subtleText: subtleText,
       divider: divider,
       headerBg: AppColors.surface(b),
-      altRowBg: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF9F9F9),
       selectedBg: theme.primaryColor.withValues(alpha: 0.18),
       bodyStyle: theme.typography.body,
       captionStyle: theme.typography.caption1,
@@ -644,7 +636,6 @@ class _Palette {
     required this.subtleText,
     required this.divider,
     required this.headerBg,
-    required this.altRowBg,
     required this.selectedBg,
     required this.bodyStyle,
     required this.captionStyle,
@@ -657,7 +648,6 @@ class _Palette {
   final Color subtleText;
   final Color divider;
   final Color headerBg;
-  final Color altRowBg;
   final Color selectedBg;
   final TextStyle bodyStyle;
   final TextStyle captionStyle;

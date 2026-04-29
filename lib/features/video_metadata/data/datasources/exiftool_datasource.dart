@@ -32,6 +32,11 @@ class ExiftoolDatasource {
       '-MediaCreateDate',
       '-DateTimeOriginal',
       '-TrackCreateDate',
+      // Filesystem date fallbacks for containers without embedded creation
+      // dates (e.g. AVCHD .MTS from Sony cameras). FileCreateDate typically
+      // matches the recording start; FileModifyDate matches recording end.
+      '-FileCreateDate',
+      '-FileModifyDate',
       '-GPSLatitude',
       '-GPSLongitude',
       '-Model',
@@ -53,7 +58,12 @@ class ExiftoolDatasource {
 
       final metadata = VideoMetadata(
         creationDate: _parseDate(
-          data['CreateDate'] ?? data['MediaCreateDate'] ?? data['TrackCreateDate'] ?? data['DateTimeOriginal'],
+          data['CreateDate'] ??
+              data['MediaCreateDate'] ??
+              data['TrackCreateDate'] ??
+              data['DateTimeOriginal'] ??
+              data['FileCreateDate'] ??
+              data['FileModifyDate'],
         ),
         gpsLatitude: _parseDouble(data['GPSLatitude']),
         gpsLongitude: _parseDouble(data['GPSLongitude']),
