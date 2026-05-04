@@ -12,7 +12,7 @@ import 'package:video_toolkit/widgets/app_checkbox.dart';
 import 'package:video_toolkit/widgets/app_dropdown.dart';
 import 'package:video_toolkit/widgets/app_preset_chip.dart';
 import 'package:video_toolkit/widgets/app_twin_field.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/encode_settings_controller.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/pages/encode_settings_controller.dart';
 
 class SizingTab extends StatelessWidget {
   const SizingTab({

@@ -14,14 +14,14 @@ import 'package:video_toolkit/widgets/app_checkbox.dart';
 import 'package:video_toolkit/widgets/app_dialog_title_bar.dart';
 import 'package:video_toolkit/widgets/app_dropdown.dart';
 import 'package:video_toolkit/widgets/app_field.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/app_preset_tile.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/encode_settings_controller.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/sidebar_resize_handle.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/tabs/audio_tab.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/tabs/container_tab.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/tabs/file_tab.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/tabs/sizing_tab.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/tabs/video_codec_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/app_preset_tile.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/pages/encode_settings_controller.dart';
+import 'package:video_toolkit/widgets/app_resizable_divider.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/audio_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/container_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/file_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/sizing_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/video_codec_tab.dart';
 import 'package:video_toolkit/app/base/app_state.dart';
 import 'package:video_toolkit/widgets/color_picker_button.dart';
 
@@ -260,9 +260,9 @@ class _WindowsEncodeSettingsDialogState
             width: _c.sidebarWidth,
             child: _buildPresetSidebar(theme, l10n, presets),
           ),
-          SidebarResizeHandle(
-            onDragDelta: _c.resizeSidebar,
-            lineColor: theme.resources.cardStrokeColorDefault,
+          AppResizableDivider(
+            axis: Axis.vertical,
+            onDrag: _c.resizeSidebar,
           ),
           Expanded(
             child: Padding(

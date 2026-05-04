@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
+import 'package:video_toolkit/widgets/app_progress_bar.dart';
 
 /// Bottom-of-screen progress strip summarising the current batch encode.
 /// Hidden when idle; colours + progress bar control adapt per platform.
@@ -93,9 +94,7 @@ class AppOverallProgressBar extends StatelessWidget {
           const SizedBox(height: 4),
           SizedBox(
             width: double.infinity,
-            child: isWindows
-                ? fluent.ProgressBar(value: overallPercent * 100)
-                : ProgressBar(value: overallPercent * 100),
+            child: AppProgressBar(percent: overallPercent),
           ),
         ],
       ),

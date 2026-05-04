@@ -20,7 +20,7 @@ import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/features/cli_tools/presentation/cli_tools_launcher.dart';
 import 'package:video_toolkit/features/app_settings/presentation/pages/settings_page.dart';
 import 'package:video_toolkit/features/home/presentation/widgets/app_video_table_section.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/windows/windows_encode_settings_dialog.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/pages/windows_encode_settings_dialog.dart';
 
 import '../home_view_data.dart';
 

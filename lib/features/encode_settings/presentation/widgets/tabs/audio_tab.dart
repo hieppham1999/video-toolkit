@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/widgets/app_dropdown.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/encode_settings_controller.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/pages/encode_settings_controller.dart';
 
 class AudioTab extends StatelessWidget {
   const AudioTab({super.key, required this.controller});

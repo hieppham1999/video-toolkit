@@ -4,7 +4,6 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:video_toolkit/app/injection.dart';
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
-import 'package:video_toolkit/features/fonts_loader/data/models/font_info.dart';
 import 'package:video_toolkit/features/fonts_loader/presentation/cubit/font_cubit.dart';
 import 'package:video_toolkit/features/fonts_loader/presentation/cubit/font_state.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
@@ -12,20 +11,17 @@ import 'package:video_toolkit/features/video_encoding/data/models/settings_prese
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_state.dart';
 import 'package:video_toolkit/widgets/app_button.dart';
-import 'package:video_toolkit/widgets/app_checkbox.dart';
 import 'package:video_toolkit/widgets/app_dialog_title_bar.dart';
-import 'package:video_toolkit/widgets/app_dropdown.dart';
-import 'package:video_toolkit/widgets/app_field.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/app_preset_tile.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/encode_settings_controller.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/sidebar_resize_handle.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/tabs/audio_tab.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/tabs/container_tab.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/tabs/file_tab.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/tabs/sizing_tab.dart';
-import 'package:video_toolkit/features/home/presentation/widgets/shared/tabs/video_codec_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/app_preset_tile.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/pages/encode_settings_controller.dart';
+import 'package:video_toolkit/widgets/app_resizable_divider.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/audio_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/container_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/file_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/filter_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/sizing_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/video_codec_tab.dart';
 import 'package:video_toolkit/app/base/app_state.dart';
-import 'package:video_toolkit/widgets/color_picker_button.dart';
 
 class MacosEncodeSettingsSheet extends StatefulWidget {
   const MacosEncodeSettingsSheet({
@@ -267,9 +263,9 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                       width: _c.sidebarWidth,
                       child: _buildPresetSidebar(theme, l10n, presets),
                     ),
-                    SidebarResizeHandle(
-                      onDragDelta: _c.resizeSidebar,
-                      lineColor: AppColors.divider(theme.brightness),
+                    AppResizableDivider(
+                      axis: Axis.vertical,
+                      onDrag: _c.resizeSidebar,
                     ),
                     Expanded(
                       child: Padding(
@@ -357,7 +353,7 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                                     sampleWidth: widget.sampleWidth,
                                     sampleHeight: widget.sampleHeight,
                                   ),
-                                4 => _buildFilterTab(theme, l10n),
+                                4 => FilterTab(controller: _c),
                                 5 => AudioTab(controller: _c),
                                 _ => const SizedBox.shrink(),
                               },
@@ -445,265 +441,5 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
       ),
     );
   }
-
-  Widget _buildFilterTab(MacosThemeData theme, dynamic l10n) {
-    final b = theme.brightness;
-    final subtleText = AppColors.textTertiary(b);
-
-    final fontState = getIt<FontCubit>().state;
-    final fonts = fontState is NormalState<FontState>
-        ? fontState.data.fonts
-        : const <FontInfo>[];
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AppDropdown<Deinterlace>(
-            label: l10n.deinterlace,
-            value: _c.deinterlace,
-            items: Deinterlace.values,
-            itemLabel: EncodeSettingsController.deinterlaceLabel,
-            onChanged: _c.setDeinterlace,
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Text(l10n.textOverlays, style: theme.typography.headline),
-              const Spacer(),
-              PushButton(
-                controlSize: ControlSize.small,
-                secondary: true,
-                onPressed: _c.addOverlay,
-                child: Text(l10n.addText),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          for (int i = 0; i < _c.textOverlays.length; i++)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: AppColors.surface(b),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          l10n.textOverlayLabel(i + 1),
-                          style: theme.typography.body,
-                        ),
-                        const Spacer(),
-                        MacosIconButton(
-                          icon: MacosIcon(
-                            CupertinoIcons.xmark,
-                            size: 12,
-                            color: subtleText,
-                          ),
-                          onPressed: () => _c.removeOverlay(i),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    AppDropdown<TextOverlayType>(
-                      label: l10n.overlayType,
-                      value: _c.textOverlays[i].type,
-                      items: TextOverlayType.values,
-                      itemLabel: (e) => switch (e) {
-                        TextOverlayType.custom => l10n.overlayTypeCustom,
-                        TextOverlayType.timestamp => l10n.overlayTypeTimestamp,
-                      },
-                      onChanged: (v) => _c.updateOverlay(
-                        i,
-                        _c.textOverlays[i].copyWith(
-                          type: v,
-                          text: v == TextOverlayType.timestamp
-                              ? ''
-                              : _c.textOverlays[i].text,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    if (_c.textOverlays[i].type == TextOverlayType.custom) ...[
-                      AppField(
-                        label: l10n.textLabel,
-                        value: _c.textOverlays[i].text,
-                        onChanged: (v) => _c.updateOverlay(
-                          i,
-                          _c.textOverlays[i].copyWith(text: v),
-                        ),
-                        hint: l10n.textHintTimestamp,
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                    if (_c.textOverlays[i].type == TextOverlayType.timestamp) ...[
-                      AppCheckbox(
-                        value: _c.textOverlays[i].showTimezone,
-                        onChanged: (v) => _c.updateOverlay(
-                          i,
-                          _c.textOverlays[i].copyWith(showTimezone: v),
-                        ),
-                        label: Text(l10n.overlayShowTimezone),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AppField(
-                            label: l10n.fontSize,
-                            value: '${_c.textOverlays[i].fontSize}',
-                            onChanged: (v) => _c.updateOverlay(
-                              i,
-                              _c.textOverlays[i].copyWith(
-                                fontSize: int.tryParse(v) ?? 24,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 100,
-                                child: Text(
-                                  l10n.color,
-                                  style: theme.typography.body,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              ColorPickerButton(
-                                value: _c.textOverlays[i].fontColor,
-                                onChanged: (v) => _c.updateOverlay(
-                                  i,
-                                  _c.textOverlays[i].copyWith(fontColor: v),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AppField(
-                            label: l10n.border,
-                            value: '${_c.textOverlays[i].borderWidth}',
-                            onChanged: (v) => _c.updateOverlay(
-                              i,
-                              _c.textOverlays[i].copyWith(
-                                borderWidth: int.tryParse(v) ?? 0,
-                              ),
-                            ),
-                            hint: l10n.noBorderHint,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 100,
-                                child: Text(
-                                  l10n.borderColor,
-                                  style: theme.typography.body,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              ColorPickerButton(
-                                value: _c.textOverlays[i].borderColor,
-                                onChanged: (v) => _c.updateOverlay(
-                                  i,
-                                  _c.textOverlays[i].copyWith(borderColor: v),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    AppDropdown<TextOverlayPosition>(
-                      label: l10n.position,
-                      value: _c.textOverlays[i].position,
-                      items: TextOverlayPosition.values,
-                      itemLabel: (e) => e.name,
-                      onChanged: (v) => _c.updateOverlay(
-                        i,
-                        _c.textOverlays[i].copyWith(position: v),
-                      ),
-                    ),
-                    if (_c.textOverlays[i].position !=
-                        TextOverlayPosition.center) ...[
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AppField(
-                              label: l10n.offsetX,
-                              value: '${_c.textOverlays[i].offsetX}',
-                              onChanged: (v) => _c.updateOverlay(
-                                i,
-                                _c.textOverlays[i].copyWith(
-                                  offsetX: int.tryParse(v) ?? 0,
-                                ),
-                              ),
-                              hint: l10n.offsetHint,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: AppField(
-                              label: l10n.offsetY,
-                              value: '${_c.textOverlays[i].offsetY}',
-                              onChanged: (v) => _c.updateOverlay(
-                                i,
-                                _c.textOverlays[i].copyWith(
-                                  offsetY: int.tryParse(v) ?? 0,
-                                ),
-                              ),
-                              hint: l10n.offsetHint,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    AppDropdown<String>(
-                      label: l10n.font,
-                      value: _c.textOverlays[i].fontFile ?? '',
-                      items: ['', ...fonts.map((f) => f.path)],
-                      itemLabel: (v) {
-                        if (v.isEmpty) return l10n.fontDefault;
-                        final match =
-                            fonts.where((e) => e.path == v).firstOrNull;
-                        if (match == null) return v;
-                        return match.isBundled
-                            ? '${match.name} (${l10n.fontBundled})'
-                            : match.name;
-                      },
-                      onChanged: (v) => _c.updateOverlay(
-                        i,
-                        _c.textOverlays[i]
-                            .copyWith(fontFile: v.isEmpty ? null : v),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
 }
 

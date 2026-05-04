@@ -15,6 +15,7 @@ import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_e
 import 'package:video_toolkit/features/home/data/models/video_file.dart';
 import 'package:video_toolkit/widgets/app_column_resize_handle.dart';
 import 'package:video_toolkit/widgets/app_context_menu.dart';
+import 'package:video_toolkit/widgets/app_progress_bar.dart';
 
 /// Cross-platform table listing imported videos. Layout, resize, selection,
 /// alt-row striping and per-row progress are platform-agnostic; only the
@@ -512,7 +513,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
         ];
         return Row(
           children: [
-            Expanded(child: _progressBar(progress.percent)),
+            Expanded(child: AppProgressBar(percent: progress.percent)),
             const SizedBox(width: 6),
             Text(parts.join('  ·  '), style: captionStyle),
           ],
@@ -577,13 +578,6 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       icon: MacosIcon(CupertinoIcons.xmark, size: 12, color: palette.subtleText),
       onPressed: () => widget.onRemove(file.path),
     );
-  }
-
-  Widget _progressBar(double percent) {
-    if (Platform.isWindows) {
-      return fluent.ProgressBar(value: percent * 100);
-    }
-    return ProgressBar(value: percent * 100);
   }
 
   _Palette _palette(BuildContext context) {
