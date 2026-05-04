@@ -115,3 +115,13 @@ if(EXISTS "${BUNDLED_EXIFTOOL_DIR}")
     DESTINATION "${INSTALL_BUNDLE_DATA_DIR}/bin"
     COMPONENT Runtime)
 endif()
+
+# Bundled ffmpeg/ffprobe (shared build with sibling DLLs).
+# Must be installed as a directory because the .exe depends on sibling DLLs
+# (avcodec-*.dll, avformat-*.dll, etc.) that asset extraction cannot ship.
+set(BUNDLED_FFMPEG_DIR "${CMAKE_SOURCE_DIR}/../assets/bin/ffmpeg/windows")
+if(EXISTS "${BUNDLED_FFMPEG_DIR}")
+  install(DIRECTORY "${BUNDLED_FFMPEG_DIR}/"
+    DESTINATION "${INSTALL_BUNDLE_DATA_DIR}/bin"
+    COMPONENT Runtime)
+endif()

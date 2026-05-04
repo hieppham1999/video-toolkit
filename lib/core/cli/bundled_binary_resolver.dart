@@ -11,9 +11,10 @@ import 'package:video_toolkit/core/utils/app_logger.dart';
 /// 1. Platform app bundle (prod): macOS `.app/Contents/Resources/bin/<name>`,
 ///    Windows `data/bin/<name>.exe`.
 /// 2. Dev assets: walk up from executable to find `assets/bin/<folder>/<platform>/<name><ext>`.
-/// 3. Flutter asset extraction (single-file tools only, e.g. ffmpeg/ffprobe).
-///    Multi-file tools like exiftool (needs sibling `lib/`) must be shipped via
-///    steps 1 or 2 — asset extraction is skipped for them.
+/// 3. Flutter asset extraction (opt-in via `_singleFileExtractable`). Currently
+///    empty — both ffmpeg (shared build with sibling DLLs on Windows) and
+///    exiftool (needs sibling `lib/`) require their entire folder, so they must
+///    be shipped via steps 1 or 2.
 @lazySingleton
 class BundledBinaryResolver {
   final Map<String, String?> _cache = {};
@@ -26,9 +27,11 @@ class BundledBinaryResolver {
     'exiftool': 'exiftool',
   };
 
-  /// Tools that cannot be extracted from Flutter assets at runtime because
-  /// they depend on sibling files/folders (e.g. exiftool's `lib/`).
-  static const _singleFileExtractable = {'ffmpeg', 'ffprobe'};
+  /// Tools that can be safely extracted as a single file from Flutter assets
+  /// at runtime. Empty: ffmpeg (shared build needs sibling DLLs on Windows)
+  /// and exiftool (needs sibling `lib/`) both require their entire folder
+  /// shipped via app bundle / dev assets.
+  static const _singleFileExtractable = <String>{};
 
   Future<String?> resolve(String name) async {
     if (_cache.containsKey(name)) return _cache[name];

@@ -57,7 +57,14 @@ flutter:
   uses-material-design: true
   generate: true
 
+  # Note: bundled CLI tools (ffmpeg, ffprobe, exiftool) are NOT declared as
+  # Flutter assets. They are shipped via native build steps so each platform
+  # only includes its own binaries:
+  #   - Windows: windows/CMakeLists.txt installs assets/bin/{ffmpeg,exiftool}/windows
+  #     into <app>/data/bin/ next to the exe.
+  #   - macOS: Xcode "Copy Bundled Binaries" build phase rsyncs
+  #     assets/bin/{ffmpeg,exiftool}/macos into Runner.app/Contents/Resources/bin.
+  # In dev (flutter run), BundledBinaryResolver._devAssetPath walks up from
+  # the executable to find the source assets directly.
   assets:
-    - assets/bin/ffmpeg/windows/
-    - assets/bin/ffmpeg/macos/
     - assets/fonts/

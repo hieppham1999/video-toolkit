@@ -440,7 +440,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\nSRC=\"${SRCROOT}/../assets/bin/exiftool/macos\"\nDST=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Contents/Resources/bin\"\nif [ -d \"$SRC\" ]; then\n  mkdir -p \"$DST\"\n  /usr/bin/rsync -a --delete \"$SRC/\" \"$DST/\"\n  chmod +x \"$DST/exiftool\" 2>/dev/null || true\nelse\n  echo \"warning: $SRC not found — skipping exiftool bundling\"\nfi\n";
+			shellScript = "set -e\nDST=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Contents/Resources/bin\"\nmkdir -p \"$DST\"\n# Clean stale binaries from previous builds before re-copying.\nrm -rf \"$DST\"/*\n\nEXIFTOOL_SRC=\"${SRCROOT}/../assets/bin/exiftool/macos\"\nif [ -d \"$EXIFTOOL_SRC\" ]; then\n  /usr/bin/rsync -a \"$EXIFTOOL_SRC/\" \"$DST/\"\n  chmod +x \"$DST/exiftool\" 2>/dev/null || true\nelse\n  echo \"warning: $EXIFTOOL_SRC not found — skipping exiftool bundling\"\nfi\n\nFFMPEG_SRC=\"${SRCROOT}/../assets/bin/ffmpeg/macos\"\nif [ -d \"$FFMPEG_SRC\" ]; then\n  /usr/bin/rsync -a \"$FFMPEG_SRC/\" \"$DST/\"\n  chmod +x \"$DST/ffmpeg\" \"$DST/ffprobe\" 2>/dev/null || true\nelse\n  echo \"warning: $FFMPEG_SRC not found — skipping ffmpeg bundling\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
