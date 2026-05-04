@@ -224,6 +224,24 @@ abstract class AppLocalizations {
   /// **'Path'**
   String get columnPath;
 
+  /// No description provided for @columnSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Setting'**
+  String get columnSetting;
+
+  /// No description provided for @presetModifiedTooltipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Modified from preset:'**
+  String get presetModifiedTooltipTitle;
+
+  /// No description provided for @perFileSettingsOverrideTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'This file uses per-file settings overriding the global settings'**
+  String get perFileSettingsOverrideTooltip;
+
   /// No description provided for @columnSize.
   ///
   /// In en, this message translates to:

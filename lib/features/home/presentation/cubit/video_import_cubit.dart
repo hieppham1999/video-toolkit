@@ -90,10 +90,19 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
     _userSettings.saveEncodeSettings(settings);
   }
 
-  void updateFileSettings(String path, EncodeSettings? settings) {
+  void updateFileSettings(
+    String path,
+    EncodeSettings? settings,
+    String? presetId,
+  ) {
     emitNormal(currentData.copyWith(
       files: currentData.files.map((f) {
-        if (f.path == path) return f.copyWith(overrideSettings: settings);
+        if (f.path == path) {
+          return f.copyWith(
+            overrideSettings: settings,
+            appliedPresetId: settings == null ? null : presetId,
+          );
+        }
         return f;
       }).toList(),
     ));

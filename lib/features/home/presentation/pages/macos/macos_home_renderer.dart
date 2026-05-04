@@ -156,6 +156,8 @@ class MacosHomeRenderer extends StatelessWidget {
                             outputDirectory: data.outputDirectory,
                             selectedFilePath: data.selectedFile?.path,
                             encodeState: data.encodeState,
+                            presets: data.presets,
+                            globalSelectedPresetId: data.globalSelectedPresetId,
                             onSelect: data.onSelectVideo,
                             onRemove: data.onRemoveFile,
                             onRemoveAll: () => _confirmClearAll(context),
@@ -199,7 +201,7 @@ class MacosHomeRenderer extends StatelessWidget {
       context: context,
       builder: (_) => MacosEncodeSettingsSheet(
         settings: data.encodeSettings,
-        onSave: (settings) {
+        onSave: (settings, _) {
           data.onSaveEncodeSettings(settings);
           Navigator.of(context).pop();
         },
@@ -212,7 +214,8 @@ class MacosHomeRenderer extends StatelessWidget {
     BuildContext context,
     VideoFile file,
     EncodeSettings globalSettings,
-    void Function(String path, EncodeSettings? settings) onUpdate,
+    void Function(String path, EncodeSettings? settings, String? presetId)
+        onUpdate,
   ) {
     final base = file.overrideSettings ?? globalSettings;
     final w = file.metadata?.width;
@@ -234,14 +237,14 @@ class MacosHomeRenderer extends StatelessWidget {
         sampleTimezoneOffset: file.metadata?.timezoneOffset,
         sampleWidth: file.metadata?.width,
         sampleHeight: file.metadata?.height,
-        onSave: (settings) {
-          onUpdate(file.path, settings);
+        onSave: (settings, presetId) {
+          onUpdate(file.path, settings, presetId);
           Navigator.of(context).pop();
         },
         onCancel: () => Navigator.of(context).pop(),
         onReset: file.overrideSettings != null
             ? () {
-                onUpdate(file.path, null);
+                onUpdate(file.path, null, null);
                 Navigator.of(context).pop();
               }
             : null,

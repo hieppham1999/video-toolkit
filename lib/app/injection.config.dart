@@ -78,16 +78,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i753.BundledBinaryResolver>(
       () => _i753.BundledBinaryResolver(),
     );
-    gh.lazySingleton<_i1056.UserSettingsDatasource>(
-      () => _i1056.UserSettingsDatasource(),
-    );
-    gh.lazySingleton<_i1063.PresetDatasource>(() => _i1063.PresetDatasource());
     gh.lazySingleton<_i814.SystemFontDatasource>(
       () => _i814.SystemFontDatasource(),
     );
     gh.lazySingleton<_i393.BundledFontDatasource>(
       () => _i393.BundledFontDatasource(),
     );
+    gh.lazySingleton<_i1056.UserSettingsDatasource>(
+      () => _i1056.UserSettingsDatasource(),
+    );
+    gh.lazySingleton<_i1063.PresetDatasource>(() => _i1063.PresetDatasource());
     gh.lazySingleton<_i762.AppSettingCubit>(
       () => _i762.AppSettingCubit(gh<_i1056.UserSettingsDatasource>()),
     );

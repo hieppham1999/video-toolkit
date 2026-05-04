@@ -86,8 +86,12 @@ class _HomePageState extends State<HomePage> {
     _importCubit.updateEncodeSettings(settings);
   }
 
-  void _onUpdateFileSettings(String path, EncodeSettings? settings) {
-    _importCubit.updateFileSettings(path, settings);
+  void _onUpdateFileSettings(
+    String path,
+    EncodeSettings? settings,
+    String? presetId,
+  ) {
+    _importCubit.updateFileSettings(path, settings, presetId);
   }
 
   void _onStart() {
@@ -147,6 +151,8 @@ class _HomePageState extends State<HomePage> {
                   encodeState: encodeState,
                   currentPresetName: selectedPreset?.name,
                   isPresetModified: isPresetModified,
+                  presets: presetState.presets,
+                  globalSelectedPresetId: presetState.selectedId,
                   onPickFiles: _pickFiles,
                   onSelectVideo: _onSelectVideo,
                   onSaveEncodeSettings: _onSaveEncodeSettings,

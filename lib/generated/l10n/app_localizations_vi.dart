@@ -73,6 +73,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get columnPath => 'Đường dẫn';
 
   @override
+  String get columnSetting => 'Cài đặt';
+
+  @override
+  String get presetModifiedTooltipTitle => 'Đã chỉnh từ preset:';
+
+  @override
+  String get perFileSettingsOverrideTooltip =>
+      'File này đang dùng cài đặt riêng đè lên cài đặt chung';
+
+  @override
   String get columnSize => 'Kích thước';
 
   @override

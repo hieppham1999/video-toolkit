@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 mixin _$VideoFile {
 
  String get path; String get name; int get sizeInBytes; DateTime get importedAt; VideoMetadata? get metadata;/// Per-file encode settings override. Null = use global settings.
- EncodeSettings? get overrideSettings;
+ EncodeSettings? get overrideSettings;/// Preset id last selected in the per-file settings dialog.
+/// Null = file follows the globally selected preset.
+ String? get appliedPresetId;
 /// Create a copy of VideoFile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +28,16 @@ $VideoFileCopyWith<VideoFile> get copyWith => _$VideoFileCopyWithImpl<VideoFile>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoFile&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.sizeInBytes, sizeInBytes) || other.sizeInBytes == sizeInBytes)&&(identical(other.importedAt, importedAt) || other.importedAt == importedAt)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.overrideSettings, overrideSettings) || other.overrideSettings == overrideSettings));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoFile&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.sizeInBytes, sizeInBytes) || other.sizeInBytes == sizeInBytes)&&(identical(other.importedAt, importedAt) || other.importedAt == importedAt)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.overrideSettings, overrideSettings) || other.overrideSettings == overrideSettings)&&(identical(other.appliedPresetId, appliedPresetId) || other.appliedPresetId == appliedPresetId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,name,sizeInBytes,importedAt,metadata,overrideSettings);
+int get hashCode => Object.hash(runtimeType,path,name,sizeInBytes,importedAt,metadata,overrideSettings,appliedPresetId);
 
 @override
 String toString() {
-  return 'VideoFile(path: $path, name: $name, sizeInBytes: $sizeInBytes, importedAt: $importedAt, metadata: $metadata, overrideSettings: $overrideSettings)';
+  return 'VideoFile(path: $path, name: $name, sizeInBytes: $sizeInBytes, importedAt: $importedAt, metadata: $metadata, overrideSettings: $overrideSettings, appliedPresetId: $appliedPresetId)';
 }
 
 
@@ -46,7 +48,7 @@ abstract mixin class $VideoFileCopyWith<$Res>  {
   factory $VideoFileCopyWith(VideoFile value, $Res Function(VideoFile) _then) = _$VideoFileCopyWithImpl;
 @useResult
 $Res call({
- String path, String name, int sizeInBytes, DateTime importedAt, VideoMetadata? metadata, EncodeSettings? overrideSettings
+ String path, String name, int sizeInBytes, DateTime importedAt, VideoMetadata? metadata, EncodeSettings? overrideSettings, String? appliedPresetId
 });
 
 
@@ -63,7 +65,7 @@ class _$VideoFileCopyWithImpl<$Res>
 
 /// Create a copy of VideoFile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? path = null,Object? name = null,Object? sizeInBytes = null,Object? importedAt = null,Object? metadata = freezed,Object? overrideSettings = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? path = null,Object? name = null,Object? sizeInBytes = null,Object? importedAt = null,Object? metadata = freezed,Object? overrideSettings = freezed,Object? appliedPresetId = freezed,}) {
   return _then(_self.copyWith(
 path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -71,7 +73,8 @@ as String,sizeInBytes: null == sizeInBytes ? _self.sizeInBytes : sizeInBytes // 
 as int,importedAt: null == importedAt ? _self.importedAt : importedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,metadata: freezed == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
 as VideoMetadata?,overrideSettings: freezed == overrideSettings ? _self.overrideSettings : overrideSettings // ignore: cast_nullable_to_non_nullable
-as EncodeSettings?,
+as EncodeSettings?,appliedPresetId: freezed == appliedPresetId ? _self.appliedPresetId : appliedPresetId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of VideoFile
@@ -180,10 +183,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata,  EncodeSettings? overrideSettings)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata,  EncodeSettings? overrideSettings,  String? appliedPresetId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VideoFile() when $default != null:
-return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata,_that.overrideSettings);case _:
+return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata,_that.overrideSettings,_that.appliedPresetId);case _:
   return orElse();
 
 }
@@ -201,10 +204,10 @@ return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.m
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata,  EncodeSettings? overrideSettings)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata,  EncodeSettings? overrideSettings,  String? appliedPresetId)  $default,) {final _that = this;
 switch (_that) {
 case _VideoFile():
-return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata,_that.overrideSettings);case _:
+return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata,_that.overrideSettings,_that.appliedPresetId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -221,10 +224,10 @@ return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.m
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata,  EncodeSettings? overrideSettings)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String path,  String name,  int sizeInBytes,  DateTime importedAt,  VideoMetadata? metadata,  EncodeSettings? overrideSettings,  String? appliedPresetId)?  $default,) {final _that = this;
 switch (_that) {
 case _VideoFile() when $default != null:
-return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata,_that.overrideSettings);case _:
+return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.metadata,_that.overrideSettings,_that.appliedPresetId);case _:
   return null;
 
 }
@@ -236,7 +239,7 @@ return $default(_that.path,_that.name,_that.sizeInBytes,_that.importedAt,_that.m
 
 
 class _VideoFile implements VideoFile {
-  const _VideoFile({required this.path, required this.name, required this.sizeInBytes, required this.importedAt, this.metadata, this.overrideSettings});
+  const _VideoFile({required this.path, required this.name, required this.sizeInBytes, required this.importedAt, this.metadata, this.overrideSettings, this.appliedPresetId});
   
 
 @override final  String path;
@@ -246,6 +249,9 @@ class _VideoFile implements VideoFile {
 @override final  VideoMetadata? metadata;
 /// Per-file encode settings override. Null = use global settings.
 @override final  EncodeSettings? overrideSettings;
+/// Preset id last selected in the per-file settings dialog.
+/// Null = file follows the globally selected preset.
+@override final  String? appliedPresetId;
 
 /// Create a copy of VideoFile
 /// with the given fields replaced by the non-null parameter values.
@@ -257,16 +263,16 @@ _$VideoFileCopyWith<_VideoFile> get copyWith => __$VideoFileCopyWithImpl<_VideoF
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoFile&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.sizeInBytes, sizeInBytes) || other.sizeInBytes == sizeInBytes)&&(identical(other.importedAt, importedAt) || other.importedAt == importedAt)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.overrideSettings, overrideSettings) || other.overrideSettings == overrideSettings));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoFile&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.sizeInBytes, sizeInBytes) || other.sizeInBytes == sizeInBytes)&&(identical(other.importedAt, importedAt) || other.importedAt == importedAt)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.overrideSettings, overrideSettings) || other.overrideSettings == overrideSettings)&&(identical(other.appliedPresetId, appliedPresetId) || other.appliedPresetId == appliedPresetId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,name,sizeInBytes,importedAt,metadata,overrideSettings);
+int get hashCode => Object.hash(runtimeType,path,name,sizeInBytes,importedAt,metadata,overrideSettings,appliedPresetId);
 
 @override
 String toString() {
-  return 'VideoFile(path: $path, name: $name, sizeInBytes: $sizeInBytes, importedAt: $importedAt, metadata: $metadata, overrideSettings: $overrideSettings)';
+  return 'VideoFile(path: $path, name: $name, sizeInBytes: $sizeInBytes, importedAt: $importedAt, metadata: $metadata, overrideSettings: $overrideSettings, appliedPresetId: $appliedPresetId)';
 }
 
 
@@ -277,7 +283,7 @@ abstract mixin class _$VideoFileCopyWith<$Res> implements $VideoFileCopyWith<$Re
   factory _$VideoFileCopyWith(_VideoFile value, $Res Function(_VideoFile) _then) = __$VideoFileCopyWithImpl;
 @override @useResult
 $Res call({
- String path, String name, int sizeInBytes, DateTime importedAt, VideoMetadata? metadata, EncodeSettings? overrideSettings
+ String path, String name, int sizeInBytes, DateTime importedAt, VideoMetadata? metadata, EncodeSettings? overrideSettings, String? appliedPresetId
 });
 
 
@@ -294,7 +300,7 @@ class __$VideoFileCopyWithImpl<$Res>
 
 /// Create a copy of VideoFile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,Object? sizeInBytes = null,Object? importedAt = null,Object? metadata = freezed,Object? overrideSettings = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,Object? sizeInBytes = null,Object? importedAt = null,Object? metadata = freezed,Object? overrideSettings = freezed,Object? appliedPresetId = freezed,}) {
   return _then(_VideoFile(
 path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -302,7 +308,8 @@ as String,sizeInBytes: null == sizeInBytes ? _self.sizeInBytes : sizeInBytes // 
 as int,importedAt: null == importedAt ? _self.importedAt : importedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,metadata: freezed == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
 as VideoMetadata?,overrideSettings: freezed == overrideSettings ? _self.overrideSettings : overrideSettings // ignore: cast_nullable_to_non_nullable
-as EncodeSettings?,
+as EncodeSettings?,appliedPresetId: freezed == appliedPresetId ? _self.appliedPresetId : appliedPresetId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

@@ -73,6 +73,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get columnPath => 'Path';
 
   @override
+  String get columnSetting => 'Setting';
+
+  @override
+  String get presetModifiedTooltipTitle => 'Modified from preset:';
+
+  @override
+  String get perFileSettingsOverrideTooltip =>
+      'This file uses per-file settings overriding the global settings';
+
+  @override
   String get columnSize => 'Size';
 
   @override

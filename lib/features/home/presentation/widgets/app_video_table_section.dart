@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show Tooltip;
 import 'package:macos_ui/macos_ui.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/app/languages.dart';
@@ -10,6 +11,8 @@ import 'package:video_toolkit/core/utils/file_size_formatter.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/settings_preset.dart';
+import 'package:video_toolkit/features/video_encoding/domain/encode_settings_differ.dart';
 import 'package:video_toolkit/features/video_encoding/domain/output_path_resolver.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/home/data/models/video_file.dart';
@@ -29,6 +32,8 @@ class AppVideoTableSection extends StatefulWidget {
     required this.outputDirectory,
     required this.selectedFilePath,
     required this.encodeState,
+    required this.presets,
+    required this.globalSelectedPresetId,
     required this.onSelect,
     required this.onRemove,
     required this.onRemoveAll,
@@ -40,6 +45,8 @@ class AppVideoTableSection extends StatefulWidget {
   final OutputDirectorySettings outputDirectory;
   final String? selectedFilePath;
   final VideoEncodeState encodeState;
+  final List<SettingsPreset> presets;
+  final String? globalSelectedPresetId;
   final ValueChanged<String> onSelect;
   final ValueChanged<String> onRemove;
   final VoidCallback onRemoveAll;
@@ -54,35 +61,38 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
   static const _gapWidth = 8.0;
   static const _actionWidth = 72.0;
   static const _statusWidth = 140.0;
-  static const _sizeColWidth = 40.0;
-  static const _outputSizeColWidth = 40.0;
+  static const _sizeColWidth = 80.0;
+  static const _outputSizeColWidth = 80.0;
   static const _ratioColWidth = 52.0;
   static const _headerHeight = 32.0;
   // Column indices in display order:
-  // 0: Name (prop), 1: Path (prop), 2: Size (fixed), 3: Output (prop),
-  // 4: OutputSize (fixed), 5: Ratio (fixed), 6: Status (fixed).
-  static const _proportions = [0.28, 0.34, 0.38];
-  static const _propIndices = [0, 1, 3];
+  // 0: Name (prop), 1: Path (prop), 2: Size (fixed), 3: Setting (prop),
+  // 4: Output (prop), 5: OutputSize (fixed), 6: Ratio (fixed),
+  // 7: Status (fixed).
+  static const _proportions = [0.18, 0.32, 0.18, 0.32];
+  static const _propIndices = [0, 1, 3, 4];
 
   static const _greenColor = AppColors.success;
   static const _redColor = AppColors.error;
 
-  final List<double> _dragOffsets = [0, 0, 0, 0, 0, 0, 0];
+  final List<double> _dragOffsets = [0, 0, 0, 0, 0, 0, 0, 0];
   final Map<String, int?> _outputSizeCache = {};
   List<double> _lastColWidths = const [];
 
   double _fixedWidth(int idx, double base) =>
       (base + _dragOffsets[idx]).clamp(_minColWidth, double.infinity);
 
-  /// Returns widths in display order (indices 0..6). Status columns are 0 when
+  /// Returns widths in display order (indices 0..7). Status columns are 0 when
   /// hidden.
   List<double> _computeWidths(double viewportWidth, bool showStatus) {
     final size = _fixedWidth(2, _sizeColWidth);
     final outSize =
-        showStatus ? _fixedWidth(4, _outputSizeColWidth) : 0.0;
-    final ratio = showStatus ? _fixedWidth(5, _ratioColWidth) : 0.0;
-    final status = showStatus ? _fixedWidth(6, _statusWidth) : 0.0;
-    final gapCount = showStatus ? 6 : 3;
+        showStatus ? _fixedWidth(5, _outputSizeColWidth) : 0.0;
+    final ratio = showStatus ? _fixedWidth(6, _ratioColWidth) : 0.0;
+    final status = showStatus ? _fixedWidth(7, _statusWidth) : 0.0;
+    // Visible-column gaps: 4 always (between 0-1, 1-2, 2-3, 3-4) +
+    // 3 when status block shown (4-5, 5-6, 6-7).
+    final gapCount = showStatus ? 7 : 4;
     final available = viewportWidth -
         _actionWidth -
         size -
@@ -91,11 +101,20 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
         status -
         32 -
         (_gapWidth * gapCount);
-    final props = List<double>.generate(3, (j) {
+    final props = List<double>.generate(_propIndices.length, (j) {
       return (available * _proportions[j] + _dragOffsets[_propIndices[j]])
           .clamp(_minColWidth, double.infinity);
     });
-    _lastColWidths = [props[0], props[1], size, props[2], outSize, ratio, status];
+    _lastColWidths = [
+      props[0], // Name
+      props[1], // Path
+      size,
+      props[2], // Setting
+      props[3], // Output
+      outSize,
+      ratio,
+      status,
+    ];
     return _lastColWidths;
   }
 
@@ -114,7 +133,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     // If a fixed column is involved, `available` changes and every
     // proportional column would redistribute. Compensate each proportional
     // column's offset so only L and R actually change width.
-    const fixedCols = {2, 4, 5, 6};
+    const fixedCols = {2, 5, 6, 7};
     double f = 0;
     if (fixedCols.contains(leftIdx)) f += effective;
     if (fixedCols.contains(leftIdx + 1)) f -= effective;
@@ -161,7 +180,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final colWidths = _computeWidths(constraints.maxWidth, showStatus);
-          final gapCount = showStatus ? 6 : 3;
+          final gapCount = showStatus ? 7 : 4;
           final contentWidth = colWidths.fold(0.0, (s, w) => s + w) +
               (_gapWidth * gapCount) +
               _actionWidth +
@@ -238,23 +257,28 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
             dividerColor: palette.divider,
             onDrag: (dx) => _onResizeColumn(2, dx),
           ),
-          headerCell(l10n.columnOutput, colWidths[3]),
+          headerCell(l10n.columnSetting, colWidths[3]),
+          AppColumnResizeHandle(
+            dividerColor: palette.divider,
+            onDrag: (dx) => _onResizeColumn(3, dx),
+          ),
+          headerCell(l10n.columnOutput, colWidths[4]),
           if (showStatus) ...[
-            AppColumnResizeHandle(
-              dividerColor: palette.divider,
-              onDrag: (dx) => _onResizeColumn(3, dx),
-            ),
-            headerCell(l10n.columnOutputSize, colWidths[4], alignEnd: true),
             AppColumnResizeHandle(
               dividerColor: palette.divider,
               onDrag: (dx) => _onResizeColumn(4, dx),
             ),
-            headerCell(l10n.columnSizeRatio, colWidths[5], alignEnd: true),
+            headerCell(l10n.columnOutputSize, colWidths[5], alignEnd: true),
             AppColumnResizeHandle(
               dividerColor: palette.divider,
               onDrag: (dx) => _onResizeColumn(5, dx),
             ),
-            headerCell(l10n.columnStatus, colWidths[6]),
+            headerCell(l10n.columnSizeRatio, colWidths[6], alignEnd: true),
+            AppColumnResizeHandle(
+              dividerColor: palette.divider,
+              onDrag: (dx) => _onResizeColumn(6, dx),
+            ),
+            headerCell(l10n.columnStatus, colWidths[7]),
           ],
           const SizedBox(width: _actionWidth),
         ],
@@ -361,9 +385,14 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
               ),
             ),
             const SizedBox(width: _gapWidth),
+            SizedBox(
+              width: colWidths[3],
+              child: _settingCell(palette, file, effectiveSettings, captionStyle),
+            ),
+            const SizedBox(width: _gapWidth),
             fluent.Expanded(
               child: SizedBox(
-                width: colWidths[3],
+                width: colWidths[4],
                 child: Text(
                   outputPath,
                   style: subtleCaptionStyle,
@@ -374,7 +403,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
             if (showStatus) ...[
               const SizedBox(width: _gapWidth),
               SizedBox(
-                width: colWidths[4],
+                width: colWidths[5],
                 child: Text(
                   outputSizeLabel,
                   style: captionStyle,
@@ -384,7 +413,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
               ),
               const SizedBox(width: _gapWidth),
               SizedBox(
-                width: colWidths[5],
+                width: colWidths[6],
                 child: Text(
                   ratioLabel,
                   style: captionStyle,
@@ -394,7 +423,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
               ),
               const SizedBox(width: _gapWidth),
               SizedBox(
-                width: colWidths[6],
+                width: colWidths[7],
                 child: _statusCell(palette, rowStatus!, captionStyle),
               ),
             ],
@@ -555,15 +584,22 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
 
   Widget _settingsButton(_Palette palette, bool hasOverride, VideoFile file) {
     final color = hasOverride ? palette.accent : palette.subtleText;
-    if (Platform.isWindows) {
-      return fluent.IconButton(
-        icon: fluent.Icon(fluent.FluentIcons.settings, size: 12, color: color),
-        onPressed: () => widget.onOpenFileSettings(file),
-      );
-    }
-    return MacosIconButton(
-      icon: MacosIcon(CupertinoIcons.slider_horizontal_3, size: 12, color: color),
-      onPressed: () => widget.onOpenFileSettings(file),
+    final Widget button = Platform.isWindows
+        ? fluent.IconButton(
+            icon: fluent.Icon(fluent.FluentIcons.settings,
+                size: 12, color: color),
+            onPressed: () => widget.onOpenFileSettings(file),
+          )
+        : MacosIconButton(
+            icon: MacosIcon(CupertinoIcons.slider_horizontal_3,
+                size: 12, color: color),
+            onPressed: () => widget.onOpenFileSettings(file),
+          );
+    if (!hasOverride) return button;
+    return Tooltip(
+      message: Languages.translate.perFileSettingsOverrideTooltip,
+      waitDuration: const Duration(milliseconds: 400),
+      child: button,
     );
   }
 
@@ -577,6 +613,52 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     return MacosIconButton(
       icon: MacosIcon(CupertinoIcons.xmark, size: 12, color: palette.subtleText),
       onPressed: () => widget.onRemove(file.path),
+    );
+  }
+
+  Widget _settingCell(
+    _Palette palette,
+    VideoFile file,
+    EncodeSettings effectiveSettings,
+    TextStyle captionStyle,
+  ) {
+    final l10n = Languages.translate;
+    final effectivePresetId =
+        file.appliedPresetId ?? widget.globalSelectedPresetId;
+    final basePreset = effectivePresetId == null
+        ? null
+        : widget.presets
+            .where((p) => p.id == effectivePresetId)
+            .firstOrNull;
+
+    if (basePreset == null) {
+      return Text(
+        '–',
+        style: captionStyle.copyWith(color: palette.subtleText),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+
+    final diffs =
+        EncodeSettingsDiffer.diff(basePreset.settings, effectiveSettings);
+    final isModified = diffs.isNotEmpty;
+    final label = isModified ? '${basePreset.name} *' : basePreset.name;
+    final color = isModified ? palette.accent : null;
+    final text = Text(
+      label,
+      style: color == null ? captionStyle : captionStyle.copyWith(color: color),
+      overflow: TextOverflow.ellipsis,
+    );
+    if (!isModified) return text;
+
+    final lines = [
+      '${l10n.presetModifiedTooltipTitle} ${basePreset.name}',
+      ...diffs.map((d) => '${d.label}: ${d.before} → ${d.after}'),
+    ];
+    return Tooltip(
+      message: lines.join('\n'),
+      waitDuration: const Duration(milliseconds: 400),
+      child: text,
     );
   }
 

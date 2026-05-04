@@ -39,7 +39,7 @@ class MacosEncodeSettingsSheet extends StatefulWidget {
   });
 
   final EncodeSettings settings;
-  final ValueChanged<EncodeSettings> onSave;
+  final void Function(EncodeSettings settings, String? presetId) onSave;
   final VoidCallback onCancel;
   final VoidCallback? onReset;
   final String sampleFileName;
@@ -383,7 +383,10 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                                   size: AppButtonSize.large,
                                   onPressed: () {
                                     _c.commitPresetSelection();
-                                    widget.onSave(_c.buildSettings());
+                                    widget.onSave(
+                                      _c.buildSettings(),
+                                      _c.selectedPresetId,
+                                    );
                                   },
                                   child: Text(l10n.save),
                                 ),
