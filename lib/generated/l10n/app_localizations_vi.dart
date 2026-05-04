@@ -538,4 +538,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get outputDirCustomNotSet => 'Chưa chọn thư mục';
+
+  @override
+  String get settingsTabGeneral => 'Chung';
+
+  @override
+  String get settingsTabFileHandling => 'Quản lý tệp';
+
+  @override
+  String get settingsTabAbout => 'Giới thiệu';
+
+  @override
+  String get aboutAuthor => 'Tác giả';
+
+  @override
+  String get aboutVersion => 'Phiên bản';
+
+  @override
+  String get aboutAppName => 'Video Toolkit';
 }

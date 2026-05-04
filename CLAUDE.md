@@ -50,6 +50,7 @@ Flutter desktop app (macOS + Windows) for video processing. Uses `macos_ui` for 
 - **When changing app behavior or UI features, always update BOTH platform renderers.** A change to one renderer without the other is a bug. Check both files before considering a task complete.
 
 ## Cross-Platform Widgets (App* pattern)
+- **Default rule: when creating ANY new widget class, write a cross-platform `App*` widget first.** Per-platform `Macos*` / `Fluent*` classes are the exception, only justified when behavior genuinely diverges. Never reach for a per-platform pair as the first move.
 - **Prefer cross-platform `App*` wrappers** over per-platform widget classes whenever structure is similar between macOS and Windows. This avoids the "sửa 1 bên quên bên kia" bug class.
 - Live under `lib/features/video_import/presentation/widgets/` (e.g. `app_field.dart`, `app_dropdown.dart`, `app_preset_chip.dart`, `app_metadata_row.dart`, `app_overall_progress_bar.dart`).
 - **When creating a new widget**, before writing `Macos*` / `Fluent*` pair, check if an `App*` wrapper fits:

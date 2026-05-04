@@ -184,5 +184,11 @@
   "outputDirSubfolderHint": "Sub-folder name",
   "outputDirChooseFolder": "Choose folder…",
   "outputDirPreview": "Preview",
-  "outputDirCustomNotSet": "No folder selected"
+  "outputDirCustomNotSet": "No folder selected",
+  "settingsTabGeneral": "General",
+  "settingsTabFileHandling": "File Handling",
+  "settingsTabAbout": "About",
+  "aboutAuthor": "Author",
+  "aboutVersion": "Version",
+  "aboutAppName": "Video Toolkit"
 }

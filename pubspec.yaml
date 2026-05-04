@@ -43,6 +43,9 @@ dependencies:
   # Date formatting
   intl: any
 
+  # App metadata
+  package_info_plus: ^8.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

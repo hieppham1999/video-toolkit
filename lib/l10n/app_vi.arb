@@ -184,5 +184,11 @@
   "outputDirSubfolderHint": "Tên thư mục con",
   "outputDirChooseFolder": "Chọn thư mục…",
   "outputDirPreview": "Xem trước",
-  "outputDirCustomNotSet": "Chưa chọn thư mục"
+  "outputDirCustomNotSet": "Chưa chọn thư mục",
+  "settingsTabGeneral": "Chung",
+  "settingsTabFileHandling": "Quản lý tệp",
+  "settingsTabAbout": "Giới thiệu",
+  "aboutAuthor": "Tác giả",
+  "aboutVersion": "Phiên bản",
+  "aboutAppName": "Video Toolkit"
 }

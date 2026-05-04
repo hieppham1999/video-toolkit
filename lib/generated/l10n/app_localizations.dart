@@ -1135,6 +1135,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No folder selected'**
   String get outputDirCustomNotSet;
+
+  /// No description provided for @settingsTabGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get settingsTabGeneral;
+
+  /// No description provided for @settingsTabFileHandling.
+  ///
+  /// In en, this message translates to:
+  /// **'File Handling'**
+  String get settingsTabFileHandling;
+
+  /// No description provided for @settingsTabAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsTabAbout;
+
+  /// No description provided for @aboutAuthor.
+  ///
+  /// In en, this message translates to:
+  /// **'Author'**
+  String get aboutAuthor;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get aboutVersion;
+
+  /// No description provided for @aboutAppName.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Toolkit'**
+  String get aboutAppName;
 }
 
 class _AppLocalizationsDelegate

@@ -540,4 +540,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get outputDirCustomNotSet => 'No folder selected';
+
+  @override
+  String get settingsTabGeneral => 'General';
+
+  @override
+  String get settingsTabFileHandling => 'File Handling';
+
+  @override
+  String get settingsTabAbout => 'About';
+
+  @override
+  String get aboutAuthor => 'Author';
+
+  @override
+  String get aboutVersion => 'Version';
+
+  @override
+  String get aboutAppName => 'Video Toolkit';
 }

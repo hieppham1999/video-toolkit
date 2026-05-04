@@ -97,10 +97,18 @@ class _AppDialogTitleBarState extends State<AppDialogTitleBar> {
       ),
     );
 
+    // When shrinkWrap is true the sheet must size to its content height —
+    // but MacosSheet sits inside `showDialog`'s tight (full-screen) constraints
+    // and would otherwise stretch. Wrapping in Align loosens vertical
+    // constraints so the sheet shrinks to fit its child.
+    final boxed = widget.shrinkWrap
+        ? Align(alignment: Alignment.center, child: sheet)
+        : sheet;
+
     if (widget.draggable) {
-      return Transform.translate(offset: _dragOffset, child: sheet);
+      return Transform.translate(offset: _dragOffset, child: boxed);
     }
-    return sheet;
+    return boxed;
   }
 }
 
