@@ -18,11 +18,13 @@ class FileTab extends StatelessWidget {
     required this.controller,
     required this.sampleFileName,
     required this.sampleCreationDate,
+    this.sampleTimezoneOffset,
   });
 
   final EncodeSettingsController controller;
   final String sampleFileName;
   final DateTime? sampleCreationDate;
+  final String? sampleTimezoneOffset;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,7 @@ class FileTab extends StatelessWidget {
       c.outputNameTemplate,
       originalName: sampleFileName,
       creationDate: sampleCreationDate ?? DateTime.now(),
-      sourceTimezoneOffset: c.sourceTimezoneOffset,
+      sourceTimezoneOffset: c.sourceTimezoneOffset ?? sampleTimezoneOffset,
     );
     return SingleChildScrollView(
       child: Column(

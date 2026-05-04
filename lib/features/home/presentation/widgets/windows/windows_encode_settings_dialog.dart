@@ -34,6 +34,7 @@ class WindowsEncodeSettingsDialog extends StatefulWidget {
     this.onReset,
     this.sampleFileName = 'video',
     this.sampleCreationDate,
+    this.sampleTimezoneOffset,
     this.sampleWidth,
     this.sampleHeight,
   });
@@ -44,6 +45,7 @@ class WindowsEncodeSettingsDialog extends StatefulWidget {
   final VoidCallback? onReset;
   final String sampleFileName;
   final DateTime? sampleCreationDate;
+  final String? sampleTimezoneOffset;
   final int? sampleWidth;
   final int? sampleHeight;
 
@@ -341,6 +343,7 @@ class _WindowsEncodeSettingsDialogState
                           controller: _c,
                           sampleFileName: widget.sampleFileName,
                           sampleCreationDate: widget.sampleCreationDate,
+                          sampleTimezoneOffset: widget.sampleTimezoneOffset,
                         ),
                       1 => ContainerTab(controller: _c),
                       2 => VideoCodecTab(controller: _c),

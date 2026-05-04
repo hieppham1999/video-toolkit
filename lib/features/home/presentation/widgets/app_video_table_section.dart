@@ -280,7 +280,8 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       effectiveSettings.outputNameTemplate,
       originalName: baseName,
       creationDate: file.metadata?.creationDate,
-      sourceTimezoneOffset: effectiveSettings.sourceTimezoneOffset,
+      sourceTimezoneOffset: effectiveSettings.sourceTimezoneOffset ??
+          file.metadata?.timezoneOffset,
     );
     final outputDir = OutputPathResolver.resolveDir(
       inputPath: file.path,

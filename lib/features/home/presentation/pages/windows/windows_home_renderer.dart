@@ -209,6 +209,7 @@ class WindowsHomeRenderer extends StatelessWidget {
         settings: effective,
         sampleFileName: p.basenameWithoutExtension(file.path),
         sampleCreationDate: file.metadata?.creationDate,
+        sampleTimezoneOffset: file.metadata?.timezoneOffset,
         sampleWidth: file.metadata?.width,
         sampleHeight: file.metadata?.height,
         onSave: (settings) {

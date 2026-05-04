@@ -133,9 +133,13 @@ class ExiftoolDatasource {
     appLogger.d('exiftool parse date input: $value (type=${value.runtimeType})');
     if (value == null || value is! String) return null;
 
+    // QuickTime CreateDate/MediaCreateDate atoms are UTC per spec when written
+    // without an offset. Parse offset-less strings as UTC so downstream shift
+    // logic (`.toUtc().add(sourceOffset)`) doesn't double-count the machine TZ.
+    final hasOffset = _tzOffsetRegex.hasMatch(value.trim());
     for (final fmt in _dateFormats) {
       try {
-        return fmt.parse(value);
+        return fmt.parse(value, !hasOffset);
       } catch (_) {
         // try next format
       }

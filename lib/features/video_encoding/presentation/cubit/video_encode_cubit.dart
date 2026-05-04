@@ -71,7 +71,15 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
 
     _lastLoggedBucket = -1;
     final file = _queue[index];
-    final settings = file.overrideSettings ?? _globalSettings;
+    final rawSettings = file.overrideSettings ?? _globalSettings;
+    // When user keeps TZ on "Auto", fall back to the source's auto-detected
+    // offset so filename / overlay timestamps reflect the recording's local
+    // wall-clock instead of the encode machine's TZ.
+    final settings = rawSettings.sourceTimezoneOffset == null
+        ? rawSettings.copyWith(
+            sourceTimezoneOffset: file.metadata?.timezoneOffset,
+          )
+        : rawSettings;
     final dir = OutputPathResolver.resolveDir(
       inputPath: file.path,
       settings: _outputDirectory,
