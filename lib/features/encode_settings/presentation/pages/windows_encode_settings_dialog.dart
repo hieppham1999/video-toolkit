@@ -37,6 +37,7 @@ class WindowsEncodeSettingsDialog extends StatefulWidget {
     this.sampleTimezoneOffset,
     this.sampleWidth,
     this.sampleHeight,
+    this.isPerFile = false,
   });
 
   final EncodeSettings settings;
@@ -48,6 +49,7 @@ class WindowsEncodeSettingsDialog extends StatefulWidget {
   final String? sampleTimezoneOffset;
   final int? sampleWidth;
   final int? sampleHeight;
+  final bool isPerFile;
 
   @override
   State<WindowsEncodeSettingsDialog> createState() =>
@@ -64,6 +66,7 @@ class _WindowsEncodeSettingsDialogState
     _c = EncodeSettingsController(
       initialSettings: widget.settings,
       presetCubit: getIt<PresetCubit>(),
+      isPerFile: widget.isPerFile,
     );
   }
 
@@ -368,7 +371,10 @@ class _WindowsEncodeSettingsDialogState
           Button(onPressed: widget.onReset, child: Text(l10n.resetToGlobal)),
         Button(onPressed: widget.onCancel, child: Text(l10n.cancel)),
         AppButton(
-          onPressed: () => widget.onSave(_c.buildSettings()),
+          onPressed: () {
+            _c.commitPresetSelection();
+            widget.onSave(_c.buildSettings());
+          },
           child: Text(l10n.save),
         ),
       ],

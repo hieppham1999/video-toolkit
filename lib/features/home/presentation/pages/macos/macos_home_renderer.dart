@@ -228,6 +228,7 @@ class MacosHomeRenderer extends StatelessWidget {
       context: context,
       builder: (_) => MacosEncodeSettingsSheet(
         settings: effective,
+        isPerFile: true,
         sampleFileName: p.basenameWithoutExtension(file.path),
         sampleCreationDate: file.metadata?.creationDate,
         sampleTimezoneOffset: file.metadata?.timezoneOffset,

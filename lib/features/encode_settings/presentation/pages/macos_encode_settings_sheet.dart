@@ -35,6 +35,7 @@ class MacosEncodeSettingsSheet extends StatefulWidget {
     this.sampleTimezoneOffset,
     this.sampleWidth,
     this.sampleHeight,
+    this.isPerFile = false,
   });
 
   final EncodeSettings settings;
@@ -46,6 +47,7 @@ class MacosEncodeSettingsSheet extends StatefulWidget {
   final String? sampleTimezoneOffset;
   final int? sampleWidth;
   final int? sampleHeight;
+  final bool isPerFile;
 
   @override
   State<MacosEncodeSettingsSheet> createState() =>
@@ -61,6 +63,7 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
     _c = EncodeSettingsController(
       initialSettings: widget.settings,
       presetCubit: getIt<PresetCubit>(),
+      isPerFile: widget.isPerFile,
     );
   }
 
@@ -378,8 +381,10 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                                 const SizedBox(width: 8),
                                 AppButton(
                                   size: AppButtonSize.large,
-                                  onPressed: () =>
-                                      widget.onSave(_c.buildSettings()),
+                                  onPressed: () {
+                                    _c.commitPresetSelection();
+                                    widget.onSave(_c.buildSettings());
+                                  },
                                   child: Text(l10n.save),
                                 ),
                               ],

@@ -207,6 +207,7 @@ class WindowsHomeRenderer extends StatelessWidget {
       context: context,
       builder: (_) => WindowsEncodeSettingsDialog(
         settings: effective,
+        isPerFile: true,
         sampleFileName: p.basenameWithoutExtension(file.path),
         sampleCreationDate: file.metadata?.creationDate,
         sampleTimezoneOffset: file.metadata?.timezoneOffset,

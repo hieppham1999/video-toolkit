@@ -14,12 +14,14 @@ class EncodeSettingsController extends ChangeNotifier {
   EncodeSettingsController({
     required EncodeSettings initialSettings,
     required this.presetCubit,
+    this.isPerFile = false,
   }) {
     _loadFromSettings(initialSettings);
     selectedPresetId = presetCubit.currentData.selectedId;
   }
 
   final PresetCubit presetCubit;
+  final bool isPerFile;
   final ScrollController presetScrollController = ScrollController();
 
   static const double minSidebar = 160;
@@ -317,8 +319,14 @@ class EncodeSettingsController extends ChangeNotifier {
   void selectPreset(SettingsPreset p) {
     selectedPresetId = p.id;
     _loadFromSettings(p.settings);
-    presetCubit.select(p.id);
     notifyListeners();
+  }
+
+  /// Commits the in-sheet preset selection to the global cubit. Called by the
+  /// platform view when the user confirms (Save). No-op in per-file mode.
+  void commitPresetSelection() {
+    if (isPerFile) return;
+    presetCubit.select(selectedPresetId);
   }
 
   /// Returns the newly created preset (callers may want to show a toast).
