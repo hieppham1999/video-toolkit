@@ -321,6 +321,14 @@ abstract class EncodeSettings with _$EncodeSettings {
           (outputExtension == OutputExtension.mp4 ||
               outputExtension == OutputExtension.mov))
         ...['-movflags', '+faststart'],
+      // Apple devices (QuickTime, iOS, macOS) only play HEVC in MP4/MOV when
+      // the sample entry uses the `hvc1` tag. ffmpeg defaults to `hev1`, which
+      // results in unplayable files on Apple platforms.
+      if (pass != 1 &&
+          codec == VideoEncoder.h265 &&
+          (outputExtension == OutputExtension.mp4 ||
+              outputExtension == OutputExtension.mov))
+        ...['-tag:v', 'hvc1'],
       if (pass != 1 &&
           useDisplayRotation &&
           rotation != Rotation.none)
