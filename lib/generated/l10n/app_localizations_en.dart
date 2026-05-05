@@ -39,6 +39,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removeAll => 'Remove all';
 
   @override
+  String get revealInputInFolder => 'Show input in folder';
+
+  @override
+  String get revealOutputInFolder => 'Show output in folder';
+
+  @override
   String get noVideos => 'No videos yet';
 
   @override

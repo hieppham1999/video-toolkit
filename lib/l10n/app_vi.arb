@@ -9,6 +9,8 @@
   "clearAll": "Xóa tất cả",
   "remove": "Gỡ",
   "removeAll": "Gỡ tất cả",
+  "revealInputInFolder": "Hiện file gốc trong thư mục",
+  "revealOutputInFolder": "Hiện file kết quả trong thư mục",
   "noVideos": "Chưa có video nào",
   "clearAllConfirmMessage": "Bạn có chắc muốn xóa tất cả video khỏi danh sách?",
   "cancel": "Hủy",

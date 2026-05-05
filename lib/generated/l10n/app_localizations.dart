@@ -158,6 +158,18 @@ abstract class AppLocalizations {
   /// **'Remove all'**
   String get removeAll;
 
+  /// No description provided for @revealInputInFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Show input in folder'**
+  String get revealInputInFolder;
+
+  /// No description provided for @revealOutputInFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Show output in folder'**
+  String get revealOutputInFolder;
+
   /// No description provided for @noVideos.
   ///
   /// In en, this message translates to:

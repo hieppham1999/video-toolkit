@@ -7,6 +7,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
+import 'package:video_toolkit/core/utils/file_reveal.dart';
 import 'package:video_toolkit/core/utils/file_size_formatter.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
@@ -173,11 +174,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       );
     }
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onSecondaryTapDown: (details) =>
-          _showAreaMenu(context, details.globalPosition),
-      child: LayoutBuilder(
+    return LayoutBuilder(
         builder: (context, constraints) {
           final colWidths = _computeWidths(constraints.maxWidth, showStatus);
           final gapCount = showStatus ? 7 : 4;
@@ -209,7 +206,6 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
             ),
           );
         },
-      ),
     );
   }
 
@@ -338,9 +334,15 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
         : palette.subtleCaptionStyle.copyWith(color: rowColor);
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => widget.onSelect(file.path),
-      onSecondaryTapDown: (details) =>
-          _showRowMenu(context, details.globalPosition, file),
+      onSecondaryTapDown: (details) => _showRowMenu(
+        context,
+        details.globalPosition,
+        file,
+        outputPath: outputPath,
+        isCompleted: isCompleted,
+      ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
@@ -443,34 +445,37 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     );
   }
 
-  void _showRowMenu(BuildContext context, Offset position, VideoFile file) {
+  void _showRowMenu(
+    BuildContext context,
+    Offset position,
+    VideoFile file, {
+    required String outputPath,
+    required bool isCompleted,
+  }) {
+    if (widget.selectedFilePath != file.path) {
+      widget.onSelect(file.path);
+    }
     final l10n = Languages.translate;
-    final isSelected = widget.selectedFilePath == file.path;
+    final showRevealOutput =
+        isCompleted && File(outputPath).existsSync();
     showAppContextMenu(
       context: context,
       globalPosition: position,
       items: [
-        if (isSelected)
+        AppContextMenuItem(
+          label: l10n.revealInputInFolder,
+          onTap: () => revealInOsFileManager(file.path),
+        ),
+        if (showRevealOutput)
           AppContextMenuItem(
-            label: l10n.remove,
-            isDestructive: true,
-            onTap: () => widget.onRemove(file.path),
+            label: l10n.revealOutputInFolder,
+            onTap: () => revealInOsFileManager(outputPath),
           ),
         AppContextMenuItem(
-          label: l10n.removeAll,
+          label: l10n.remove,
           isDestructive: true,
-          onTap: widget.onRemoveAll,
+          onTap: () => widget.onRemove(file.path),
         ),
-      ],
-    );
-  }
-
-  void _showAreaMenu(BuildContext context, Offset position) {
-    final l10n = Languages.translate;
-    showAppContextMenu(
-      context: context,
-      globalPosition: position,
-      items: [
         AppContextMenuItem(
           label: l10n.removeAll,
           isDestructive: true,

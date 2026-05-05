@@ -39,6 +39,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get removeAll => 'Gỡ tất cả';
 
   @override
+  String get revealInputInFolder => 'Hiện file gốc trong thư mục';
+
+  @override
+  String get revealOutputInFolder => 'Hiện file kết quả trong thư mục';
+
+  @override
   String get noVideos => 'Chưa có video nào';
 
   @override

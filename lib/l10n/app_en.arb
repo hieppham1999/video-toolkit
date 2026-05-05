@@ -9,6 +9,8 @@
   "clearAll": "Clear all",
   "remove": "Remove",
   "removeAll": "Remove all",
+  "revealInputInFolder": "Show input in folder",
+  "revealOutputInFolder": "Show output in folder",
   "noVideos": "No videos yet",
   "clearAllConfirmMessage": "Are you sure you want to remove all videos from the list?",
   "cancel": "Cancel",
