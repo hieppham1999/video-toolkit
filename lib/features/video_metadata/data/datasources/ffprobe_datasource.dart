@@ -1,0 +1,128 @@
+import 'dart:convert';
+
+import 'package:injectable/injectable.dart';
+import 'package:video_toolkit/core/cli/cli_tool_runner.dart';
+import 'package:video_toolkit/core/utils/app_logger.dart';
+import 'package:video_toolkit/features/video_metadata/data/models/video_metadata.dart';
+
+@lazySingleton
+class FfprobeDatasource {
+  FfprobeDatasource(this._runner);
+
+  final CliToolRunner _runner;
+
+  static const _executable = 'ffprobe';
+
+  Future<bool> get isAvailable => _runner.isAvailable(_executable);
+
+  Future<VideoMetadata?> extract(String filePath) async {
+    if (!await isAvailable) return null;
+
+    // -probesize 1M and -analyzeduration 1000000 (1s) limit how much of the file
+    // ffprobe reads to infer stream info. Defaults are 5MB / 5s which is slow
+    // on large files; 1MB / 1s is more than enough for MP4/MOV container headers
+    // and gives accurate codec/resolution/fps/duration.
+    final args = [
+      '-v', 'quiet',
+      '-probesize', '1000000',
+      '-analyzeduration', '1000000',
+      '-print_format', 'json',
+      '-show_format',
+      '-show_streams',
+      filePath,
+    ];
+    appLogger.i('ffprobe command: $_executable ${args.join(' ')}');
+    final result = await _runner.run(_executable, args, timeout: const Duration(seconds: 15));
+
+    if (!result.isSuccess) {
+      appLogger.w('ffprobe failed for $filePath: ${result.stderr}');
+      return null;
+    }
+
+    appLogger.d('ffprobe raw output for $filePath:\n${result.stdout}');
+
+    try {
+      final data = jsonDecode(result.stdout) as Map<String, dynamic>;
+      final streams = data['streams'] as List? ?? [];
+      final format = data['format'] as Map<String, dynamic>? ?? {};
+
+      final videoStream = streams.cast<Map<String, dynamic>>().where(
+        (s) => s['codec_type'] == 'video',
+      ).firstOrNull;
+
+      final audioStream = streams.cast<Map<String, dynamic>>().where(
+        (s) => s['codec_type'] == 'audio',
+      ).firstOrNull;
+
+      final metadata = VideoMetadata(
+        duration: _parseDuration(format['duration']),
+        width: videoStream?['width'] as int?,
+        height: videoStream?['height'] as int?,
+        videoCodec: videoStream?['codec_name'] as String?,
+        audioCodec: audioStream?['codec_name'] as String?,
+        bitrate: int.tryParse(format['bit_rate']?.toString() ?? ''),
+        creationDate: _parseCreationDate(videoStream, format),
+        frameRate: _parseFrameRate(videoStream?['r_frame_rate']),
+      );
+
+      appLogger.i(
+        'ffprobe parsed: duration=${metadata.duration}, '
+        '${metadata.width}x${metadata.height}, '
+        'video=${metadata.videoCodec}, audio=${metadata.audioCodec}, '
+        'bitrate=${metadata.bitrate}, fps=${metadata.frameRate}, '
+        'creationDate=${metadata.creationDate}',
+      );
+
+      return metadata;
+    } catch (e) {
+      appLogger.e('ffprobe parse error: $e');
+      return null;
+    }
+  }
+
+  /// Extract creation time. Priority: video stream tags > format tags.
+  /// Tag keys vary by container — try common ones in order.
+  DateTime? _parseCreationDate(
+    Map<String, dynamic>? videoStream,
+    Map<String, dynamic> format,
+  ) {
+    const candidateKeys = ['creation_time', 'date', 'DATE', 'com.apple.quicktime.creationdate'];
+    final tagSources = [
+      videoStream?['tags'] as Map?,
+      format['tags'] as Map?,
+    ];
+
+    for (final tags in tagSources) {
+      if (tags == null) continue;
+      for (final key in candidateKeys) {
+        final raw = tags[key]?.toString();
+        if (raw == null || raw.isEmpty) continue;
+        final parsed = DateTime.tryParse(raw);
+        if (parsed != null) return parsed;
+      }
+    }
+    return null;
+  }
+
+  Duration? _parseDuration(dynamic value) {
+    if (value == null) return null;
+    final seconds = double.tryParse(value.toString());
+    if (seconds == null) return null;
+    return Duration(milliseconds: (seconds * 1000).round());
+  }
+
+  double? _parseFrameRate(dynamic value) {
+    if (value == null) return null;
+    final str = value.toString();
+    // ffprobe returns frame rate as fraction e.g. "30000/1001"
+    final parts = str.split('/');
+    if (parts.length == 2) {
+      final num = double.tryParse(parts[0]);
+      final den = double.tryParse(parts[1]);
+      if (num != null && den != null && den != 0) {
+        return num / den;
+      }
+    }
+    return double.tryParse(str);
+  }
+}
