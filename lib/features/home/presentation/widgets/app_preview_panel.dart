@@ -107,11 +107,12 @@ class _PreviewShell extends StatelessWidget {
     final framePath = state.framePath;
     Widget body;
     if (framePath != null && File(framePath).existsSync()) {
-      body = Image.file(
-        File(framePath),
-        key: ValueKey('${framePath}_${state.frameRevision}'),
-        fit: BoxFit.contain,
-        gaplessPlayback: true,
+      body = _SmoothFileImage(
+        path: framePath,
+        revision: state.frameRevision,
+        fallback: state.isLoading
+            ? Center(child: loadingIndicator)
+            : Center(child: placeholder),
       );
     } else if (state.isLoading) {
       body = Center(child: loadingIndicator);
@@ -184,6 +185,99 @@ class _PlaceholderContent extends StatelessWidget {
         Text(label, style: captionStyle),
       ],
     );
+  }
+}
+
+/// Loads a [File] image without the black flash that occurs when the
+/// underlying [Image] widget is rebuilt with a new key. The next frame is
+/// decoded off-screen; the previously displayed frame stays visible until the
+/// new one is ready, then we swap atomically.
+class _SmoothFileImage extends StatefulWidget {
+  const _SmoothFileImage({
+    required this.path,
+    required this.revision,
+    required this.fallback,
+  });
+
+  final String path;
+  final int revision;
+  final Widget fallback;
+
+  @override
+  State<_SmoothFileImage> createState() => _SmoothFileImageState();
+}
+
+class _SmoothFileImageState extends State<_SmoothFileImage> {
+  ImageProvider? _displayed;
+  ImageStream? _pendingStream;
+  ImageStreamListener? _pendingListener;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNext();
+  }
+
+  @override
+  void didUpdateWidget(_SmoothFileImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.path != widget.path ||
+        oldWidget.revision != widget.revision) {
+      _loadNext();
+    }
+  }
+
+  @override
+  void dispose() {
+    _detachPending();
+    super.dispose();
+  }
+
+  void _detachPending() {
+    if (_pendingStream != null && _pendingListener != null) {
+      _pendingStream!.removeListener(_pendingListener!);
+    }
+    _pendingStream = null;
+    _pendingListener = null;
+  }
+
+  void _loadNext() {
+    _detachPending();
+    final next = FileImage(File(widget.path));
+    // File at this path may have been overwritten — drop any cached decode.
+    next.evict().whenComplete(() {
+      if (!mounted) return;
+      final stream = next.resolve(ImageConfiguration.empty);
+      late ImageStreamListener listener;
+      listener = ImageStreamListener(
+        (info, _) {
+          if (!mounted) return;
+          if (_pendingListener == listener) {
+            stream.removeListener(listener);
+            _pendingStream = null;
+            _pendingListener = null;
+            setState(() => _displayed = next);
+          }
+        },
+        onError: (e, st) {
+          if (_pendingListener == listener) {
+            stream.removeListener(listener);
+            _pendingStream = null;
+            _pendingListener = null;
+          }
+        },
+      );
+      _pendingStream = stream;
+      _pendingListener = listener;
+      stream.addListener(listener);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final image = _displayed;
+    if (image == null) return widget.fallback;
+    return Image(image: image, fit: BoxFit.contain, gaplessPlayback: true);
   }
 }
 
