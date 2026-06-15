@@ -195,5 +195,14 @@
   "settingsTabAbout": "About",
   "aboutAuthor": "Author",
   "aboutVersion": "Version",
-  "aboutAppName": "Video Toolkit"
+  "aboutAppName": "Video Toolkit",
+  "encodeErrorsTitle": "Encoding failed",
+  "encodeErrorsSummary": "{count} file(s) failed to encode. Details below:",
+  "@encodeErrorsSummary": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "errorDetails": "Details",
+  "copy": "Copy",
+  "copied": "Copied",
+  "close": "Close"
 }

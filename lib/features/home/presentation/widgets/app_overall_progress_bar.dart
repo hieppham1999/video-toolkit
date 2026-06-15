@@ -10,9 +10,17 @@ import 'package:video_toolkit/widgets/app_progress_bar.dart';
 /// Bottom-of-screen progress strip summarising the current batch encode.
 /// Hidden when idle; colours + progress bar control adapt per platform.
 class AppOverallProgressBar extends StatelessWidget {
-  const AppOverallProgressBar({super.key, required this.encodeState});
+  const AppOverallProgressBar({
+    super.key,
+    required this.encodeState,
+    this.onShowEncodeErrors,
+  });
 
   final VideoEncodeState encodeState;
+
+  /// Called when the user taps the "failed" status to view error details.
+  /// Only wired (and the status made tappable) when there are failures.
+  final VoidCallback? onShowEncodeErrors;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +30,7 @@ class AppOverallProgressBar extends StatelessWidget {
     final total = encodeState.totalFiles;
     final current = encodeState.currentIndex;
     final completed = encodeState.completedCount;
-    final failed = encodeState.failedFiles;
+    final failed = encodeState.failures;
     final currentFileFraction =
         status == EncodeStatus.encoding ? encodeState.progress.percent : 0.0;
     final overallPercent = total > 0
@@ -80,9 +88,11 @@ class AppOverallProgressBar extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  statusText,
+                child: _StatusLabel(
+                  text: statusText,
                   style: (captionStyle ?? const TextStyle()).copyWith(color: statusColor),
+                  // Tappable only when there are failures to inspect.
+                  onTap: status == EncodeStatus.error ? onShowEncodeErrors : null,
                 ),
               ),
               Text(
@@ -97,6 +107,41 @@ class AppOverallProgressBar extends StatelessWidget {
             child: AppProgressBar(percent: overallPercent),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Status text that becomes a clickable affordance (underline + pointer cursor)
+/// when [onTap] is provided — used to reopen the error details dialog.
+class _StatusLabel extends StatelessWidget {
+  const _StatusLabel({
+    required this.text,
+    required this.style,
+    this.onTap,
+  });
+
+  final String text;
+  final TextStyle style;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = Text(
+      text,
+      style: onTap != null
+          ? style.copyWith(decoration: TextDecoration.underline)
+          : style,
+    );
+
+    if (onTap == null) return label;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: label,
       ),
     );
   }

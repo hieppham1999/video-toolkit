@@ -195,5 +195,14 @@
   "settingsTabAbout": "Giới thiệu",
   "aboutAuthor": "Tác giả",
   "aboutVersion": "Phiên bản",
-  "aboutAppName": "Video Toolkit"
+  "aboutAppName": "Video Toolkit",
+  "encodeErrorsTitle": "Mã hóa thất bại",
+  "encodeErrorsSummary": "{count} tệp mã hóa thất bại. Chi tiết bên dưới:",
+  "@encodeErrorsSummary": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "errorDetails": "Chi tiết",
+  "copy": "Sao chép",
+  "copied": "Đã sao chép",
+  "close": "Đóng"
 }

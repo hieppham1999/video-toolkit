@@ -1201,6 +1201,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Video Toolkit'**
   String get aboutAppName;
+
+  /// No description provided for @encodeErrorsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Encoding failed'**
+  String get encodeErrorsTitle;
+
+  /// No description provided for @encodeErrorsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} file(s) failed to encode. Details below:'**
+  String encodeErrorsSummary(int count);
+
+  /// No description provided for @errorDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get errorDetails;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
 }
 
 class _AppLocalizationsDelegate

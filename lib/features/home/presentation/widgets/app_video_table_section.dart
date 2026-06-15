@@ -487,7 +487,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
 
   _RowStatus _rowStatusFor(int index, VideoFile file) {
     final s = widget.encodeState;
-    if (s.failedFiles.contains(file.path)) return _RowStatus.failed;
+    if (s.failedPaths.contains(file.path)) return _RowStatus.failed;
     if (s.currentFilePath == file.path &&
         s.status == EncodeStatus.encoding) {
       return _RowStatus.processing;

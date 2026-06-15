@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/core/utils/filename_template.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/encode_failure.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
@@ -53,7 +54,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       totalFiles: files.length,
       currentIndex: 0,
       completedCount: 0,
-      failedFiles: [],
+      failures: [],
       errorMessage: null,
     ));
 
@@ -106,6 +107,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     ));
 
     final completer = Completer<bool>();
+    String? errorDetail;
 
     _encodeSub = _repository
         .encode(
@@ -135,6 +137,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
             );
           },
           onError: (Object e) {
+            errorDetail = e.toString();
             appLogger.e('Encode error for ${file.name}: $e');
             completer.complete(false);
           },
@@ -164,7 +167,15 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     emitNormal(currentData.copyWith(
       currentIndex: index + 1,
       completedCount: success ? currentData.completedCount + 1 : currentData.completedCount,
-      failedFiles: success ? currentData.failedFiles : [...currentData.failedFiles, file.path],
+      failures: success
+          ? currentData.failures
+          : [
+              ...currentData.failures,
+              EncodeFailure(
+                filePath: file.path,
+                message: errorDetail ?? 'Unknown error',
+              ),
+            ],
     ));
 
     await _encodeNext();
@@ -172,7 +183,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
 
   void _finish() {
     _previewCubit.stopLiveMode();
-    final failed = currentData.failedFiles;
+    final failed = currentData.failures;
     emitNormal(currentData.copyWith(
       status: _cancelled
           ? EncodeStatus.idle
@@ -180,7 +191,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
               ? EncodeStatus.done
               : EncodeStatus.error,
       errorMessage: failed.isNotEmpty
-          ? '${failed.length} file(s) failed: ${failed.map(p.basename).join(', ')}'
+          ? '${failed.length} file(s) failed: ${failed.map((f) => p.basename(f.filePath)).join(', ')}'
           : null,
       currentFilePath: null,
     ));

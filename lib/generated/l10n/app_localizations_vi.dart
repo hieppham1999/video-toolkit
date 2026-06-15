@@ -572,4 +572,24 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get aboutAppName => 'Video Toolkit';
+
+  @override
+  String get encodeErrorsTitle => 'Mã hóa thất bại';
+
+  @override
+  String encodeErrorsSummary(int count) {
+    return '$count tệp mã hóa thất bại. Chi tiết bên dưới:';
+  }
+
+  @override
+  String get errorDetails => 'Chi tiết';
+
+  @override
+  String get copy => 'Sao chép';
+
+  @override
+  String get copied => 'Đã sao chép';
+
+  @override
+  String get close => 'Đóng';
 }

@@ -143,7 +143,10 @@ class WindowsHomeRenderer extends StatelessWidget {
                     ),
                   ),
                 ),
-                AppOverallProgressBar(encodeState: data.encodeState),
+                AppOverallProgressBar(
+                  encodeState: data.encodeState,
+                  onShowEncodeErrors: data.onShowEncodeErrors,
+                ),
               ],
             );
           },

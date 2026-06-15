@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$VideoEncodeState {
 
- EncodeStatus get status; EncodeProgress get progress; String? get errorMessage; String? get currentFilePath; String? get outputPath; int get currentIndex; int get totalFiles; int get completedCount; List<String> get failedFiles;
+ EncodeStatus get status; EncodeProgress get progress; String? get errorMessage; String? get currentFilePath; String? get outputPath; int get currentIndex; int get totalFiles; int get completedCount; List<EncodeFailure> get failures;
 /// Create a copy of VideoEncodeState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $VideoEncodeStateCopyWith<VideoEncodeState> get copyWith => _$VideoEncodeStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoEncodeState&&(identical(other.status, status) || other.status == status)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.currentFilePath, currentFilePath) || other.currentFilePath == currentFilePath)&&(identical(other.outputPath, outputPath) || other.outputPath == outputPath)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&(identical(other.totalFiles, totalFiles) || other.totalFiles == totalFiles)&&(identical(other.completedCount, completedCount) || other.completedCount == completedCount)&&const DeepCollectionEquality().equals(other.failedFiles, failedFiles));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoEncodeState&&(identical(other.status, status) || other.status == status)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.currentFilePath, currentFilePath) || other.currentFilePath == currentFilePath)&&(identical(other.outputPath, outputPath) || other.outputPath == outputPath)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&(identical(other.totalFiles, totalFiles) || other.totalFiles == totalFiles)&&(identical(other.completedCount, completedCount) || other.completedCount == completedCount)&&const DeepCollectionEquality().equals(other.failures, failures));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,progress,errorMessage,currentFilePath,outputPath,currentIndex,totalFiles,completedCount,const DeepCollectionEquality().hash(failedFiles));
+int get hashCode => Object.hash(runtimeType,status,progress,errorMessage,currentFilePath,outputPath,currentIndex,totalFiles,completedCount,const DeepCollectionEquality().hash(failures));
 
 @override
 String toString() {
-  return 'VideoEncodeState(status: $status, progress: $progress, errorMessage: $errorMessage, currentFilePath: $currentFilePath, outputPath: $outputPath, currentIndex: $currentIndex, totalFiles: $totalFiles, completedCount: $completedCount, failedFiles: $failedFiles)';
+  return 'VideoEncodeState(status: $status, progress: $progress, errorMessage: $errorMessage, currentFilePath: $currentFilePath, outputPath: $outputPath, currentIndex: $currentIndex, totalFiles: $totalFiles, completedCount: $completedCount, failures: $failures)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $VideoEncodeStateCopyWith<$Res>  {
   factory $VideoEncodeStateCopyWith(VideoEncodeState value, $Res Function(VideoEncodeState) _then) = _$VideoEncodeStateCopyWithImpl;
 @useResult
 $Res call({
- EncodeStatus status, EncodeProgress progress, String? errorMessage, String? currentFilePath, String? outputPath, int currentIndex, int totalFiles, int completedCount, List<String> failedFiles
+ EncodeStatus status, EncodeProgress progress, String? errorMessage, String? currentFilePath, String? outputPath, int currentIndex, int totalFiles, int completedCount, List<EncodeFailure> failures
 });
 
 
@@ -62,7 +62,7 @@ class _$VideoEncodeStateCopyWithImpl<$Res>
 
 /// Create a copy of VideoEncodeState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? progress = null,Object? errorMessage = freezed,Object? currentFilePath = freezed,Object? outputPath = freezed,Object? currentIndex = null,Object? totalFiles = null,Object? completedCount = null,Object? failedFiles = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? progress = null,Object? errorMessage = freezed,Object? currentFilePath = freezed,Object? outputPath = freezed,Object? currentIndex = null,Object? totalFiles = null,Object? completedCount = null,Object? failures = null,}) {
   return _then(_self.copyWith(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as EncodeStatus,progress: null == progress ? _self.progress : progress // ignore: cast_nullable_to_non_nullable
@@ -72,8 +72,8 @@ as String?,outputPath: freezed == outputPath ? _self.outputPath : outputPath // 
 as String?,currentIndex: null == currentIndex ? _self.currentIndex : currentIndex // ignore: cast_nullable_to_non_nullable
 as int,totalFiles: null == totalFiles ? _self.totalFiles : totalFiles // ignore: cast_nullable_to_non_nullable
 as int,completedCount: null == completedCount ? _self.completedCount : completedCount // ignore: cast_nullable_to_non_nullable
-as int,failedFiles: null == failedFiles ? _self.failedFiles : failedFiles // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as int,failures: null == failures ? _self.failures : failures // ignore: cast_nullable_to_non_nullable
+as List<EncodeFailure>,
   ));
 }
 /// Create a copy of VideoEncodeState
@@ -167,10 +167,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( EncodeStatus status,  EncodeProgress progress,  String? errorMessage,  String? currentFilePath,  String? outputPath,  int currentIndex,  int totalFiles,  int completedCount,  List<String> failedFiles)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( EncodeStatus status,  EncodeProgress progress,  String? errorMessage,  String? currentFilePath,  String? outputPath,  int currentIndex,  int totalFiles,  int completedCount,  List<EncodeFailure> failures)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VideoEncodeState() when $default != null:
-return $default(_that.status,_that.progress,_that.errorMessage,_that.currentFilePath,_that.outputPath,_that.currentIndex,_that.totalFiles,_that.completedCount,_that.failedFiles);case _:
+return $default(_that.status,_that.progress,_that.errorMessage,_that.currentFilePath,_that.outputPath,_that.currentIndex,_that.totalFiles,_that.completedCount,_that.failures);case _:
   return orElse();
 
 }
@@ -188,10 +188,10 @@ return $default(_that.status,_that.progress,_that.errorMessage,_that.currentFile
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( EncodeStatus status,  EncodeProgress progress,  String? errorMessage,  String? currentFilePath,  String? outputPath,  int currentIndex,  int totalFiles,  int completedCount,  List<String> failedFiles)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( EncodeStatus status,  EncodeProgress progress,  String? errorMessage,  String? currentFilePath,  String? outputPath,  int currentIndex,  int totalFiles,  int completedCount,  List<EncodeFailure> failures)  $default,) {final _that = this;
 switch (_that) {
 case _VideoEncodeState():
-return $default(_that.status,_that.progress,_that.errorMessage,_that.currentFilePath,_that.outputPath,_that.currentIndex,_that.totalFiles,_that.completedCount,_that.failedFiles);case _:
+return $default(_that.status,_that.progress,_that.errorMessage,_that.currentFilePath,_that.outputPath,_that.currentIndex,_that.totalFiles,_that.completedCount,_that.failures);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +208,10 @@ return $default(_that.status,_that.progress,_that.errorMessage,_that.currentFile
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( EncodeStatus status,  EncodeProgress progress,  String? errorMessage,  String? currentFilePath,  String? outputPath,  int currentIndex,  int totalFiles,  int completedCount,  List<String> failedFiles)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( EncodeStatus status,  EncodeProgress progress,  String? errorMessage,  String? currentFilePath,  String? outputPath,  int currentIndex,  int totalFiles,  int completedCount,  List<EncodeFailure> failures)?  $default,) {final _that = this;
 switch (_that) {
 case _VideoEncodeState() when $default != null:
-return $default(_that.status,_that.progress,_that.errorMessage,_that.currentFilePath,_that.outputPath,_that.currentIndex,_that.totalFiles,_that.completedCount,_that.failedFiles);case _:
+return $default(_that.status,_that.progress,_that.errorMessage,_that.currentFilePath,_that.outputPath,_that.currentIndex,_that.totalFiles,_that.completedCount,_that.failures);case _:
   return null;
 
 }
@@ -222,8 +222,8 @@ return $default(_that.status,_that.progress,_that.errorMessage,_that.currentFile
 /// @nodoc
 
 
-class _VideoEncodeState implements VideoEncodeState {
-  const _VideoEncodeState({this.status = EncodeStatus.idle, this.progress = const EncodeProgress(), this.errorMessage, this.currentFilePath, this.outputPath, this.currentIndex = 0, this.totalFiles = 0, this.completedCount = 0, final  List<String> failedFiles = const []}): _failedFiles = failedFiles;
+class _VideoEncodeState extends VideoEncodeState {
+  const _VideoEncodeState({this.status = EncodeStatus.idle, this.progress = const EncodeProgress(), this.errorMessage, this.currentFilePath, this.outputPath, this.currentIndex = 0, this.totalFiles = 0, this.completedCount = 0, final  List<EncodeFailure> failures = const []}): _failures = failures,super._();
   
 
 @override@JsonKey() final  EncodeStatus status;
@@ -234,11 +234,11 @@ class _VideoEncodeState implements VideoEncodeState {
 @override@JsonKey() final  int currentIndex;
 @override@JsonKey() final  int totalFiles;
 @override@JsonKey() final  int completedCount;
- final  List<String> _failedFiles;
-@override@JsonKey() List<String> get failedFiles {
-  if (_failedFiles is EqualUnmodifiableListView) return _failedFiles;
+ final  List<EncodeFailure> _failures;
+@override@JsonKey() List<EncodeFailure> get failures {
+  if (_failures is EqualUnmodifiableListView) return _failures;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_failedFiles);
+  return EqualUnmodifiableListView(_failures);
 }
 
 
@@ -252,16 +252,16 @@ _$VideoEncodeStateCopyWith<_VideoEncodeState> get copyWith => __$VideoEncodeStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoEncodeState&&(identical(other.status, status) || other.status == status)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.currentFilePath, currentFilePath) || other.currentFilePath == currentFilePath)&&(identical(other.outputPath, outputPath) || other.outputPath == outputPath)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&(identical(other.totalFiles, totalFiles) || other.totalFiles == totalFiles)&&(identical(other.completedCount, completedCount) || other.completedCount == completedCount)&&const DeepCollectionEquality().equals(other._failedFiles, _failedFiles));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoEncodeState&&(identical(other.status, status) || other.status == status)&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.currentFilePath, currentFilePath) || other.currentFilePath == currentFilePath)&&(identical(other.outputPath, outputPath) || other.outputPath == outputPath)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&(identical(other.totalFiles, totalFiles) || other.totalFiles == totalFiles)&&(identical(other.completedCount, completedCount) || other.completedCount == completedCount)&&const DeepCollectionEquality().equals(other._failures, _failures));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,progress,errorMessage,currentFilePath,outputPath,currentIndex,totalFiles,completedCount,const DeepCollectionEquality().hash(_failedFiles));
+int get hashCode => Object.hash(runtimeType,status,progress,errorMessage,currentFilePath,outputPath,currentIndex,totalFiles,completedCount,const DeepCollectionEquality().hash(_failures));
 
 @override
 String toString() {
-  return 'VideoEncodeState(status: $status, progress: $progress, errorMessage: $errorMessage, currentFilePath: $currentFilePath, outputPath: $outputPath, currentIndex: $currentIndex, totalFiles: $totalFiles, completedCount: $completedCount, failedFiles: $failedFiles)';
+  return 'VideoEncodeState(status: $status, progress: $progress, errorMessage: $errorMessage, currentFilePath: $currentFilePath, outputPath: $outputPath, currentIndex: $currentIndex, totalFiles: $totalFiles, completedCount: $completedCount, failures: $failures)';
 }
 
 
@@ -272,7 +272,7 @@ abstract mixin class _$VideoEncodeStateCopyWith<$Res> implements $VideoEncodeSta
   factory _$VideoEncodeStateCopyWith(_VideoEncodeState value, $Res Function(_VideoEncodeState) _then) = __$VideoEncodeStateCopyWithImpl;
 @override @useResult
 $Res call({
- EncodeStatus status, EncodeProgress progress, String? errorMessage, String? currentFilePath, String? outputPath, int currentIndex, int totalFiles, int completedCount, List<String> failedFiles
+ EncodeStatus status, EncodeProgress progress, String? errorMessage, String? currentFilePath, String? outputPath, int currentIndex, int totalFiles, int completedCount, List<EncodeFailure> failures
 });
 
 
@@ -289,7 +289,7 @@ class __$VideoEncodeStateCopyWithImpl<$Res>
 
 /// Create a copy of VideoEncodeState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? progress = null,Object? errorMessage = freezed,Object? currentFilePath = freezed,Object? outputPath = freezed,Object? currentIndex = null,Object? totalFiles = null,Object? completedCount = null,Object? failedFiles = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? progress = null,Object? errorMessage = freezed,Object? currentFilePath = freezed,Object? outputPath = freezed,Object? currentIndex = null,Object? totalFiles = null,Object? completedCount = null,Object? failures = null,}) {
   return _then(_VideoEncodeState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as EncodeStatus,progress: null == progress ? _self.progress : progress // ignore: cast_nullable_to_non_nullable
@@ -299,8 +299,8 @@ as String?,outputPath: freezed == outputPath ? _self.outputPath : outputPath // 
 as String?,currentIndex: null == currentIndex ? _self.currentIndex : currentIndex // ignore: cast_nullable_to_non_nullable
 as int,totalFiles: null == totalFiles ? _self.totalFiles : totalFiles // ignore: cast_nullable_to_non_nullable
 as int,completedCount: null == completedCount ? _self.completedCount : completedCount // ignore: cast_nullable_to_non_nullable
-as int,failedFiles: null == failedFiles ? _self._failedFiles : failedFiles // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as int,failures: null == failures ? _self._failures : failures // ignore: cast_nullable_to_non_nullable
+as List<EncodeFailure>,
   ));
 }
 

@@ -574,4 +574,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutAppName => 'Video Toolkit';
+
+  @override
+  String get encodeErrorsTitle => 'Encoding failed';
+
+  @override
+  String encodeErrorsSummary(int count) {
+    return '$count file(s) failed to encode. Details below:';
+  }
+
+  @override
+  String get errorDetails => 'Details';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String get close => 'Close';
 }

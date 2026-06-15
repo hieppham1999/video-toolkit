@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/encode_failure.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
 
 part 'generated/video_encode_state.freezed.dart';
@@ -7,6 +8,8 @@ enum EncodeStatus { idle, encoding, done, error }
 
 @freezed
 abstract class VideoEncodeState with _$VideoEncodeState {
+  const VideoEncodeState._();
+
   const factory VideoEncodeState({
     @Default(EncodeStatus.idle) EncodeStatus status,
     @Default(EncodeProgress()) EncodeProgress progress,
@@ -16,6 +19,9 @@ abstract class VideoEncodeState with _$VideoEncodeState {
     @Default(0) int currentIndex,
     @Default(0) int totalFiles,
     @Default(0) int completedCount,
-    @Default([]) List<String> failedFiles,
+    @Default([]) List<EncodeFailure> failures,
   }) = _VideoEncodeState;
+
+  /// Paths of files that failed to encode (convenience accessor).
+  List<String> get failedPaths => failures.map((f) => f.filePath).toList();
 }

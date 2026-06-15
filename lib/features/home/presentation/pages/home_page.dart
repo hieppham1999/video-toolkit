@@ -2,7 +2,12 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path/path.dart' as p;
+import 'package:video_toolkit/app/base/app_state.dart';
 import 'package:video_toolkit/app/injection.dart';
+import 'package:video_toolkit/app/languages.dart';
+import 'package:video_toolkit/widgets/app_error_dialog.dart';
 import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_cubit.dart';
 import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_state.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
@@ -109,10 +114,31 @@ class _HomePageState extends State<HomePage> {
     _encodeCubit.stop();
   }
 
+  /// Builds a combined per-file error report and shows it in a copyable dialog.
+  void _showEncodeErrors(BuildContext context, VideoEncodeState s) {
+    if (s.failures.isEmpty) return;
+    final l10n = Languages.translate;
+    final details = s.failures
+        .map((f) => '=== ${p.basename(f.filePath)} ===\n${f.message}')
+        .join('\n\n');
+    showAppErrorDialog(
+      context: context,
+      title: l10n.encodeErrorsTitle,
+      message: l10n.encodeErrorsSummary(s.failures.length),
+      details: details,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return CubitStateBuilder<VideoImportState>(
-      cubit: _importCubit,
+    return BlocListener<VideoEncodeCubit, CubitState<VideoEncodeState>>(
+      bloc: _encodeCubit,
+      listenWhen: (prev, cur) =>
+          prev.data.status != EncodeStatus.error &&
+          cur.data.status == EncodeStatus.error,
+      listener: (context, state) => _showEncodeErrors(context, state.data),
+      child: CubitStateBuilder<VideoImportState>(
+        cubit: _importCubit,
       builder: (context, importState) {
         final selectedFile = importState.selectedFilePath != null
             ? importState.files.where((f) => f.path == importState.selectedFilePath).firstOrNull
@@ -164,6 +190,9 @@ class _HomePageState extends State<HomePage> {
                   onDividerDrag: _onDividerDrag,
                   onStart: importState.files.isEmpty || isEncoding ? null : _onStart,
                   onStop: isEncoding ? _onStop : null,
+                  onShowEncodeErrors: encodeState.failures.isEmpty
+                      ? null
+                      : () => _showEncodeErrors(context, encodeState),
                 );
 
                 if (Platform.isWindows) return WindowsHomeRenderer(data: viewData);
@@ -175,6 +204,7 @@ class _HomePageState extends State<HomePage> {
           },
         );
       },
+      ),
     );
   }
 }

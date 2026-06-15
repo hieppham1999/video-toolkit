@@ -31,6 +31,7 @@ class HomeViewData {
     required this.onDividerDrag,
     required this.onStart,
     required this.onStop,
+    required this.onShowEncodeErrors,
   });
 
   // ── State ──
@@ -70,6 +71,10 @@ class HomeViewData {
   final ValueChanged<double> onDividerDrag;
   final VoidCallback? onStart;
   final VoidCallback? onStop;
+
+  /// Opens the error-details dialog for the current batch. Null when there are
+  /// no failures to show.
+  final VoidCallback? onShowEncodeErrors;
 
   bool get hasFiles => files.isNotEmpty;
   bool get isEncoding => encodeState.status == EncodeStatus.encoding;
