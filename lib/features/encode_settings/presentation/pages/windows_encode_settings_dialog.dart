@@ -34,6 +34,7 @@ class WindowsEncodeSettingsDialog extends StatefulWidget {
     this.onReset,
     this.sampleFileName = 'video',
     this.sampleCreationDate,
+    this.sampleCreationDateFromFileSystem = false,
     this.sampleTimezoneOffset,
     this.sampleWidth,
     this.sampleHeight,
@@ -46,6 +47,7 @@ class WindowsEncodeSettingsDialog extends StatefulWidget {
   final VoidCallback? onReset;
   final String sampleFileName;
   final DateTime? sampleCreationDate;
+  final bool sampleCreationDateFromFileSystem;
   final String? sampleTimezoneOffset;
   final int? sampleWidth;
   final int? sampleHeight;
@@ -263,10 +265,7 @@ class _WindowsEncodeSettingsDialogState
             width: _c.sidebarWidth,
             child: _buildPresetSidebar(theme, l10n, presets),
           ),
-          AppResizableDivider(
-            axis: Axis.vertical,
-            onDrag: _c.resizeSidebar,
-          ),
+          AppResizableDivider(axis: Axis.vertical, onDrag: _c.resizeSidebar),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -331,8 +330,9 @@ class _WindowsEncodeSettingsDialogState
                           child: Text(
                             tabs[i],
                             style: i == _c.selectedTab
-                                ? theme.typography.body
-                                    ?.copyWith(fontWeight: FontWeight.w600)
+                                ? theme.typography.body?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  )
                                 : theme.typography.body,
                           ),
                         ),
@@ -343,18 +343,20 @@ class _WindowsEncodeSettingsDialogState
                   Expanded(
                     child: switch (_c.selectedTab) {
                       0 => FileTab(
-                          controller: _c,
-                          sampleFileName: widget.sampleFileName,
-                          sampleCreationDate: widget.sampleCreationDate,
-                          sampleTimezoneOffset: widget.sampleTimezoneOffset,
-                        ),
+                        controller: _c,
+                        sampleFileName: widget.sampleFileName,
+                        sampleCreationDate: widget.sampleCreationDate,
+                        sampleCreationDateFromFileSystem:
+                            widget.sampleCreationDateFromFileSystem,
+                        sampleTimezoneOffset: widget.sampleTimezoneOffset,
+                      ),
                       1 => ContainerTab(controller: _c),
                       2 => VideoCodecTab(controller: _c),
                       3 => SizingTab(
-                          controller: _c,
-                          sampleWidth: widget.sampleWidth,
-                          sampleHeight: widget.sampleHeight,
-                        ),
+                        controller: _c,
+                        sampleWidth: widget.sampleWidth,
+                        sampleHeight: widget.sampleHeight,
+                      ),
                       4 => _buildFilterTab(theme, l10n),
                       5 => AudioTab(controller: _c),
                       _ => const SizedBox.shrink(),
@@ -475,8 +477,10 @@ class _WindowsEncodeSettingsDialogState
                           ),
                           const Spacer(),
                           IconButton(
-                            icon: const Icon(FluentIcons.chrome_close,
-                                size: 12),
+                            icon: const Icon(
+                              FluentIcons.chrome_close,
+                              size: 12,
+                            ),
                             onPressed: () => _c.removeOverlay(i),
                           ),
                         ],
@@ -557,8 +561,7 @@ class _WindowsEncodeSettingsDialogState
                                   value: _c.textOverlays[i].fontColor,
                                   onChanged: (v) => _c.updateOverlay(
                                     i,
-                                    _c.textOverlays[i]
-                                        .copyWith(fontColor: v),
+                                    _c.textOverlays[i].copyWith(fontColor: v),
                                   ),
                                 ),
                               ],
@@ -598,8 +601,7 @@ class _WindowsEncodeSettingsDialogState
                                   value: _c.textOverlays[i].borderColor,
                                   onChanged: (v) => _c.updateOverlay(
                                     i,
-                                    _c.textOverlays[i]
-                                        .copyWith(borderColor: v),
+                                    _c.textOverlays[i].copyWith(borderColor: v),
                                   ),
                                 ),
                               ],
@@ -660,8 +662,9 @@ class _WindowsEncodeSettingsDialogState
                         items: ['', ...fonts.map((f) => f.path)],
                         itemLabel: (v) {
                           if (v.isEmpty) return l10n.fontDefault;
-                          final match =
-                              fonts.where((e) => e.path == v).firstOrNull;
+                          final match = fonts
+                              .where((e) => e.path == v)
+                              .firstOrNull;
                           if (match == null) return v;
                           return match.isBundled
                               ? '${match.name} (${l10n.fontBundled})'
@@ -669,8 +672,9 @@ class _WindowsEncodeSettingsDialogState
                         },
                         onChanged: (v) => _c.updateOverlay(
                           i,
-                          _c.textOverlays[i]
-                              .copyWith(fontFile: v.isEmpty ? null : v),
+                          _c.textOverlays[i].copyWith(
+                            fontFile: v.isEmpty ? null : v,
+                          ),
                         ),
                       ),
                     ],
@@ -682,6 +686,4 @@ class _WindowsEncodeSettingsDialogState
       ),
     );
   }
-
 }
-

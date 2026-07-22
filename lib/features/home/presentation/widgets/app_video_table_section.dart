@@ -87,14 +87,14 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
   /// hidden.
   List<double> _computeWidths(double viewportWidth, bool showStatus) {
     final size = _fixedWidth(2, _sizeColWidth);
-    final outSize =
-        showStatus ? _fixedWidth(5, _outputSizeColWidth) : 0.0;
+    final outSize = showStatus ? _fixedWidth(5, _outputSizeColWidth) : 0.0;
     final ratio = showStatus ? _fixedWidth(6, _ratioColWidth) : 0.0;
     final status = showStatus ? _fixedWidth(7, _statusWidth) : 0.0;
     // Visible-column gaps: 4 always (between 0-1, 1-2, 2-3, 3-4) +
     // 3 when status block shown (4-5, 5-6, 6-7).
     final gapCount = showStatus ? 7 : 4;
-    final available = viewportWidth -
+    final available =
+        viewportWidth -
         _actionWidth -
         size -
         outSize -
@@ -169,43 +169,48 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     final showStatus = widget.encodeState.status != EncodeStatus.idle;
 
     if (widget.files.isEmpty) {
-      return Center(
-        child: Text(l10n.noVideos, style: palette.emptyStyle),
-      );
+      return Center(child: Text(l10n.noVideos, style: palette.emptyStyle));
     }
 
     return LayoutBuilder(
-        builder: (context, constraints) {
-          final colWidths = _computeWidths(constraints.maxWidth, showStatus);
-          final gapCount = showStatus ? 7 : 4;
-          final contentWidth = colWidths.fold(0.0, (s, w) => s + w) +
-              (_gapWidth * gapCount) +
-              _actionWidth +
-              32;
-          final effectiveWidth =
-              contentWidth.clamp(constraints.maxWidth, double.infinity);
+      builder: (context, constraints) {
+        final colWidths = _computeWidths(constraints.maxWidth, showStatus);
+        final gapCount = showStatus ? 7 : 4;
+        final contentWidth =
+            colWidths.fold(0.0, (s, w) => s + w) +
+            (_gapWidth * gapCount) +
+            _actionWidth +
+            32;
+        final effectiveWidth = contentWidth.clamp(
+          constraints.maxWidth,
+          double.infinity,
+        );
 
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SizedBox(
-              width: effectiveWidth,
-              height: constraints.maxHeight,
-              child: Column(
-                children: [
-                  _buildHeader(palette, colWidths, showStatus),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: widget.files.length,
-                      itemBuilder: (context, index) =>
-                          _buildRow(palette, colWidths, index, isEncoding,
-                              showStatus),
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: effectiveWidth,
+            height: constraints.maxHeight,
+            child: Column(
+              children: [
+                _buildHeader(palette, colWidths, showStatus),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: widget.files.length,
+                    itemBuilder: (context, index) => _buildRow(
+                      palette,
+                      colWidths,
+                      index,
+                      isEncoding,
+                      showStatus,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        },
+          ),
+        );
+      },
     );
   }
 
@@ -301,7 +306,10 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       effectiveSettings.outputNameTemplate,
       originalName: baseName,
       creationDate: file.metadata?.creationDate,
-      sourceTimezoneOffset: effectiveSettings.sourceTimezoneOffset ??
+      creationDateFromFileSystem:
+          file.metadata?.creationDateFromFileSystem ?? false,
+      sourceTimezoneOffset:
+          effectiveSettings.sourceTimezoneOffset ??
           file.metadata?.timezoneOffset,
     );
     final outputDir = OutputPathResolver.resolveDir(
@@ -347,8 +355,9 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
           color: bgColor,
-          border:
-              Border(bottom: BorderSide(color: palette.divider, width: 0.5)),
+          border: Border(
+            bottom: BorderSide(color: palette.divider, width: 0.5),
+          ),
         ),
         child: Row(
           children: [
@@ -389,7 +398,12 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
             const SizedBox(width: _gapWidth),
             SizedBox(
               width: colWidths[3],
-              child: _settingCell(palette, file, effectiveSettings, captionStyle),
+              child: _settingCell(
+                palette,
+                file,
+                effectiveSettings,
+                captionStyle,
+              ),
             ),
             const SizedBox(width: _gapWidth),
             fluent.Expanded(
@@ -456,8 +470,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       widget.onSelect(file.path);
     }
     final l10n = Languages.translate;
-    final showRevealOutput =
-        isCompleted && File(outputPath).existsSync();
+    final showRevealOutput = isCompleted && File(outputPath).existsSync();
     showAppContextMenu(
       context: context,
       globalPosition: position,
@@ -488,8 +501,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
   _RowStatus _rowStatusFor(int index, VideoFile file) {
     final s = widget.encodeState;
     if (s.failedPaths.contains(file.path)) return _RowStatus.failed;
-    if (s.currentFilePath == file.path &&
-        s.status == EncodeStatus.encoding) {
+    if (s.currentFilePath == file.path && s.status == EncodeStatus.encoding) {
       return _RowStatus.processing;
     }
     if (index < s.currentIndex) return _RowStatus.completed;
@@ -536,8 +548,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
         );
       case _RowStatus.processing:
         final progress = widget.encodeState.progress;
-        final percentLabel =
-            '${(progress.percent * 100).toStringAsFixed(0)}%';
+        final percentLabel = '${(progress.percent * 100).toStringAsFixed(0)}%';
         final etaLabel = _formatEta(progress.estimatedRemaining);
         final passLabel = progress.pass == null ? null : 'P${progress.pass}/2';
         final parts = [
@@ -591,13 +602,19 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     final color = hasOverride ? palette.accent : palette.subtleText;
     final Widget button = Platform.isWindows
         ? fluent.IconButton(
-            icon: fluent.Icon(fluent.FluentIcons.settings,
-                size: 12, color: color),
+            icon: fluent.Icon(
+              fluent.FluentIcons.settings,
+              size: 12,
+              color: color,
+            ),
             onPressed: () => widget.onOpenFileSettings(file),
           )
         : MacosIconButton(
-            icon: MacosIcon(CupertinoIcons.slider_horizontal_3,
-                size: 12, color: color),
+            icon: MacosIcon(
+              CupertinoIcons.slider_horizontal_3,
+              size: 12,
+              color: color,
+            ),
             onPressed: () => widget.onOpenFileSettings(file),
           );
     if (!hasOverride) return button;
@@ -616,7 +633,11 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       );
     }
     return MacosIconButton(
-      icon: MacosIcon(CupertinoIcons.xmark, size: 12, color: palette.subtleText),
+      icon: MacosIcon(
+        CupertinoIcons.xmark,
+        size: 12,
+        color: palette.subtleText,
+      ),
       onPressed: () => widget.onRemove(file.path),
     );
   }
@@ -632,9 +653,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
         file.appliedPresetId ?? widget.globalSelectedPresetId;
     final basePreset = effectivePresetId == null
         ? null
-        : widget.presets
-            .where((p) => p.id == effectivePresetId)
-            .firstOrNull;
+        : widget.presets.where((p) => p.id == effectivePresetId).firstOrNull;
 
     if (basePreset == null) {
       return Text(
@@ -644,8 +663,10 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       );
     }
 
-    final diffs =
-        EncodeSettingsDiffer.diff(basePreset.settings, effectiveSettings);
+    final diffs = EncodeSettingsDiffer.diff(
+      basePreset.settings,
+      effectiveSettings,
+    );
     final isModified = diffs.isNotEmpty;
     final label = isModified ? '${basePreset.name} *' : basePreset.name;
     final color = isModified ? palette.accent : null;
@@ -701,8 +722,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       selectedBg: theme.primaryColor.withValues(alpha: 0.18),
       bodyStyle: theme.typography.body,
       captionStyle: theme.typography.caption1,
-      subtleCaptionStyle:
-          theme.typography.caption1.copyWith(color: subtleText),
+      subtleCaptionStyle: theme.typography.caption1.copyWith(color: subtleText),
       headerStyle: theme.typography.caption1.copyWith(
         color: subtleText,
         fontWeight: FontWeight.w600,

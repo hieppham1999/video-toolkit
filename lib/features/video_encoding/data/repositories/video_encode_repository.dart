@@ -10,5 +10,6 @@ abstract class VideoEncodeRepository {
     required Duration totalDuration,
     String? outputDir,
     DateTime? creationDate,
+    bool creationDateFromFileSystem = false,
   });
 }

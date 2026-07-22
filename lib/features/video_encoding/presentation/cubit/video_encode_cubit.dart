@@ -21,7 +21,7 @@ import 'video_encode_state.dart';
 @lazySingleton
 class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   VideoEncodeCubit(this._repository, this._previewCubit, this._exiftool)
-      : super.normal(const VideoEncodeState());
+    : super.normal(const VideoEncodeState());
 
   final VideoEncodeRepository _repository;
   final PreviewCubit _previewCubit;
@@ -49,14 +49,16 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     _outputDirectory = outputDirectory;
     _cancelled = false;
 
-    emitNormal(currentData.copyWith(
-      status: EncodeStatus.encoding,
-      totalFiles: files.length,
-      currentIndex: 0,
-      completedCount: 0,
-      failures: [],
-      errorMessage: null,
-    ));
+    emitNormal(
+      currentData.copyWith(
+        status: EncodeStatus.encoding,
+        totalFiles: files.length,
+        currentIndex: 0,
+        completedCount: 0,
+        failures: [],
+        errorMessage: null,
+      ),
+    );
 
     _previewCubit.startLiveMode();
 
@@ -90,9 +92,14 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       settings.outputNameTemplate,
       originalName: baseName,
       creationDate: file.metadata?.creationDate,
+      creationDateFromFileSystem:
+          file.metadata?.creationDateFromFileSystem ?? false,
       sourceTimezoneOffset: settings.sourceTimezoneOffset,
     );
-    final outputPath = p.join(dir, '$outName.${settings.outputExtension.value}');
+    final outputPath = p.join(
+      dir,
+      '$outName.${settings.outputExtension.value}',
+    );
 
     try {
       await Directory(dir).create(recursive: true);
@@ -100,11 +107,13 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       appLogger.w('Failed to create output dir $dir: $e');
     }
 
-    emitNormal(currentData.copyWith(
-      currentFilePath: file.path,
-      outputPath: outputPath,
-      progress: const EncodeProgress(),
-    ));
+    emitNormal(
+      currentData.copyWith(
+        currentFilePath: file.path,
+        outputPath: outputPath,
+        progress: const EncodeProgress(),
+      ),
+    );
 
     final completer = Completer<bool>();
     String? errorDetail;
@@ -116,6 +125,8 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
           totalDuration: file.metadata?.duration ?? Duration.zero,
           outputDir: dir,
           creationDate: file.metadata?.creationDate,
+          creationDateFromFileSystem:
+              file.metadata?.creationDateFromFileSystem ?? false,
         )
         .listen(
           (progress) {
@@ -155,7 +166,9 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       // source file. Falls back to extracted value (or machine local TZ at
       // exiftool-write time) when no override is set.
       final effectiveMetadata = settings.sourceTimezoneOffset != null
-          ? file.metadata?.copyWith(timezoneOffset: settings.sourceTimezoneOffset)
+          ? file.metadata?.copyWith(
+              timezoneOffset: settings.sourceTimezoneOffset,
+            )
           : file.metadata;
       await _exiftool.copyMetadata(
         sourcePath: file.path,
@@ -164,19 +177,23 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       );
     }
 
-    emitNormal(currentData.copyWith(
-      currentIndex: index + 1,
-      completedCount: success ? currentData.completedCount + 1 : currentData.completedCount,
-      failures: success
-          ? currentData.failures
-          : [
-              ...currentData.failures,
-              EncodeFailure(
-                filePath: file.path,
-                message: errorDetail ?? 'Unknown error',
-              ),
-            ],
-    ));
+    emitNormal(
+      currentData.copyWith(
+        currentIndex: index + 1,
+        completedCount: success
+            ? currentData.completedCount + 1
+            : currentData.completedCount,
+        failures: success
+            ? currentData.failures
+            : [
+                ...currentData.failures,
+                EncodeFailure(
+                  filePath: file.path,
+                  message: errorDetail ?? 'Unknown error',
+                ),
+              ],
+      ),
+    );
 
     await _encodeNext();
   }
@@ -184,17 +201,19 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   void _finish() {
     _previewCubit.stopLiveMode();
     final failed = currentData.failures;
-    emitNormal(currentData.copyWith(
-      status: _cancelled
-          ? EncodeStatus.idle
-          : failed.isEmpty
-              ? EncodeStatus.done
-              : EncodeStatus.error,
-      errorMessage: failed.isNotEmpty
-          ? '${failed.length} file(s) failed: ${failed.map((f) => p.basename(f.filePath)).join(', ')}'
-          : null,
-      currentFilePath: null,
-    ));
+    emitNormal(
+      currentData.copyWith(
+        status: _cancelled
+            ? EncodeStatus.idle
+            : failed.isEmpty
+            ? EncodeStatus.done
+            : EncodeStatus.error,
+        errorMessage: failed.isNotEmpty
+            ? '${failed.length} file(s) failed: ${failed.map((f) => p.basename(f.filePath)).join(', ')}'
+            : null,
+        currentFilePath: null,
+      ),
+    );
   }
 
   void stop() {

@@ -101,57 +101,57 @@ class WindowsHomeRenderer extends StatelessWidget {
       content: ColoredBox(
         color: theme.micaBackgroundColor,
         child: DropTarget(
-        onDragDone: (details) {
-          data.onFilesDropped(details.files.map((f) => f.path).toList());
-        },
-        onDragEntered: (_) => data.onDragStateChanged(true),
-        onDragExited: (_) => data.onDragStateChanged(false),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final totalHeight = constraints.maxHeight;
-            final previewH = totalHeight * data.previewFraction;
+          onDragDone: (details) {
+            data.onFilesDropped(details.files.map((f) => f.path).toList());
+          },
+          onDragEntered: (_) => data.onDragStateChanged(true),
+          onDragExited: (_) => data.onDragStateChanged(false),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final totalHeight = constraints.maxHeight;
+              final previewH = totalHeight * data.previewFraction;
 
-            return Column(
-              children: [
-                SizedBox(
-                  height: previewH,
-                  child: _PreviewSection(
-                    isDragging: data.isDragging,
-                    selectedFile: data.selectedFile,
-                  ),
-                ),
-                AppResizableDivider(
-                  onDrag: (dy) => data.onDividerDrag(dy / totalHeight),
-                ),
-                Expanded(
-                  child: AppVideoTableSection(
-                    files: data.files,
-                    globalSettings: data.encodeSettings,
-                    outputDirectory: data.outputDirectory,
-                    selectedFilePath: data.selectedFile?.path,
-                    encodeState: data.encodeState,
-                    presets: data.presets,
-                    globalSelectedPresetId: data.globalSelectedPresetId,
-                    onSelect: data.onSelectVideo,
-                    onRemove: data.onRemoveFile,
-                    onRemoveAll: () => _confirmClearAll(context),
-                    onOpenFileSettings: (file) => _openFileSettings(
-                      context,
-                      file,
-                      data.encodeSettings,
-                      data.onUpdateFileSettings,
+              return Column(
+                children: [
+                  SizedBox(
+                    height: previewH,
+                    child: _PreviewSection(
+                      isDragging: data.isDragging,
+                      selectedFile: data.selectedFile,
                     ),
                   ),
-                ),
-                AppOverallProgressBar(
-                  encodeState: data.encodeState,
-                  onShowEncodeErrors: data.onShowEncodeErrors,
-                ),
-              ],
-            );
-          },
+                  AppResizableDivider(
+                    onDrag: (dy) => data.onDividerDrag(dy / totalHeight),
+                  ),
+                  Expanded(
+                    child: AppVideoTableSection(
+                      files: data.files,
+                      globalSettings: data.encodeSettings,
+                      outputDirectory: data.outputDirectory,
+                      selectedFilePath: data.selectedFile?.path,
+                      encodeState: data.encodeState,
+                      presets: data.presets,
+                      globalSelectedPresetId: data.globalSelectedPresetId,
+                      onSelect: data.onSelectVideo,
+                      onRemove: data.onRemoveFile,
+                      onRemoveAll: () => _confirmClearAll(context),
+                      onOpenFileSettings: (file) => _openFileSettings(
+                        context,
+                        file,
+                        data.encodeSettings,
+                        data.onUpdateFileSettings,
+                      ),
+                    ),
+                  ),
+                  AppOverallProgressBar(
+                    encodeState: data.encodeState,
+                    onShowEncodeErrors: data.onShowEncodeErrors,
+                  ),
+                ],
+              );
+            },
+          ),
         ),
-      ),
       ),
     );
   }
@@ -172,10 +172,7 @@ class WindowsHomeRenderer extends StatelessWidget {
   }
 
   void _openSettings(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (_) => const SettingsPage(),
-    );
+    showDialog<void>(context: context, builder: (_) => const SettingsPage());
   }
 
   void _openEncodeSettings(BuildContext context) {
@@ -197,16 +194,13 @@ class WindowsHomeRenderer extends StatelessWidget {
     VideoFile file,
     EncodeSettings globalSettings,
     void Function(String path, EncodeSettings? settings, String? presetId)
-        onUpdate,
+    onUpdate,
   ) {
     final base = file.overrideSettings ?? globalSettings;
     final w = file.metadata?.width;
     final h = file.metadata?.height;
-    final effective = (base.resolution == null &&
-            w != null &&
-            h != null &&
-            w > 0 &&
-            h > 0)
+    final effective =
+        (base.resolution == null && w != null && h != null && w > 0 && h > 0)
         ? base.copyWith(resolution: '$w:$h')
         : base;
     showDialog<void>(
@@ -216,6 +210,8 @@ class WindowsHomeRenderer extends StatelessWidget {
         isPerFile: true,
         sampleFileName: p.basenameWithoutExtension(file.path),
         sampleCreationDate: file.metadata?.creationDate,
+        sampleCreationDateFromFileSystem:
+            file.metadata?.creationDateFromFileSystem ?? false,
         sampleTimezoneOffset: file.metadata?.timezoneOffset,
         sampleWidth: file.metadata?.width,
         sampleHeight: file.metadata?.height,
@@ -302,7 +298,11 @@ class _PreviewSection extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(FluentIcons.video, size: 48, color: theme.resources.textFillColorSecondary),
+              Icon(
+                FluentIcons.video,
+                size: 48,
+                color: theme.resources.textFillColorSecondary,
+              ),
               const SizedBox(height: 12),
               Text(l10n.selectVideoToPreview, style: theme.typography.subtitle),
               const SizedBox(height: 4),
@@ -328,7 +328,11 @@ class _PreviewSection extends StatelessWidget {
     final secondaryText = AppColors.textSecondary(brightness);
     final labelStyle = TextStyle(color: secondaryText, fontSize: 12);
     final valueStyle = TextStyle(color: primaryText, fontSize: 14);
-    final titleStyle = TextStyle(color: primaryText, fontSize: 16, fontWeight: FontWeight.w600);
+    final titleStyle = TextStyle(
+      color: primaryText,
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+    );
 
     return Container(
       color: theme.micaBackgroundColor,
@@ -357,19 +361,60 @@ class _PreviewSection extends StatelessWidget {
                 if (metadata == null)
                   Text(l10n.metadataNotAvailable, style: labelStyle)
                 else ...[
-                  AppMetadataRow(label: l10n.resolution, value: metadata.width != null && metadata.height != null ? '${metadata.width}x${metadata.height}' : '-', labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(
+                    label: l10n.resolution,
+                    value: metadata.width != null && metadata.height != null
+                        ? '${metadata.width}x${metadata.height}'
+                        : '-',
+                    labelStyle: labelStyle,
+                    valueStyle: valueStyle,
+                  ),
                   const SizedBox(height: 6),
-                  AppMetadataRow(label: l10n.codec, value: metadata.videoCodec ?? '-', labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(
+                    label: l10n.codec,
+                    value: metadata.videoCodec ?? '-',
+                    labelStyle: labelStyle,
+                    valueStyle: valueStyle,
+                  ),
                   const SizedBox(height: 6),
-                  AppMetadataRow(label: l10n.bitrate, value: BitrateFormatter.format(metadata.bitrate), labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(
+                    label: l10n.bitrate,
+                    value: BitrateFormatter.format(metadata.bitrate),
+                    labelStyle: labelStyle,
+                    valueStyle: valueStyle,
+                  ),
                   const SizedBox(height: 6),
-                  AppMetadataRow(label: l10n.aspectRatio, value: computeAspectRatio(metadata.width, metadata.height) ?? '-', labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(
+                    label: l10n.aspectRatio,
+                    value:
+                        computeAspectRatio(metadata.width, metadata.height) ??
+                        '-',
+                    labelStyle: labelStyle,
+                    valueStyle: valueStyle,
+                  ),
                   const SizedBox(height: 6),
-                  AppMetadataRow(label: l10n.frameRate, value: metadata.frameRate != null ? '${metadata.frameRate!.toStringAsFixed(2)} fps' : '-', labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(
+                    label: l10n.frameRate,
+                    value: metadata.frameRate != null
+                        ? '${metadata.frameRate!.toStringAsFixed(2)} fps'
+                        : '-',
+                    labelStyle: labelStyle,
+                    valueStyle: valueStyle,
+                  ),
                   const SizedBox(height: 6),
-                  AppMetadataRow(label: l10n.duration, value: DateFormatter.formatDuration(metadata.duration), labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(
+                    label: l10n.duration,
+                    value: DateFormatter.formatDuration(metadata.duration),
+                    labelStyle: labelStyle,
+                    valueStyle: valueStyle,
+                  ),
                   const SizedBox(height: 6),
-                  AppMetadataRow(label: l10n.dateTaken, value: DateFormatter.format(metadata.creationDate), labelStyle: labelStyle, valueStyle: valueStyle),
+                  AppMetadataRow(
+                    label: l10n.dateTaken,
+                    value: DateFormatter.format(metadata.creationDate),
+                    labelStyle: labelStyle,
+                    valueStyle: valueStyle,
+                  ),
                 ],
               ],
             ),
@@ -388,5 +433,4 @@ class _PreviewSection extends StatelessWidget {
       ),
     );
   }
-
 }

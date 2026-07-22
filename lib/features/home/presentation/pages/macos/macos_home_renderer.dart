@@ -36,15 +36,17 @@ class MacosHomeRenderer extends StatelessWidget {
     final theme = MacosTheme.of(context);
     final l10n = Languages.translate;
     return MacosScaffold(
-      backgroundColor: CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
-                theme.canvasColor,
+      backgroundColor:
+          CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
+          theme.canvasColor,
       toolBar: ToolBar(
         title: const Text('Video Toolkit'),
         height: 78,
         titleWidth: 150,
         decoration: BoxDecoration(
-          color: CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
-                theme.canvasColor,
+          color:
+              CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
+              theme.canvasColor,
         ),
 
         actions: [
@@ -122,13 +124,19 @@ class MacosHomeRenderer extends StatelessWidget {
             // Paint the entire body with canvas color so unpainted gaps
             // (below table rows, around divider) don't show the Flutter
             // default black bg through.
-            final canvas = CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
+            final canvas =
+                CupertinoDynamicColor.maybeResolve(
+                  theme.canvasColor,
+                  context,
+                ) ??
                 theme.canvasColor;
             return ColoredBox(
               color: canvas,
               child: DropTarget(
                 onDragDone: (details) {
-                  data.onFilesDropped(details.files.map((f) => f.path).toList());
+                  data.onFilesDropped(
+                    details.files.map((f) => f.path).toList(),
+                  );
                 },
                 onDragEntered: (_) => data.onDragStateChanged(true),
                 onDragExited: (_) => data.onDragStateChanged(false),
@@ -191,7 +199,6 @@ class MacosHomeRenderer extends StatelessWidget {
     return data.isPresetModified ? '$name*' : name;
   }
 
-
   void _openSettings(BuildContext context) {
     showMacosSheet<void>(
       context: context,
@@ -218,16 +225,13 @@ class MacosHomeRenderer extends StatelessWidget {
     VideoFile file,
     EncodeSettings globalSettings,
     void Function(String path, EncodeSettings? settings, String? presetId)
-        onUpdate,
+    onUpdate,
   ) {
     final base = file.overrideSettings ?? globalSettings;
     final w = file.metadata?.width;
     final h = file.metadata?.height;
-    final effective = (base.resolution == null &&
-            w != null &&
-            h != null &&
-            w > 0 &&
-            h > 0)
+    final effective =
+        (base.resolution == null && w != null && h != null && w > 0 && h > 0)
         ? base.copyWith(resolution: '$w:$h')
         : base;
     showMacosSheet<void>(
@@ -237,6 +241,8 @@ class MacosHomeRenderer extends StatelessWidget {
         isPerFile: true,
         sampleFileName: p.basenameWithoutExtension(file.path),
         sampleCreationDate: file.metadata?.creationDate,
+        sampleCreationDateFromFileSystem:
+            file.metadata?.creationDateFromFileSystem ?? false,
         sampleTimezoneOffset: file.metadata?.timezoneOffset,
         sampleWidth: file.metadata?.width,
         sampleHeight: file.metadata?.height,
@@ -299,8 +305,9 @@ class _PreviewSection extends StatelessWidget {
     // may disagree (e.g., MacosApp themeMode lag, native chrome override).
     final resolvedCanvas =
         CupertinoDynamicColor.maybeResolve(theme.canvasColor, context) ??
-            theme.canvasColor;
-    final isDark = theme.brightness == Brightness.dark ||
+        theme.canvasColor;
+    final isDark =
+        theme.brightness == Brightness.dark ||
         MediaQuery.platformBrightnessOf(context) == Brightness.dark ||
         resolvedCanvas.computeLuminance() < 0.5;
     final brightness = isDark ? Brightness.dark : Brightness.light;
@@ -337,7 +344,11 @@ class _PreviewSection extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            MacosIcon(CupertinoIcons.play_rectangle, size: 48, color: subtleText),
+            MacosIcon(
+              CupertinoIcons.play_rectangle,
+              size: 48,
+              color: subtleText,
+            ),
             const SizedBox(height: 12),
             Text(
               l10n.selectVideoToPreview,
@@ -360,7 +371,11 @@ class _PreviewSection extends StatelessWidget {
     // CupertinoDynamicColor that copyWith fails to replace cleanly.
     final labelStyle = TextStyle(color: subtleText, fontSize: 11);
     final valueStyle = TextStyle(color: primaryText, fontSize: 13);
-    final titleStyle = TextStyle(color: primaryText, fontSize: 15, fontWeight: FontWeight.w600);
+    final titleStyle = TextStyle(
+      color: primaryText,
+      fontSize: 15,
+      fontWeight: FontWeight.w600,
+    );
 
     // Paint our own background so text contrast is guaranteed even when
     // outer macos_ui widgets paint a different color than theme.canvasColor.
@@ -368,101 +383,101 @@ class _PreviewSection extends StatelessWidget {
       color: resolvedCanvas,
       child: Padding(
         padding: const EdgeInsets.all(24),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Left: metadata info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  selectedFile!.name,
-                  style: titleStyle,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  selectedFile!.path,
-                  style: labelStyle,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-                const SizedBox(height: 16),
-                if (metadata == null)
-                  Text(l10n.metadataNotAvailable, style: labelStyle)
-                else ...[
-                  AppMetadataRow(
-                    label: l10n.resolution,
-                    value: metadata.width != null && metadata.height != null
-                        ? '${metadata.width}x${metadata.height}'
-                        : '-',
-                    labelStyle: labelStyle,
-                    valueStyle: valueStyle,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Left: metadata info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    selectedFile!.name,
+                    style: titleStyle,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 6),
-                  AppMetadataRow(
-                    label: l10n.codec,
-                    value: metadata.videoCodec ?? '-',
-                    labelStyle: labelStyle,
-                    valueStyle: valueStyle,
+                  const SizedBox(height: 4),
+                  Text(
+                    selectedFile!.path,
+                    style: labelStyle,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-                  const SizedBox(height: 6),
-                  AppMetadataRow(
-                    label: l10n.bitrate,
-                    value: BitrateFormatter.format(metadata.bitrate),
-                    labelStyle: labelStyle,
-                    valueStyle: valueStyle,
-                  ),
-                  const SizedBox(height: 6),
-                  AppMetadataRow(
-                    label: l10n.aspectRatio,
-                    value: computeAspectRatio(metadata.width, metadata.height) ?? '-',
-                    labelStyle: labelStyle,
-                    valueStyle: valueStyle,
-                  ),
-                  const SizedBox(height: 6),
-                  AppMetadataRow(
-                    label: l10n.frameRate,
-                    value: metadata.frameRate != null
-                        ? '${metadata.frameRate!.toStringAsFixed(2)} fps'
-                        : '-',
-                    labelStyle: labelStyle,
-                    valueStyle: valueStyle,
-                  ),
-                  const SizedBox(height: 6),
-                  AppMetadataRow(
-                    label: l10n.duration,
-                    value: DateFormatter.formatDuration(metadata.duration),
-                    labelStyle: labelStyle,
-                    valueStyle: valueStyle,
-                  ),
-                  const SizedBox(height: 6),
-                  AppMetadataRow(
-                    label: l10n.dateTaken,
-                    value: DateFormatter.format(metadata.creationDate),
-                    labelStyle: labelStyle,
-                    valueStyle: valueStyle,
-                  ),
+                  const SizedBox(height: 16),
+                  if (metadata == null)
+                    Text(l10n.metadataNotAvailable, style: labelStyle)
+                  else ...[
+                    AppMetadataRow(
+                      label: l10n.resolution,
+                      value: metadata.width != null && metadata.height != null
+                          ? '${metadata.width}x${metadata.height}'
+                          : '-',
+                      labelStyle: labelStyle,
+                      valueStyle: valueStyle,
+                    ),
+                    const SizedBox(height: 6),
+                    AppMetadataRow(
+                      label: l10n.codec,
+                      value: metadata.videoCodec ?? '-',
+                      labelStyle: labelStyle,
+                      valueStyle: valueStyle,
+                    ),
+                    const SizedBox(height: 6),
+                    AppMetadataRow(
+                      label: l10n.bitrate,
+                      value: BitrateFormatter.format(metadata.bitrate),
+                      labelStyle: labelStyle,
+                      valueStyle: valueStyle,
+                    ),
+                    const SizedBox(height: 6),
+                    AppMetadataRow(
+                      label: l10n.aspectRatio,
+                      value:
+                          computeAspectRatio(metadata.width, metadata.height) ??
+                          '-',
+                      labelStyle: labelStyle,
+                      valueStyle: valueStyle,
+                    ),
+                    const SizedBox(height: 6),
+                    AppMetadataRow(
+                      label: l10n.frameRate,
+                      value: metadata.frameRate != null
+                          ? '${metadata.frameRate!.toStringAsFixed(2)} fps'
+                          : '-',
+                      labelStyle: labelStyle,
+                      valueStyle: valueStyle,
+                    ),
+                    const SizedBox(height: 6),
+                    AppMetadataRow(
+                      label: l10n.duration,
+                      value: DateFormatter.formatDuration(metadata.duration),
+                      labelStyle: labelStyle,
+                      valueStyle: valueStyle,
+                    ),
+                    const SizedBox(height: 6),
+                    AppMetadataRow(
+                      label: l10n.dateTaken,
+                      value: DateFormatter.format(metadata.creationDate),
+                      labelStyle: labelStyle,
+                      valueStyle: valueStyle,
+                    ),
+                  ],
                 ],
-              ],
-            ),
-          ),
-          // Right: live/static preview frame.
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: CubitStateBuilder<PreviewState>(
-                cubit: getIt<PreviewCubit>(),
-                builder: (context, state) => AppPreviewPanel(state: state),
               ),
             ),
-          ),
-        ],
-      ),
+            // Right: live/static preview frame.
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: CubitStateBuilder<PreviewState>(
+                  cubit: getIt<PreviewCubit>(),
+                  builder: (context, state) => AppPreviewPanel(state: state),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-
 }
-

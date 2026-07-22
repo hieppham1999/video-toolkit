@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$VideoMetadata {
 
- Duration? get duration; int? get width; int? get height; String? get videoCodec; String? get audioCodec; int? get bitrate; double? get frameRate; DateTime? get creationDate; String? get timezoneOffset; double? get gpsLatitude; double? get gpsLongitude; String? get cameraModel; Map<String, String> get rawExif;
+ Duration? get duration; int? get width; int? get height; String? get videoCodec; String? get audioCodec; int? get bitrate; double? get frameRate; DateTime? get creationDate; bool get creationDateFromFileSystem; String? get timezoneOffset; double? get gpsLatitude; double? get gpsLongitude; String? get cameraModel; Map<String, String> get rawExif;
 /// Create a copy of VideoMetadata
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $VideoMetadataCopyWith<VideoMetadata> get copyWith => _$VideoMetadataCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoMetadata&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.frameRate, frameRate) || other.frameRate == frameRate)&&(identical(other.creationDate, creationDate) || other.creationDate == creationDate)&&(identical(other.timezoneOffset, timezoneOffset) || other.timezoneOffset == timezoneOffset)&&(identical(other.gpsLatitude, gpsLatitude) || other.gpsLatitude == gpsLatitude)&&(identical(other.gpsLongitude, gpsLongitude) || other.gpsLongitude == gpsLongitude)&&(identical(other.cameraModel, cameraModel) || other.cameraModel == cameraModel)&&const DeepCollectionEquality().equals(other.rawExif, rawExif));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoMetadata&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.frameRate, frameRate) || other.frameRate == frameRate)&&(identical(other.creationDate, creationDate) || other.creationDate == creationDate)&&(identical(other.creationDateFromFileSystem, creationDateFromFileSystem) || other.creationDateFromFileSystem == creationDateFromFileSystem)&&(identical(other.timezoneOffset, timezoneOffset) || other.timezoneOffset == timezoneOffset)&&(identical(other.gpsLatitude, gpsLatitude) || other.gpsLatitude == gpsLatitude)&&(identical(other.gpsLongitude, gpsLongitude) || other.gpsLongitude == gpsLongitude)&&(identical(other.cameraModel, cameraModel) || other.cameraModel == cameraModel)&&const DeepCollectionEquality().equals(other.rawExif, rawExif));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,duration,width,height,videoCodec,audioCodec,bitrate,frameRate,creationDate,timezoneOffset,gpsLatitude,gpsLongitude,cameraModel,const DeepCollectionEquality().hash(rawExif));
+int get hashCode => Object.hash(runtimeType,duration,width,height,videoCodec,audioCodec,bitrate,frameRate,creationDate,creationDateFromFileSystem,timezoneOffset,gpsLatitude,gpsLongitude,cameraModel,const DeepCollectionEquality().hash(rawExif));
 
 @override
 String toString() {
-  return 'VideoMetadata(duration: $duration, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitrate: $bitrate, frameRate: $frameRate, creationDate: $creationDate, timezoneOffset: $timezoneOffset, gpsLatitude: $gpsLatitude, gpsLongitude: $gpsLongitude, cameraModel: $cameraModel, rawExif: $rawExif)';
+  return 'VideoMetadata(duration: $duration, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitrate: $bitrate, frameRate: $frameRate, creationDate: $creationDate, creationDateFromFileSystem: $creationDateFromFileSystem, timezoneOffset: $timezoneOffset, gpsLatitude: $gpsLatitude, gpsLongitude: $gpsLongitude, cameraModel: $cameraModel, rawExif: $rawExif)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $VideoMetadataCopyWith<$Res>  {
   factory $VideoMetadataCopyWith(VideoMetadata value, $Res Function(VideoMetadata) _then) = _$VideoMetadataCopyWithImpl;
 @useResult
 $Res call({
- Duration? duration, int? width, int? height, String? videoCodec, String? audioCodec, int? bitrate, double? frameRate, DateTime? creationDate, String? timezoneOffset, double? gpsLatitude, double? gpsLongitude, String? cameraModel, Map<String, String> rawExif
+ Duration? duration, int? width, int? height, String? videoCodec, String? audioCodec, int? bitrate, double? frameRate, DateTime? creationDate, bool creationDateFromFileSystem, String? timezoneOffset, double? gpsLatitude, double? gpsLongitude, String? cameraModel, Map<String, String> rawExif
 });
 
 
@@ -62,7 +62,7 @@ class _$VideoMetadataCopyWithImpl<$Res>
 
 /// Create a copy of VideoMetadata
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? duration = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitrate = freezed,Object? frameRate = freezed,Object? creationDate = freezed,Object? timezoneOffset = freezed,Object? gpsLatitude = freezed,Object? gpsLongitude = freezed,Object? cameraModel = freezed,Object? rawExif = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? duration = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitrate = freezed,Object? frameRate = freezed,Object? creationDate = freezed,Object? creationDateFromFileSystem = null,Object? timezoneOffset = freezed,Object? gpsLatitude = freezed,Object? gpsLongitude = freezed,Object? cameraModel = freezed,Object? rawExif = null,}) {
   return _then(_self.copyWith(
 duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration?,width: freezed == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
@@ -72,7 +72,8 @@ as String?,audioCodec: freezed == audioCodec ? _self.audioCodec : audioCodec // 
 as String?,bitrate: freezed == bitrate ? _self.bitrate : bitrate // ignore: cast_nullable_to_non_nullable
 as int?,frameRate: freezed == frameRate ? _self.frameRate : frameRate // ignore: cast_nullable_to_non_nullable
 as double?,creationDate: freezed == creationDate ? _self.creationDate : creationDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,timezoneOffset: freezed == timezoneOffset ? _self.timezoneOffset : timezoneOffset // ignore: cast_nullable_to_non_nullable
+as DateTime?,creationDateFromFileSystem: null == creationDateFromFileSystem ? _self.creationDateFromFileSystem : creationDateFromFileSystem // ignore: cast_nullable_to_non_nullable
+as bool,timezoneOffset: freezed == timezoneOffset ? _self.timezoneOffset : timezoneOffset // ignore: cast_nullable_to_non_nullable
 as String?,gpsLatitude: freezed == gpsLatitude ? _self.gpsLatitude : gpsLatitude // ignore: cast_nullable_to_non_nullable
 as double?,gpsLongitude: freezed == gpsLongitude ? _self.gpsLongitude : gpsLongitude // ignore: cast_nullable_to_non_nullable
 as double?,cameraModel: freezed == cameraModel ? _self.cameraModel : cameraModel // ignore: cast_nullable_to_non_nullable
@@ -162,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  Map<String, String> rawExif)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  bool creationDateFromFileSystem,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  Map<String, String> rawExif)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VideoMetadata() when $default != null:
-return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.rawExif);case _:
+return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.creationDateFromFileSystem,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.rawExif);case _:
   return orElse();
 
 }
@@ -183,10 +184,10 @@ return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.a
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  Map<String, String> rawExif)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  bool creationDateFromFileSystem,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  Map<String, String> rawExif)  $default,) {final _that = this;
 switch (_that) {
 case _VideoMetadata():
-return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.rawExif);case _:
+return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.creationDateFromFileSystem,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.rawExif);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +204,10 @@ return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.a
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  Map<String, String> rawExif)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  bool creationDateFromFileSystem,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  Map<String, String> rawExif)?  $default,) {final _that = this;
 switch (_that) {
 case _VideoMetadata() when $default != null:
-return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.rawExif);case _:
+return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.creationDateFromFileSystem,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.rawExif);case _:
   return null;
 
 }
@@ -218,7 +219,7 @@ return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.a
 
 
 class _VideoMetadata implements VideoMetadata {
-  const _VideoMetadata({this.duration, this.width, this.height, this.videoCodec, this.audioCodec, this.bitrate, this.frameRate, this.creationDate, this.timezoneOffset, this.gpsLatitude, this.gpsLongitude, this.cameraModel, final  Map<String, String> rawExif = const {}}): _rawExif = rawExif;
+  const _VideoMetadata({this.duration, this.width, this.height, this.videoCodec, this.audioCodec, this.bitrate, this.frameRate, this.creationDate, this.creationDateFromFileSystem = false, this.timezoneOffset, this.gpsLatitude, this.gpsLongitude, this.cameraModel, final  Map<String, String> rawExif = const {}}): _rawExif = rawExif;
   
 
 @override final  Duration? duration;
@@ -229,6 +230,7 @@ class _VideoMetadata implements VideoMetadata {
 @override final  int? bitrate;
 @override final  double? frameRate;
 @override final  DateTime? creationDate;
+@override@JsonKey() final  bool creationDateFromFileSystem;
 @override final  String? timezoneOffset;
 @override final  double? gpsLatitude;
 @override final  double? gpsLongitude;
@@ -251,16 +253,16 @@ _$VideoMetadataCopyWith<_VideoMetadata> get copyWith => __$VideoMetadataCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoMetadata&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.frameRate, frameRate) || other.frameRate == frameRate)&&(identical(other.creationDate, creationDate) || other.creationDate == creationDate)&&(identical(other.timezoneOffset, timezoneOffset) || other.timezoneOffset == timezoneOffset)&&(identical(other.gpsLatitude, gpsLatitude) || other.gpsLatitude == gpsLatitude)&&(identical(other.gpsLongitude, gpsLongitude) || other.gpsLongitude == gpsLongitude)&&(identical(other.cameraModel, cameraModel) || other.cameraModel == cameraModel)&&const DeepCollectionEquality().equals(other._rawExif, _rawExif));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoMetadata&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.frameRate, frameRate) || other.frameRate == frameRate)&&(identical(other.creationDate, creationDate) || other.creationDate == creationDate)&&(identical(other.creationDateFromFileSystem, creationDateFromFileSystem) || other.creationDateFromFileSystem == creationDateFromFileSystem)&&(identical(other.timezoneOffset, timezoneOffset) || other.timezoneOffset == timezoneOffset)&&(identical(other.gpsLatitude, gpsLatitude) || other.gpsLatitude == gpsLatitude)&&(identical(other.gpsLongitude, gpsLongitude) || other.gpsLongitude == gpsLongitude)&&(identical(other.cameraModel, cameraModel) || other.cameraModel == cameraModel)&&const DeepCollectionEquality().equals(other._rawExif, _rawExif));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,duration,width,height,videoCodec,audioCodec,bitrate,frameRate,creationDate,timezoneOffset,gpsLatitude,gpsLongitude,cameraModel,const DeepCollectionEquality().hash(_rawExif));
+int get hashCode => Object.hash(runtimeType,duration,width,height,videoCodec,audioCodec,bitrate,frameRate,creationDate,creationDateFromFileSystem,timezoneOffset,gpsLatitude,gpsLongitude,cameraModel,const DeepCollectionEquality().hash(_rawExif));
 
 @override
 String toString() {
-  return 'VideoMetadata(duration: $duration, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitrate: $bitrate, frameRate: $frameRate, creationDate: $creationDate, timezoneOffset: $timezoneOffset, gpsLatitude: $gpsLatitude, gpsLongitude: $gpsLongitude, cameraModel: $cameraModel, rawExif: $rawExif)';
+  return 'VideoMetadata(duration: $duration, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitrate: $bitrate, frameRate: $frameRate, creationDate: $creationDate, creationDateFromFileSystem: $creationDateFromFileSystem, timezoneOffset: $timezoneOffset, gpsLatitude: $gpsLatitude, gpsLongitude: $gpsLongitude, cameraModel: $cameraModel, rawExif: $rawExif)';
 }
 
 
@@ -271,7 +273,7 @@ abstract mixin class _$VideoMetadataCopyWith<$Res> implements $VideoMetadataCopy
   factory _$VideoMetadataCopyWith(_VideoMetadata value, $Res Function(_VideoMetadata) _then) = __$VideoMetadataCopyWithImpl;
 @override @useResult
 $Res call({
- Duration? duration, int? width, int? height, String? videoCodec, String? audioCodec, int? bitrate, double? frameRate, DateTime? creationDate, String? timezoneOffset, double? gpsLatitude, double? gpsLongitude, String? cameraModel, Map<String, String> rawExif
+ Duration? duration, int? width, int? height, String? videoCodec, String? audioCodec, int? bitrate, double? frameRate, DateTime? creationDate, bool creationDateFromFileSystem, String? timezoneOffset, double? gpsLatitude, double? gpsLongitude, String? cameraModel, Map<String, String> rawExif
 });
 
 
@@ -288,7 +290,7 @@ class __$VideoMetadataCopyWithImpl<$Res>
 
 /// Create a copy of VideoMetadata
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? duration = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitrate = freezed,Object? frameRate = freezed,Object? creationDate = freezed,Object? timezoneOffset = freezed,Object? gpsLatitude = freezed,Object? gpsLongitude = freezed,Object? cameraModel = freezed,Object? rawExif = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? duration = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitrate = freezed,Object? frameRate = freezed,Object? creationDate = freezed,Object? creationDateFromFileSystem = null,Object? timezoneOffset = freezed,Object? gpsLatitude = freezed,Object? gpsLongitude = freezed,Object? cameraModel = freezed,Object? rawExif = null,}) {
   return _then(_VideoMetadata(
 duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration?,width: freezed == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
@@ -298,7 +300,8 @@ as String?,audioCodec: freezed == audioCodec ? _self.audioCodec : audioCodec // 
 as String?,bitrate: freezed == bitrate ? _self.bitrate : bitrate // ignore: cast_nullable_to_non_nullable
 as int?,frameRate: freezed == frameRate ? _self.frameRate : frameRate // ignore: cast_nullable_to_non_nullable
 as double?,creationDate: freezed == creationDate ? _self.creationDate : creationDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,timezoneOffset: freezed == timezoneOffset ? _self.timezoneOffset : timezoneOffset // ignore: cast_nullable_to_non_nullable
+as DateTime?,creationDateFromFileSystem: null == creationDateFromFileSystem ? _self.creationDateFromFileSystem : creationDateFromFileSystem // ignore: cast_nullable_to_non_nullable
+as bool,timezoneOffset: freezed == timezoneOffset ? _self.timezoneOffset : timezoneOffset // ignore: cast_nullable_to_non_nullable
 as String?,gpsLatitude: freezed == gpsLatitude ? _self.gpsLatitude : gpsLatitude // ignore: cast_nullable_to_non_nullable
 as double?,gpsLongitude: freezed == gpsLongitude ? _self.gpsLongitude : gpsLongitude // ignore: cast_nullable_to_non_nullable
 as double?,cameraModel: freezed == cameraModel ? _self.cameraModel : cameraModel // ignore: cast_nullable_to_non_nullable

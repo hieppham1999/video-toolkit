@@ -32,6 +32,7 @@ class MacosEncodeSettingsSheet extends StatefulWidget {
     this.onReset,
     this.sampleFileName = 'video',
     this.sampleCreationDate,
+    this.sampleCreationDateFromFileSystem = false,
     this.sampleTimezoneOffset,
     this.sampleWidth,
     this.sampleHeight,
@@ -44,6 +45,7 @@ class MacosEncodeSettingsSheet extends StatefulWidget {
   final VoidCallback? onReset;
   final String sampleFileName;
   final DateTime? sampleCreationDate;
+  final bool sampleCreationDateFromFileSystem;
   final String? sampleTimezoneOffset;
   final int? sampleWidth;
   final int? sampleHeight;
@@ -170,8 +172,10 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
     return showMacosAlertDialog<void>(
       context: context,
       builder: (ctx) => MacosAlertDialog(
-        appIcon: const MacosIcon(CupertinoIcons.exclamationmark_triangle,
-            size: 48),
+        appIcon: const MacosIcon(
+          CupertinoIcons.exclamationmark_triangle,
+          size: 48,
+        ),
         title: Text(l10n.importError),
         message: Text(l10n.importFailed),
         primaryButton: PushButton(
@@ -262,144 +266,139 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-                    SizedBox(
-                      width: _c.sidebarWidth,
-                      child: _buildPresetSidebar(theme, l10n, presets),
-                    ),
-                    AppResizableDivider(
-                      axis: Axis.vertical,
-                      onDrag: _c.resizeSidebar,
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Spacer(),
-                                AppButton(
-                                  secondary: true,
-                                  onPressed: _handleImport,
-                                  child: Text(l10n.import),
-                                ),
-                                const SizedBox(width: 6),
-                                AppButton(
-                                  secondary: true,
-                                  onPressed: _c.selectedPresetId != null
-                                      ? () => _c.exportSelectedPreset()
-                                      : null,
-                                  child: Text(l10n.export),
-                                ),
-                                const SizedBox(width: 6),
-                                AppButton(
-                                  secondary: true,
-                                  onPressed: _c.selectedPresetId != null
-                                      ? _handleRevert
-                                      : null,
-                                  child: Text(l10n.revert),
-                                ),
-                                const SizedBox(width: 6),
-                                AppButton(
-                                  secondary: true,
-                                  onPressed: () =>
-                                      _c.handleSaveAs(_promptPresetName),
-                                  child: Text(l10n.saveAs),
-                                ),
-                                const SizedBox(width: 6),
-                                AppButton(
-                                  secondary: true,
-                                  onPressed: () =>
-                                      _c.handleSave(_promptPresetName),
-                                  child: Text(l10n.save),
-                                ),
-                                const SizedBox(width: 6),
-                                AppButton(
-                                  secondary: true,
-                                  onPressed: canDelete
-                                      ? () => _c.handleDelete(_confirmDelete)
-                                      : null,
-                                  child: Text(l10n.deletePreset),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                for (int i = 0; i < tabs.length; i++) ...[
-                                  if (i > 0) const SizedBox(width: 4),
-                                  PushButton(
-                                    controlSize: ControlSize.regular,
-                                    secondary: i != _c.selectedTab,
-                                    onPressed: () => _c.setTab(i),
-                                    child: Text(tabs[i]),
-                                  ),
-                                ],
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Expanded(
-                              child: switch (_c.selectedTab) {
-                                0 => FileTab(
-                                    controller: _c,
-                                    sampleFileName: widget.sampleFileName,
-                                    sampleCreationDate:
-                                        widget.sampleCreationDate,
-                                    sampleTimezoneOffset:
-                                        widget.sampleTimezoneOffset,
-                                  ),
-                                1 => ContainerTab(controller: _c),
-                                2 => VideoCodecTab(controller: _c),
-                                3 => SizingTab(
-                                    controller: _c,
-                                    sampleWidth: widget.sampleWidth,
-                                    sampleHeight: widget.sampleHeight,
-                                  ),
-                                4 => FilterTab(controller: _c),
-                                5 => AudioTab(controller: _c),
-                                _ => const SizedBox.shrink(),
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                if (widget.onReset != null)
-                                  AppButton(
-                                    size: AppButtonSize.large,
-                                    secondary: true,
-                                    onPressed: widget.onReset,
-                                    child: Text(l10n.resetToGlobal),
-                                  ),
-                                const Spacer(),
-                                AppButton(
-                                  size: AppButtonSize.large,
-                                  secondary: true,
-                                  onPressed: widget.onCancel,
-                                  child: Text(l10n.cancel),
-                                ),
-                                const SizedBox(width: 8),
-                                AppButton(
-                                  size: AppButtonSize.large,
-                                  onPressed: () {
-                                    _c.commitPresetSelection();
-                                    widget.onSave(
-                                      _c.buildSettings(),
-                                      _c.selectedPresetId,
-                                    );
-                                  },
-                                  child: Text(l10n.save),
-                                ),
-                              ],
-                            ),
-                          ],
+            SizedBox(
+              width: _c.sidebarWidth,
+              child: _buildPresetSidebar(theme, l10n, presets),
+            ),
+            AppResizableDivider(axis: Axis.vertical, onDrag: _c.resizeSidebar),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Spacer(),
+                        AppButton(
+                          secondary: true,
+                          onPressed: _handleImport,
+                          child: Text(l10n.import),
                         ),
-                      ),
+                        const SizedBox(width: 6),
+                        AppButton(
+                          secondary: true,
+                          onPressed: _c.selectedPresetId != null
+                              ? () => _c.exportSelectedPreset()
+                              : null,
+                          child: Text(l10n.export),
+                        ),
+                        const SizedBox(width: 6),
+                        AppButton(
+                          secondary: true,
+                          onPressed: _c.selectedPresetId != null
+                              ? _handleRevert
+                              : null,
+                          child: Text(l10n.revert),
+                        ),
+                        const SizedBox(width: 6),
+                        AppButton(
+                          secondary: true,
+                          onPressed: () => _c.handleSaveAs(_promptPresetName),
+                          child: Text(l10n.saveAs),
+                        ),
+                        const SizedBox(width: 6),
+                        AppButton(
+                          secondary: true,
+                          onPressed: () => _c.handleSave(_promptPresetName),
+                          child: Text(l10n.save),
+                        ),
+                        const SizedBox(width: 6),
+                        AppButton(
+                          secondary: true,
+                          onPressed: canDelete
+                              ? () => _c.handleDelete(_confirmDelete)
+                              : null,
+                          child: Text(l10n.deletePreset),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        for (int i = 0; i < tabs.length; i++) ...[
+                          if (i > 0) const SizedBox(width: 4),
+                          PushButton(
+                            controlSize: ControlSize.regular,
+                            secondary: i != _c.selectedTab,
+                            onPressed: () => _c.setTab(i),
+                            child: Text(tabs[i]),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: switch (_c.selectedTab) {
+                        0 => FileTab(
+                          controller: _c,
+                          sampleFileName: widget.sampleFileName,
+                          sampleCreationDate: widget.sampleCreationDate,
+                          sampleCreationDateFromFileSystem:
+                              widget.sampleCreationDateFromFileSystem,
+                          sampleTimezoneOffset: widget.sampleTimezoneOffset,
+                        ),
+                        1 => ContainerTab(controller: _c),
+                        2 => VideoCodecTab(controller: _c),
+                        3 => SizingTab(
+                          controller: _c,
+                          sampleWidth: widget.sampleWidth,
+                          sampleHeight: widget.sampleHeight,
+                        ),
+                        4 => FilterTab(controller: _c),
+                        5 => AudioTab(controller: _c),
+                        _ => const SizedBox.shrink(),
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        if (widget.onReset != null)
+                          AppButton(
+                            size: AppButtonSize.large,
+                            secondary: true,
+                            onPressed: widget.onReset,
+                            child: Text(l10n.resetToGlobal),
+                          ),
+                        const Spacer(),
+                        AppButton(
+                          size: AppButtonSize.large,
+                          secondary: true,
+                          onPressed: widget.onCancel,
+                          child: Text(l10n.cancel),
+                        ),
+                        const SizedBox(width: 8),
+                        AppButton(
+                          size: AppButtonSize.large,
+                          onPressed: () {
+                            _c.commitPresetSelection();
+                            widget.onSave(
+                              _c.buildSettings(),
+                              _c.selectedPresetId,
+                            );
+                          },
+                          child: Text(l10n.save),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-      );
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildPresetSidebar(
@@ -450,4 +449,3 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
     );
   }
 }
-

@@ -25,25 +25,26 @@ class ExiftoolDatasource {
     // Request only the tags we use instead of dumping everything (faster + smaller output).
     // Do NOT pass -n: it converts QuickTime dates to raw epoch numbers, breaking date parsing.
     final args = [
-      // '-fast2',
+      '-fast2',
       '-json',
-      '-c', '%+.6f',
+      '-c',
+      '%+.6f',
       // Keys:CreationDate is the only QuickTime tag that preserves the source
       // timezone offset literally — read it first so we can round-trip the
       // exact offset on encode.
-      // '-Keys:CreationDate',
-      // '-CreateDate',
-      // '-MediaCreateDate',
-      // '-DateTimeOriginal',
-      // '-TrackCreateDate',
-      // // Filesystem date fallbacks for containers without embedded creation
-      // // dates (e.g. AVCHD .MTS from Sony cameras). FileCreateDate typically
-      // // matches the recording start; FileModifyDate matches recording end.
-      // '-FileCreateDate',
-      // '-FileModifyDate',
-      // '-GPSLatitude',
-      // '-GPSLongitude',
-      // '-Model',
+      '-Keys:CreationDate',
+      '-CreateDate',
+      '-MediaCreateDate',
+      '-DateTimeOriginal',
+      '-TrackCreateDate',
+      // Filesystem fallback for containers without a valid embedded creation
+      // date. Request it explicitly so timestamp filename previews do not wait
+      // for a full metadata dump.
+      '-FileCreateDate',
+      '-GPSLatitude',
+      '-GPSLongitude',
+      '-Model',
+      '-DeviceModelName',
       filePath,
     ];
     appLogger.i('exiftool command: $_executable ${args.join(' ')}');
@@ -60,21 +61,31 @@ class ExiftoolDatasource {
       if (list.isEmpty) return null;
       final data = list.first as Map<String, dynamic>;
 
-      final rawDate = data['CreateDate'] ??
-          data['MediaCreateDate'] ??
-          data['TrackCreateDate'] ??
-          data['DateTimeOriginal'] ??
-          data['FileCreateDate'] ??
-          data['FileModifyDate'];
+      // Pick the first date that can actually be parsed. Null-coalescing the
+      // raw values is not enough because exiftool may return an empty or
+      // invalid embedded date (for example "0000:00:00 00:00:00"). In that
+      // case, fall back specifically to the filesystem creation timestamp.
+      final embeddedDate = _firstParsedDate([
+        data['CreateDate'],
+        data['MediaCreateDate'],
+        data['TrackCreateDate'],
+        data['DateTimeOriginal'],
+      ]);
+      final fileCreateDate = _firstParsedDate([data['FileCreateDate']]);
+      final selectedDate = embeddedDate ?? fileCreateDate;
 
       final model = data['Model'] ?? data['DeviceModelName'];
 
       // Prefer Keys:CreationDate for offset detection — Apple devices store
       // the source TZ literally there, while QuickTime atoms strip it.
-      final offsetSource = data['CreationDate'] as String? ?? rawDate;
+      final offsetSource = embeddedDate != null
+          ? data['CreationDate'] as String? ?? embeddedDate.rawValue
+          : fileCreateDate?.rawValue;
 
       final metadata = VideoMetadata(
-        creationDate: _parseDate(rawDate),
+        creationDate: selectedDate?.date,
+        creationDateFromFileSystem:
+            embeddedDate == null && fileCreateDate != null,
         timezoneOffset: _extractTimezoneOffset(offsetSource),
         gpsLatitude: _parseDouble(data['GPSLatitude']),
         gpsLongitude: _parseDouble(data['GPSLongitude']),
@@ -96,15 +107,18 @@ class ExiftoolDatasource {
     }
   }
 
-  // exiftool QuickTime dates look like "2025:11:06 07:35:25", sometimes with
-  // a trailing timezone offset ("+07:00") or "Z". Try each known pattern in order.
-  static final _dateFormats = [
-    DateFormat("yyyy:MM:dd HH:mm:ssZZZZZ"),
-    DateFormat("yyyy:MM:dd HH:mm:ss'Z'"),
-    DateFormat("yyyy:MM:dd HH:mm:ss"),
-  ];
-
   static final _tzOffsetRegex = RegExp(r'(Z|[+-]\d{2}:?\d{2})$');
+  static final _exifDateRegex = RegExp(
+    r'^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)(Z|[+-]\d{2}:?\d{2})?$',
+  );
+
+  _ParsedDate? _firstParsedDate(List<dynamic> candidates) {
+    for (final candidate in candidates) {
+      final date = _parseDate(candidate);
+      if (date != null) return _ParsedDate(date, candidate);
+    }
+    return null;
+  }
 
   // Dart intl's DateFormat does not reliably emit the ZZZZZ offset token, so
   // we build "+HH:MM" / "-HH:MM" ourselves from a Duration.
@@ -130,22 +144,43 @@ class ExiftoolDatasource {
   }
 
   DateTime? _parseDate(dynamic value) {
-    appLogger.d('exiftool parse date input: $value (type=${value.runtimeType})');
+    appLogger.d(
+      'exiftool parse date input: $value (type=${value.runtimeType})',
+    );
     if (value == null || value is! String) return null;
 
-    // QuickTime CreateDate/MediaCreateDate atoms are UTC per spec when written
-    // without an offset. Parse offset-less strings as UTC so downstream shift
-    // logic (`.toUtc().add(sourceOffset)`) doesn't double-count the machine TZ.
-    final hasOffset = _tzOffsetRegex.hasMatch(value.trim());
-    for (final fmt in _dateFormats) {
-      try {
-        return fmt.parse(value, !hasOffset);
-      } catch (_) {
-        // try next format
-      }
+    // exiftool dates look like "2025:11:06 07:35:25", optionally followed by
+    // "Z", "+07:00", or "+0700". Convert to ISO 8601 after validating every
+    // component; DateFormat.parse is lenient and otherwise turns sentinel
+    // values such as "0000:00:00 00:00:00" into a real date.
+    final match = _exifDateRegex.firstMatch(value.trim());
+    if (match == null) return null;
+
+    final year = int.parse(match.group(1)!);
+    final month = int.parse(match.group(2)!);
+    final day = int.parse(match.group(3)!);
+    final hour = int.parse(match.group(4)!);
+    final minute = int.parse(match.group(5)!);
+    final second = double.parse(match.group(6)!);
+    if (year < 1 ||
+        month < 1 ||
+        month > 12 ||
+        day < 1 ||
+        day > DateTime.utc(year, month + 1, 0).day ||
+        hour > 23 ||
+        minute > 59 ||
+        second >= 60) {
+      return null;
     }
-    appLogger.w('exiftool _parseDate: no DateFormat matched "$value"');
-    return null;
+
+    var offset = match.group(7) ?? 'Z';
+    if (offset.length == 5 && offset != 'Z' && !offset.contains(':')) {
+      offset = '${offset.substring(0, 3)}:${offset.substring(3)}';
+    }
+    final iso =
+        '${match.group(1)}-${match.group(2)}-${match.group(3)}T'
+        '${match.group(4)}:${match.group(5)}:${match.group(6)}$offset';
+    return DateTime.tryParse(iso);
   }
 
   Future<bool> copyMetadata({
@@ -171,14 +206,17 @@ class ExiftoolDatasource {
     final nowStr = '${dateFormatterNoTz.format(now)}$localOffset';
     String? creationDateStr;
     if (metadata?.creationDate != null) {
-      creationDateStr = '${dateFormatterNoTz.format(metadata!.creationDate!)}$sourceOffset';
+      creationDateStr =
+          '${dateFormatterNoTz.format(metadata!.creationDate!)}$sourceOffset';
     }
     // Keys:CreationDate stores in ISO 8601 (the format Apple writes natively).
     // Using "T" separator + offset gives exiftool the unambiguous form so the
     // offset is preserved verbatim instead of being normalized to +00:00.
     String? keysCreationDateStr;
     if (metadata?.creationDate != null) {
-      final iso = DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(metadata!.creationDate!.toLocal());
+      final iso = DateFormat(
+        "yyyy-MM-dd'T'HH:mm:ss",
+      ).format(metadata!.creationDate!.toLocal());
       keysCreationDateStr = '$iso$sourceOffset';
     }
 
@@ -195,7 +233,8 @@ class ExiftoolDatasource {
       // Keys:CreationDate (com.apple.quicktime.creationdate) is the one MP4
       // atom that preserves the timezone offset literally — Photos.app and
       // Finder read this for "Content created" display.
-      if (keysCreationDateStr != null) '-Keys:CreationDate=$keysCreationDateStr',
+      if (keysCreationDateStr != null)
+        '-Keys:CreationDate=$keysCreationDateStr',
       if (metadata?.cameraModel != null) '-Model=${metadata!.cameraModel}',
       '-overwrite_original',
       targetPath,
@@ -226,4 +265,11 @@ class ExiftoolDatasource {
     if (value is String) return double.tryParse(value);
     return null;
   }
+}
+
+class _ParsedDate {
+  const _ParsedDate(this.date, this.rawValue);
+
+  final DateTime date;
+  final dynamic rawValue;
 }

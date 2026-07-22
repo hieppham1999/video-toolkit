@@ -28,6 +28,7 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
     required Duration totalDuration,
     String? outputDir,
     DateTime? creationDate,
+    bool creationDateFromFileSystem = false,
   }) {
     final controller = StreamController<EncodeProgress>();
     () async {
@@ -38,13 +39,17 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
           settings.outputNameTemplate,
           originalName: baseName,
           creationDate: creationDate,
+          creationDateFromFileSystem: creationDateFromFileSystem,
           sourceTimezoneOffset: settings.sourceTimezoneOffset,
         );
-        final outputPath = p.join(dir, '$outName.${settings.outputExtension.value}');
+        final outputPath = p.join(
+          dir,
+          '$outName.${settings.outputExtension.value}',
+        );
 
         final resolved = await _resolveFonts(settings);
-        final useTwoPass = resolved.qualityMode == QualityMode.avgBitrate &&
-            resolved.twoPass;
+        final useTwoPass =
+            resolved.qualityMode == QualityMode.avgBitrate && resolved.twoPass;
 
         if (useTwoPass) {
           final logPrefix = p.join(
@@ -69,13 +74,15 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
               totalDuration: totalDuration,
             )) {
               if (controller.isClosed) return;
-              controller.add(p.copyWith(
-                percent: (p.percent * 0.5).clamp(0.0, 0.5),
-                estimatedRemaining: p.estimatedRemaining == null
-                    ? null
-                    : p.estimatedRemaining! * 2,
-                pass: 1,
-              ));
+              controller.add(
+                p.copyWith(
+                  percent: (p.percent * 0.5).clamp(0.0, 0.5),
+                  estimatedRemaining: p.estimatedRemaining == null
+                      ? null
+                      : p.estimatedRemaining! * 2,
+                  pass: 1,
+                ),
+              );
             }
 
             final statsFile = File('$logPrefix-0.log');
@@ -107,21 +114,29 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
               totalDuration: totalDuration,
             )) {
               if (controller.isClosed) return;
-              controller.add(p.copyWith(
-                percent: (0.5 + p.percent * 0.5).clamp(0.5, 1.0),
-                pass: 2,
-              ));
+              controller.add(
+                p.copyWith(
+                  percent: (0.5 + p.percent * 0.5).clamp(0.5, 1.0),
+                  pass: 2,
+                ),
+              );
             }
           } finally {
             await _cleanupPassLogs(logPrefix);
           }
         } else {
-          final args = resolved.buildArgs(inputPath, outputPath, creationDate: creationDate);
-          await controller.addStream(_ffmpeg.encode(
-            inputPath: inputPath,
-            args: args,
-            totalDuration: totalDuration,
-          ));
+          final args = resolved.buildArgs(
+            inputPath,
+            outputPath,
+            creationDate: creationDate,
+          );
+          await controller.addStream(
+            _ffmpeg.encode(
+              inputPath: inputPath,
+              args: args,
+              totalDuration: totalDuration,
+            ),
+          );
         }
       } catch (e, st) {
         controller.addError(e, st);
