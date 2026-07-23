@@ -1,0 +1,48 @@
+VIDEO TOOLKIT - THIRD-PARTY NOTICES
+===================================
+
+This distribution includes third-party command-line tools. The notices below
+are provided for attribution and license compliance. They do not change the
+license of Video Toolkit itself.
+
+FFmpeg
+------
+Version bundled at the time of this release: 8.1
+Project: https://ffmpeg.org/
+Windows build provider: https://www.gyan.dev/ffmpeg/builds/
+
+The bundled Windows build reports that it was configured with --enable-gpl and
+--enable-version3. It is therefore distributed under the GNU General Public
+License version 3 or later. Copyright belongs to the FFmpeg developers and the
+respective component authors.
+
+License: https://www.gnu.org/licenses/gpl-3.0.html
+FFmpeg source releases: https://ffmpeg.org/releases/
+Build information and source links: https://www.gyan.dev/ffmpeg/builds/
+
+Recipients may obtain the complete corresponding source for the exact bundled
+FFmpeg build through the source and build-provider links above. Preserve this
+notice when redistributing the bundled binaries.
+
+ExifTool
+--------
+Version bundled at the time of this release: 13.57
+Project: https://exiftool.org/
+Copyright (c) Phil Harvey
+
+ExifTool is distributed under the same terms as Perl itself (the Artistic
+License or the GNU General Public License). The Windows bundle also contains
+its license at:
+
+  data\bin\exiftool_files\LICENSE
+
+Source and release archives: https://exiftool.org/
+
+Microsoft Visual C++ Redistributable
+------------------------------------
+The installer includes the Microsoft Visual C++ x64 Redistributable obtained
+from Microsoft's official distribution endpoint. Its use and redistribution
+are governed by the applicable Microsoft Visual Studio license terms.
+
+Information:
+https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist

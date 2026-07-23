@@ -122,6 +122,45 @@ fvm flutter run -d windows
 fvm flutter analyze
 ```
 
+
+### Build the Windows installer
+
+The Windows installer is a per-machine Inno Setup package. It installs the app
+under `C:\Program Files\Video Toolkit`, creates an all-users Start Menu shortcut,
+and preserves per-user settings and presets during upgrades and uninstall.
+
+Prerequisites:
+
+- Windows 10 or 11 x64
+- Flutter and Visual Studio as described above
+- [Inno Setup 6](https://jrsoftware.org/isinfo.php)
+- Internet access on the first build to download Microsoft's signed Visual C++
+  x64 Redistributable
+
+Build the release app, installer, and SHA-256 checksum:
+
+```powershell
+.\scripts\build_windows_installer.ps1
+```
+
+The outputs are written to `build\installer`.
+
+See [docs/windows-installer.md](docs/windows-installer.md) for the complete
+Vietnamese build, signing, customization, licensing, testing, and
+troubleshooting guide.
+
+For a signed public release, install the Windows SDK, import the code-signing
+certificate into the current user's certificate store, and pass its thumbprint:
+
+```powershell
+.\scripts\build_windows_installer.ps1 `
+  -CertificateThumbprint 'YOUR_CERTIFICATE_THUMBPRINT'
+```
+
+The script signs `video_toolkit.exe` before packaging and signs the generated
+installer afterward. Unsigned builds are suitable only for internal testing
+because Windows SmartScreen can warn users about unknown publishers.
+
 ---
 
 ## Localization
