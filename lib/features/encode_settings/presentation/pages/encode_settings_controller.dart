@@ -28,18 +28,50 @@ class EncodeSettingsController extends ChangeNotifier {
   static const double maxSidebar = 400;
 
   /// Quick-select aspect ratios shown as chips under the aspect input.
-  static const List<String> aspectPresets = ['16:9', '9:16', '1:1', '4:3', '3:4'];
+  static const List<String> aspectPresets = [
+    '16:9',
+    '9:16',
+    '1:1',
+    '4:3',
+    '3:4',
+  ];
 
   /// Selectable source-timezone offsets for the encode-settings dropdown.
   /// `null` represents "auto" (use the encoding machine's local TZ).
   static const List<String?> timezoneOffsets = [
     null,
-    '-12:00', '-11:00', '-10:00', '-09:00', '-08:00', '-07:00', '-06:00',
-    '-05:00', '-04:00', '-03:30', '-03:00', '-02:00', '-01:00',
+    '-12:00',
+    '-11:00',
+    '-10:00',
+    '-09:00',
+    '-08:00',
+    '-07:00',
+    '-06:00',
+    '-05:00',
+    '-04:00',
+    '-03:30',
+    '-03:00',
+    '-02:00',
+    '-01:00',
     '+00:00',
-    '+01:00', '+02:00', '+03:00', '+03:30', '+04:00', '+05:00', '+05:30',
-    '+05:45', '+06:00', '+07:00', '+08:00', '+09:00', '+09:30', '+10:00',
-    '+11:00', '+12:00', '+13:00', '+14:00',
+    '+01:00',
+    '+02:00',
+    '+03:00',
+    '+03:30',
+    '+04:00',
+    '+05:00',
+    '+05:30',
+    '+05:45',
+    '+06:00',
+    '+07:00',
+    '+08:00',
+    '+09:00',
+    '+09:30',
+    '+10:00',
+    '+11:00',
+    '+12:00',
+    '+13:00',
+    '+14:00',
   ];
 
   // Form state
@@ -50,6 +82,7 @@ class EncodeSettingsController extends ChangeNotifier {
   late AudioCodec audioCodec;
   late AudioBitrate audioBitrate;
   late List<TextOverlay> textOverlays;
+  late bool embedTimestampSubtitle;
   late String outputNameTemplate;
   late Deinterlace deinterlace;
   late QualityMode qualityMode;
@@ -58,6 +91,7 @@ class EncodeSettingsController extends ChangeNotifier {
   late bool turboFirstPass;
   late String extraParams;
   late bool copySourceMetadata;
+
   /// Null = auto (use the encoding machine's local TZ).
   String? sourceTimezoneOffset;
   late bool webOptimized;
@@ -75,6 +109,11 @@ class EncodeSettingsController extends ChangeNotifier {
   String? selectedPresetId;
   double sidebarWidth = 190;
 
+  bool get supportsTimestampSubtitle =>
+      outputExtension == OutputExtension.mp4 ||
+      outputExtension == OutputExtension.mov ||
+      outputExtension == OutputExtension.mkv;
+
   void _loadFromSettings(EncodeSettings s) {
     codec = s.codec;
     preset = s.preset;
@@ -83,6 +122,8 @@ class EncodeSettingsController extends ChangeNotifier {
     audioCodec = s.audioCodec;
     audioBitrate = s.audioBitrate;
     textOverlays = List.of(s.textOverlays);
+    embedTimestampSubtitle =
+        s.embedTimestampSubtitle && s.supportsTimestampSubtitle;
     outputNameTemplate = s.outputNameTemplate;
     deinterlace = s.deinterlace;
     qualityMode = s.qualityMode;
@@ -130,6 +171,7 @@ class EncodeSettingsController extends ChangeNotifier {
       audioCodec: audioCodec,
       audioBitrate: audioBitrate,
       textOverlays: textOverlays,
+      embedTimestampSubtitle: embedTimestampSubtitle,
       outputNameTemplate: outputNameTemplate,
       cropAspectRatio: cropAspectRatio,
       deinterlace: deinterlace,
@@ -149,27 +191,99 @@ class EncodeSettingsController extends ChangeNotifier {
   }
 
   // ── Setters (each notifies) ──────────────────────────────────────
-  void setTab(int v) { selectedTab = v; notifyListeners(); }
-  void setCodec(VideoEncoder v) { codec = v; notifyListeners(); }
-  void setPreset(EncodePreset v) { preset = v; notifyListeners(); }
-  void setCrf(int v) { crf = v; notifyListeners(); }
-  void setOutputExtension(OutputExtension v) { outputExtension = v; notifyListeners(); }
-  void setAudioCodec(AudioCodec v) { audioCodec = v; notifyListeners(); }
-  void setAudioBitrate(AudioBitrate v) { audioBitrate = v; notifyListeners(); }
-  void setOutputNameTemplate(String v) { outputNameTemplate = v; notifyListeners(); }
-  void setDeinterlace(Deinterlace v) { deinterlace = v; notifyListeners(); }
-  void setQualityMode(QualityMode v) { qualityMode = v; notifyListeners(); }
-  void setAvgBitrateKbps(int v) { avgBitrateKbps = v; notifyListeners(); }
+  void setTab(int v) {
+    selectedTab = v;
+    notifyListeners();
+  }
+
+  void setCodec(VideoEncoder v) {
+    codec = v;
+    notifyListeners();
+  }
+
+  void setPreset(EncodePreset v) {
+    preset = v;
+    notifyListeners();
+  }
+
+  void setCrf(int v) {
+    crf = v;
+    notifyListeners();
+  }
+
+  void setOutputExtension(OutputExtension v) {
+    outputExtension = v;
+    if (!supportsTimestampSubtitle) embedTimestampSubtitle = false;
+    notifyListeners();
+  }
+
+  void setAudioCodec(AudioCodec v) {
+    audioCodec = v;
+    notifyListeners();
+  }
+
+  void setAudioBitrate(AudioBitrate v) {
+    audioBitrate = v;
+    notifyListeners();
+  }
+
+  void setEmbedTimestampSubtitle(bool v) {
+    if (!supportsTimestampSubtitle) return;
+    embedTimestampSubtitle = v;
+    notifyListeners();
+  }
+
+  void setOutputNameTemplate(String v) {
+    outputNameTemplate = v;
+    notifyListeners();
+  }
+
+  void setDeinterlace(Deinterlace v) {
+    deinterlace = v;
+    notifyListeners();
+  }
+
+  void setQualityMode(QualityMode v) {
+    qualityMode = v;
+    notifyListeners();
+  }
+
+  void setAvgBitrateKbps(int v) {
+    avgBitrateKbps = v;
+    notifyListeners();
+  }
+
   void setTwoPass(bool v) {
     twoPass = v;
     if (!v) turboFirstPass = false;
     notifyListeners();
   }
-  void setTurboFirstPass(bool v) { turboFirstPass = v; notifyListeners(); }
-  void setExtraParams(String v) { extraParams = v; notifyListeners(); }
-  void setCopySourceMetadata(bool v) { copySourceMetadata = v; notifyListeners(); }
-  void setSourceTimezoneOffset(String? v) { sourceTimezoneOffset = v; notifyListeners(); }
-  void setWebOptimized(bool v) { webOptimized = v; notifyListeners(); }
+
+  void setTurboFirstPass(bool v) {
+    turboFirstPass = v;
+    notifyListeners();
+  }
+
+  void setExtraParams(String v) {
+    extraParams = v;
+    notifyListeners();
+  }
+
+  void setCopySourceMetadata(bool v) {
+    copySourceMetadata = v;
+    notifyListeners();
+  }
+
+  void setSourceTimezoneOffset(String? v) {
+    sourceTimezoneOffset = v;
+    notifyListeners();
+  }
+
+  void setWebOptimized(bool v) {
+    webOptimized = v;
+    notifyListeners();
+  }
+
   void appendNameTag(String tag) {
     outputNameTemplate = '$outputNameTemplate{$tag}';
     notifyListeners();
@@ -180,21 +294,25 @@ class EncodeSettingsController extends ChangeNotifier {
     _syncAspectFromResolution();
     notifyListeners();
   }
+
   void setResHeight(String v) {
     resHeight = v;
     _syncAspectFromResolution();
     notifyListeners();
   }
+
   void setAspectNum(String v) {
     aspectNum = v;
     _syncResolutionFromAspect();
     notifyListeners();
   }
+
   void setAspectDen(String v) {
     aspectDen = v;
     _syncResolutionFromAspect();
     notifyListeners();
   }
+
   void applyAspectPreset(String presetStr) {
     final parts = presetStr.split(':');
     if (parts.length != 2) return;
@@ -203,6 +321,7 @@ class EncodeSettingsController extends ChangeNotifier {
     _syncResolutionFromAspect();
     notifyListeners();
   }
+
   void swapResolution() {
     final tmp = resWidth;
     resWidth = resHeight;
@@ -222,9 +341,21 @@ class EncodeSettingsController extends ChangeNotifier {
     if (v == Rotation.none) useDisplayRotation = false;
     notifyListeners();
   }
-  void setUseDisplayRotation(bool v) { useDisplayRotation = v; notifyListeners(); }
-  void setFlipHorizontal(bool v) { flipHorizontal = v; notifyListeners(); }
-  void setFlipVertical(bool v) { flipVertical = v; notifyListeners(); }
+
+  void setUseDisplayRotation(bool v) {
+    useDisplayRotation = v;
+    notifyListeners();
+  }
+
+  void setFlipHorizontal(bool v) {
+    flipHorizontal = v;
+    notifyListeners();
+  }
+
+  void setFlipVertical(bool v) {
+    flipVertical = v;
+    notifyListeners();
+  }
 
   /// Localized label for a [Rotation] enum value.
   static String rotationLabel(Rotation r) {
@@ -300,10 +431,12 @@ class EncodeSettingsController extends ChangeNotifier {
     textOverlays = [...textOverlays, const TextOverlay(text: 'Text')];
     notifyListeners();
   }
+
   void removeOverlay(int i) {
     textOverlays = [...textOverlays]..removeAt(i);
     notifyListeners();
   }
+
   void updateOverlay(int i, TextOverlay o) {
     textOverlays = [...textOverlays]..[i] = o;
     notifyListeners();
@@ -424,7 +557,9 @@ class EncodeSettingsController extends ChangeNotifier {
     if (path == null) return false;
     final withExt = path.toLowerCase().endsWith('.json') ? path : '$path.json';
     const encoder = JsonEncoder.withIndent('  ');
-    await File(withExt).writeAsString(encoder.convert(preset.settings.toJson()));
+    await File(
+      withExt,
+    ).writeAsString(encoder.convert(preset.settings.toJson()));
     return true;
   }
 

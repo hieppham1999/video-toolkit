@@ -183,7 +183,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabFilter => 'Filter';
 
   @override
+  String get tabSubtitle => 'Subtitle';
+
+  @override
   String get tabAudio => 'Audio';
+
+  @override
+  String get embedTimestampSubtitle => 'Embed timestamp subtitle';
+
+  @override
+  String get embedTimestampSubtitleDescription =>
+      'Add the video timestamp as a selectable subtitle track named timestamp';
+
+  @override
+  String get subtitleUnsupportedContainer =>
+      'Timestamp subtitles are supported for MP4, MOV and MKV only';
 
   @override
   String get quality => 'Quality';

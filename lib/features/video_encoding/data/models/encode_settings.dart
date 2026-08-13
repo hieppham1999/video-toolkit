@@ -1,18 +1,16 @@
 import 'dart:io';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:video_toolkit/features/video_encoding/domain/timestamp_subtitle.dart';
 
 part 'generated/encode_settings.freezed.dart';
 part 'generated/encode_settings.g.dart';
 
+String _requireSubtitleValue(String? value) =>
+    value ?? (throw StateError('Subtitle value is missing'));
+
 /// Position anchor for text overlay placement.
-enum TextOverlayPosition {
-  topLeft,
-  topRight,
-  bottomLeft,
-  bottomRight,
-  center,
-}
+enum TextOverlayPosition { topLeft, topRight, bottomLeft, bottomRight, center }
 
 /// Whether the overlay is free-form text or an auto-generated timestamp.
 enum TextOverlayType { custom, timestamp }
@@ -32,15 +30,18 @@ abstract class TextOverlay with _$TextOverlay {
     String? fontFile,
     @Default(true) bool showBackground,
     @Default('black@0.5') String backgroundColor,
+
     /// Border (stroke) width in pixels around each character. 0 disables.
     @Default(0) int borderWidth,
     @Default('black') String borderColor,
+
     /// When [type] is [TextOverlayType.timestamp], appends the timezone offset
     /// (e.g. " +07:00") after the time line. Ignored for custom overlays.
     @Default(false) bool showTimezone,
   }) = _TextOverlay;
 
-  factory TextOverlay.fromJson(Map<String, dynamic> json) => _$TextOverlayFromJson(json);
+  factory TextOverlay.fromJson(Map<String, dynamic> json) =>
+      _$TextOverlayFromJson(json);
 }
 
 /// Builds ffmpeg drawtext filter string(s) for a [TextOverlay].
@@ -69,7 +70,9 @@ String _customFilter(TextOverlay t) {
     'x=$x',
     'y=$y',
   ];
-  if (t.fontFile != null) parts.add("fontfile='${t.fontFile?.escapedForWindowsCmd}'");
+  if (t.fontFile != null) {
+    parts.add("fontfile='${t.fontFile!.escapedForWindowsCmd}'");
+  }
   if (t.borderWidth > 0) {
     parts.add('borderw=${t.borderWidth}');
     parts.add('bordercolor=${t.borderColor}');
@@ -91,14 +94,17 @@ List<String> _timestampFilters(
   // by that offset and use ffmpeg's `gmtime` (raw, no machine TZ shift) so
   // the rendered wall-clock matches the source's local time. Otherwise fall
   // back to `localtime`, which uses the encode machine's TZ.
-  final baseUtcSec = (creationDate ?? DateTime.now()).toUtc().millisecondsSinceEpoch ~/ 1000;
-  final offsetDuration = _parseOffsetDuration(sourceTimezoneOffset);
+  final baseUtcSec =
+      (creationDate ?? DateTime.now()).toUtc().millisecondsSinceEpoch ~/ 1000;
+  final offsetDuration = parseTimestampOffset(sourceTimezoneOffset);
   final useGmtime = offsetDuration != null;
   final unixTs = useGmtime ? baseUtcSec + offsetDuration.inSeconds : baseUtcSec;
   final timeFn = useGmtime ? 'gmtime' : 'localtime';
   // Resolve the offset string actually shown in the overlay: source override
   // when present, else the encode machine's local offset.
-  final tzLabel = sourceTimezoneOffset ?? _formatLocalOffset(DateTime.now().timeZoneOffset);
+  final tzLabel =
+      sourceTimezoneOffset ??
+      formatLocalTimestampOffset(DateTime.now().timeZoneOffset);
   final x = _xExpr(t);
   // Time line sits above the date line; spacing = fontSize + 10.
   final yBase = _yExpr(t);
@@ -116,7 +122,9 @@ List<String> _timestampFilters(
       parts.add('borderw=${t.borderWidth}');
       parts.add('bordercolor=${t.borderColor}');
     }
-    if (t.fontFile != null) parts.add("fontfile='${t.fontFile?.escapedForWindowsCmd}'");
+    if (t.fontFile != null) {
+      parts.add("fontfile='${t.fontFile!.escapedForWindowsCmd}'");
+    }
     return parts;
   }
 
@@ -124,51 +132,32 @@ List<String> _timestampFilters(
       ? '%{pts:$timeFn:$unixTs:%H\\:%M\\:%S}$tzLabel'
       : '%{pts:$timeFn:$unixTs:%H\\:%M\\:%S}';
   final timeParts = buildParts(timeText, yTime);
-  final dateParts = buildParts(
-    '%{pts:$timeFn:$unixTs:%b.%d %Y}',
-    yBase,
-  );
+  final dateParts = buildParts('%{pts:$timeFn:$unixTs:%b.%d %Y}', yBase);
 
-  return [
-    'drawtext=${timeParts.join(':')}',
-    'drawtext=${dateParts.join(':')}',
-  ];
-}
-
-Duration? _parseOffsetDuration(String? offset) {
-  if (offset == null) return null;
-  final match = RegExp(r'^([+-])(\d{2}):(\d{2})$').firstMatch(offset);
-  if (match == null) return null;
-  final sign = match.group(1) == '-' ? -1 : 1;
-  final h = int.parse(match.group(2)!);
-  final m = int.parse(match.group(3)!);
-  return Duration(hours: sign * h, minutes: sign * m);
-}
-
-String _formatLocalOffset(Duration offset) {
-  final sign = offset.isNegative ? '-' : '+';
-  final abs = offset.abs();
-  final h = abs.inHours.toString().padLeft(2, '0');
-  final m = (abs.inMinutes % 60).toString().padLeft(2, '0');
-  return '$sign$h:$m';
+  return ['drawtext=${timeParts.join(':')}', 'drawtext=${dateParts.join(':')}'];
 }
 
 String _xExpr(TextOverlay t) => switch (t.position) {
-  TextOverlayPosition.topLeft || TextOverlayPosition.bottomLeft => '${t.offsetX}',
-  TextOverlayPosition.topRight || TextOverlayPosition.bottomRight => '(w-text_w-${t.offsetX})',
+  TextOverlayPosition.topLeft ||
+  TextOverlayPosition.bottomLeft => '${t.offsetX}',
+  TextOverlayPosition.topRight ||
+  TextOverlayPosition.bottomRight => '(w-text_w-${t.offsetX})',
   TextOverlayPosition.center => '(w-text_w)/2',
 };
 
 String _yExpr(TextOverlay t) => switch (t.position) {
   TextOverlayPosition.topLeft || TextOverlayPosition.topRight => '${t.offsetY}',
-  TextOverlayPosition.bottomLeft || TextOverlayPosition.bottomRight => '(h-text_h-${t.offsetY})',
+  TextOverlayPosition.bottomLeft ||
+  TextOverlayPosition.bottomRight => '(h-text_h-${t.offsetY})',
   TextOverlayPosition.center => '(h-text_h)/2',
 };
 
 /// Like [_yExpr] but adds extra pixel offset (used to stack timestamp lines).
 String _yExprOffset(TextOverlay t, int extra) => switch (t.position) {
-  TextOverlayPosition.topLeft || TextOverlayPosition.topRight => '${t.offsetY + extra}',
-  TextOverlayPosition.bottomLeft || TextOverlayPosition.bottomRight => '(h-text_h-${t.offsetY + extra})',
+  TextOverlayPosition.topLeft ||
+  TextOverlayPosition.topRight => '${t.offsetY + extra}',
+  TextOverlayPosition.bottomLeft ||
+  TextOverlayPosition.bottomRight => '(h-text_h-${t.offsetY + extra})',
   TextOverlayPosition.center => '((h-text_h)/2-$extra)',
 };
 
@@ -182,32 +171,40 @@ abstract class EncodeSettings with _$EncodeSettings {
     @Default(EncodePreset.veryfast) EncodePreset preset,
     @Default(23) int crf,
     @Default(OutputExtension.mp4) OutputExtension outputExtension,
+
     /// Null = keep original resolution. Format: "1920:1080".
     String? resolution,
     @Default(AudioCodec.passthrough) AudioCodec audioCodec,
     @Default(AudioBitrate.k128) AudioBitrate audioBitrate,
     @Default([]) List<TextOverlay> textOverlays,
+    @Default(false) bool embedTimestampSubtitle,
+
     /// Template for output file name (without extension). Empty = default
     /// `<name>_encoded`. See [FilenameTemplate] for supported tags.
     @Default('') String outputNameTemplate,
+
     /// Target aspect ratio `num:den` (e.g. "16:9", "9:16", "1:1"). Null or
     /// empty = keep original, no crop.
     String? cropAspectRatio,
+
     /// Deinterlacing filter applied before text overlays.
     @Default(Deinterlace.off) Deinterlace deinterlace,
     @Default(QualityMode.crf) QualityMode qualityMode,
     @Default(4000) int avgBitrateKbps,
     @Default(false) bool twoPass,
     @Default(false) bool turboFirstPass,
+
     /// Raw extra params forwarded via codec-specific flag (e.g. `-x265-params`).
     @Default('') String extraParams,
     @Default(true) bool copySourceMetadata,
+
     /// Override for the source video's timezone offset (e.g. "+07:00"). Used
     /// when the source MP4 doesn't carry an offset itself — typical for non-
     /// Apple cameras. Null = fall back to the encoding machine's local TZ.
     String? sourceTimezoneOffset,
     @Default(true) bool webOptimized,
     @Default(Rotation.none) Rotation rotation,
+
     /// When true and [rotation] != none, write rotation as display metadata
     /// only (no pixel re-encode). Best with MP4/MOV containers.
     @Default(false) bool useDisplayRotation,
@@ -215,7 +212,16 @@ abstract class EncodeSettings with _$EncodeSettings {
     @Default(false) bool flipVertical,
   }) = _EncodeSettings;
 
-  factory EncodeSettings.fromJson(Map<String, dynamic> json) => _$EncodeSettingsFromJson(json);
+  factory EncodeSettings.fromJson(Map<String, dynamic> json) =>
+      _$EncodeSettingsFromJson(json);
+
+  bool get supportsTimestampSubtitle => timestampSubtitleCodec != null;
+
+  String? get timestampSubtitleCodec => switch (outputExtension) {
+    OutputExtension.mp4 || OutputExtension.mov => 'mov_text',
+    OutputExtension.mkv => 'subrip',
+    OutputExtension.avi || OutputExtension.mts => null,
+  };
 
   /// Builds the ffmpeg `-vf` filter chain from these settings.
   ///
@@ -224,11 +230,13 @@ abstract class EncodeSettings with _$EncodeSettings {
   /// exact same chain as the real encode.
   String? buildVideoFilterChain({DateTime? creationDate}) {
     final overlayFilters = textOverlays
-        .expand((t) => textOverlayToFilter(
-              t,
-              creationDate: creationDate,
-              sourceTimezoneOffset: sourceTimezoneOffset,
-            ))
+        .expand(
+          (t) => textOverlayToFilter(
+            t,
+            creationDate: creationDate,
+            sourceTimezoneOffset: sourceTimezoneOffset,
+          ),
+        )
         .toList();
     final filters = [...overlayFilters];
 
@@ -288,61 +296,105 @@ abstract class EncodeSettings with _$EncodeSettings {
     DateTime? creationDate,
     int? pass,
     String? passLogPrefix,
+    String? timestampSubtitlePath,
   }) {
     final filterChain = buildVideoFilterChain(creationDate: creationDate);
     final nullSink = Platform.isWindows ? 'NUL' : '/dev/null';
     final codecParamsFlag = _codecParamsFlag;
     final mergedParams = _mergedCodecParams(pass: pass);
+    final subtitleCodec = timestampSubtitleCodec;
+    final includeTimestampSubtitle =
+        embedTimestampSubtitle &&
+        timestampSubtitlePath != null &&
+        subtitleCodec != null;
 
     return [
       '-i', inputPath,
+      if (includeTimestampSubtitle) ...[
+        '-i',
+        _requireSubtitleValue(timestampSubtitlePath),
+      ],
+      if (includeTimestampSubtitle && pass == 1) ...[
+        '-map',
+        '0:v:0',
+      ] else if (includeTimestampSubtitle) ...[
+        '-map',
+        '0:v:0',
+        '-map',
+        '0:a?',
+        '-map',
+        '1:0',
+      ],
       '-c:v', codec.value,
       if (preset.value.isNotEmpty) ...['-preset', preset.value],
-      if (qualityMode == QualityMode.crf)
-        ...['-crf', '$crf']
-      else
-        ...['-b:v', '${avgBitrateKbps}k'],
+      if (qualityMode == QualityMode.crf) ...[
+        '-crf',
+        '$crf',
+      ] else ...[
+        '-b:v',
+        '${avgBitrateKbps}k',
+      ],
       if (pass != null) ...['-pass', '$pass'],
-      if (pass != null && passLogPrefix != null)
-        ...['-passlogfile', passLogPrefix],
-      if (codecParamsFlag != null && mergedParams.isNotEmpty)
-        ...[codecParamsFlag, mergedParams],
+      if (pass != null && passLogPrefix != null) ...[
+        '-passlogfile',
+        passLogPrefix,
+      ],
+      if (codecParamsFlag != null && mergedParams.isNotEmpty) ...[
+        codecParamsFlag,
+        mergedParams,
+      ],
       if (codecParamsFlag == null && extraParams.trim().isNotEmpty)
         ...extraParams.trim().split(RegExp(r'\s+')),
       if (filterChain != null) ...['-vf', filterChain],
-      if (pass == 1) ...['-an', '-f', 'null']
-      else ...[
-        '-c:a', audioCodec.value,
-        if (audioCodec != AudioCodec.passthrough)
-          ...['-b:a', audioBitrate.value],
+      if (includeTimestampSubtitle && pass != 1) ...[
+        '-c:s',
+        _requireSubtitleValue(subtitleCodec),
+        '-metadata:s:s:0',
+        'title=timestamp',
+      ],
+      if (pass == 1) ...[
+        '-an',
+        '-f',
+        'null',
+      ] else ...[
+        '-c:a',
+        audioCodec.value,
+        if (audioCodec != AudioCodec.passthrough) ...[
+          '-b:a',
+          audioBitrate.value,
+        ],
       ],
       if (pass != 1 &&
           webOptimized &&
           (outputExtension == OutputExtension.mp4 ||
-              outputExtension == OutputExtension.mov))
-        ...['-movflags', '+faststart'],
+              outputExtension == OutputExtension.mov)) ...[
+        '-movflags',
+        '+faststart',
+      ],
       // Apple devices (QuickTime, iOS, macOS) only play HEVC in MP4/MOV when
       // the sample entry uses the `hvc1` tag. ffmpeg defaults to `hev1`, which
       // results in unplayable files on Apple platforms.
       if (pass != 1 &&
           codec == VideoEncoder.h265 &&
           (outputExtension == OutputExtension.mp4 ||
-              outputExtension == OutputExtension.mov))
-        ...['-tag:v', 'hvc1'],
-      if (pass != 1 &&
-          useDisplayRotation &&
-          rotation != Rotation.none)
-        ...['-metadata:s:v:0', 'rotate=${rotation.degrees}'],
+              outputExtension == OutputExtension.mov)) ...[
+        '-tag:v',
+        'hvc1',
+      ],
+      if (pass != 1 && useDisplayRotation && rotation != Rotation.none) ...[
+        '-metadata:s:v:0',
+        'rotate=${rotation.degrees}',
+      ],
       '-y',
       pass == 1 ? nullSink : outputPath,
     ];
   }
 
   String? get _codecParamsFlag => switch (codec) {
-        VideoEncoder.h264 => '-x264-params',
-        VideoEncoder.h265 => '-x265-params',
-        VideoEncoder.vp9 => null,
-      };
+    VideoEncoder.h264 => '-x264-params',
+    VideoEncoder.h265 => '-x265-params',
+    VideoEncoder.vp9 => null,
+  };
 
   /// Merges user [extraParams] with the codec-specific turbo-first-pass string
   /// when [pass] is 1 and [turboFirstPass] is on.
@@ -359,12 +411,12 @@ abstract class EncodeSettings with _$EncodeSettings {
   // passes; skip anything that changes stats format (e.g. `weightp`, `8x8dct`)
   // — x264 aborts pass 2 with "different X setting than first pass" otherwise.
   String get _turboParams => switch (codec) {
-        VideoEncoder.h264 =>
-          'ref=1:me=dia:subme=1:trellis=0:mixed-refs=0:fast-pskip=1',
-        VideoEncoder.h265 =>
-          'no-rect=1:no-amp=1:max-merge=1:early-skip=1:fast-intra=1:ref=1:rd=2:subme=1',
-        VideoEncoder.vp9 => '',
-      };
+    VideoEncoder.h264 =>
+      'ref=1:me=dia:subme=1:trellis=0:mixed-refs=0:fast-pskip=1',
+    VideoEncoder.h265 =>
+      'no-rect=1:no-amp=1:max-merge=1:early-skip=1:fast-intra=1:ref=1:rd=2:subme=1',
+    VideoEncoder.vp9 => '',
+  };
 }
 
 extension StringOnWindows on String {
@@ -470,4 +522,3 @@ enum AudioBitrate {
 
   final String value;
 }
-  

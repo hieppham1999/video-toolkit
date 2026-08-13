@@ -21,6 +21,7 @@ import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs
 import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/container_tab.dart';
 import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/file_tab.dart';
 import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/sizing_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/subtitle_tab.dart';
 import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/video_codec_tab.dart';
 import 'package:video_toolkit/app/base/app_state.dart';
 import 'package:video_toolkit/widgets/color_picker_button.dart';
@@ -247,6 +248,7 @@ class _WindowsEncodeSettingsDialogState
       l10n.tabVideoCodec,
       l10n.tabSizing,
       l10n.tabFilter,
+      l10n.tabSubtitle,
       l10n.tabAudio,
     ];
     final presetState = getIt<PresetCubit>().state;
@@ -358,7 +360,8 @@ class _WindowsEncodeSettingsDialogState
                         sampleHeight: widget.sampleHeight,
                       ),
                       4 => _buildFilterTab(theme, l10n),
-                      5 => AudioTab(controller: _c),
+                      5 => SubtitleTab(controller: _c),
+                      6 => AudioTab(controller: _c),
                       _ => const SizedBox.shrink(),
                     },
                   ),
