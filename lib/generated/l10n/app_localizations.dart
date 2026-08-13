@@ -440,11 +440,35 @@ abstract class AppLocalizations {
   /// **'Filter'**
   String get tabFilter;
 
+  /// No description provided for @tabSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle'**
+  String get tabSubtitle;
+
   /// No description provided for @tabAudio.
   ///
   /// In en, this message translates to:
   /// **'Audio'**
   String get tabAudio;
+
+  /// No description provided for @embedTimestampSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Embed timestamp subtitle'**
+  String get embedTimestampSubtitle;
+
+  /// No description provided for @embedTimestampSubtitleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the video timestamp as a selectable subtitle track named timestamp'**
+  String get embedTimestampSubtitleDescription;
+
+  /// No description provided for @subtitleUnsupportedContainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Timestamp subtitles are supported for MP4, MOV and MKV only'**
+  String get subtitleUnsupportedContainer;
 
   /// No description provided for @quality.
   ///

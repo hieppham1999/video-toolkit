@@ -182,7 +182,21 @@ class AppLocalizationsVi extends AppLocalizations {
   String get tabFilter => 'Bộ lọc';
 
   @override
+  String get tabSubtitle => 'Subtitle';
+
+  @override
   String get tabAudio => 'Âm thanh';
+
+  @override
+  String get embedTimestampSubtitle => 'Nhúng timestamp subtitle';
+
+  @override
+  String get embedTimestampSubtitleDescription =>
+      'Thêm timestamp của video thành subtitle track có thể bật/tắt với tên timestamp';
+
+  @override
+  String get subtitleUnsupportedContainer =>
+      'Timestamp subtitle chỉ hỗ trợ MP4, MOV và MKV';
 
   @override
   String get quality => 'Chất lượng';

@@ -33,7 +33,18 @@ class EncodeSettingsDiffer {
     _scalar(out, 'Resolution', a.resolution, b.resolution);
     _scalar(out, 'Audio codec', a.audioCodec.value, b.audioCodec.value);
     _scalar(out, 'Audio bitrate', a.audioBitrate.value, b.audioBitrate.value);
-    _scalar(out, 'Filename template', a.outputNameTemplate, b.outputNameTemplate);
+    _scalar(
+      out,
+      'Embed timestamp subtitle',
+      a.embedTimestampSubtitle,
+      b.embedTimestampSubtitle,
+    );
+    _scalar(
+      out,
+      'Filename template',
+      a.outputNameTemplate,
+      b.outputNameTemplate,
+    );
     _scalar(out, 'Crop ratio', a.cropAspectRatio, b.cropAspectRatio);
     _scalar(out, 'Deinterlace', a.deinterlace.name, b.deinterlace.name);
     _scalar(out, 'Quality mode', a.qualityMode.name, b.qualityMode.name);
@@ -45,7 +56,12 @@ class EncodeSettingsDiffer {
     _scalar(out, 'Source TZ', a.sourceTimezoneOffset, b.sourceTimezoneOffset);
     _scalar(out, 'Web optimized', a.webOptimized, b.webOptimized);
     _scalar(out, 'Rotation', a.rotation.name, b.rotation.name);
-    _scalar(out, 'Use display rotation', a.useDisplayRotation, b.useDisplayRotation);
+    _scalar(
+      out,
+      'Use display rotation',
+      a.useDisplayRotation,
+      b.useDisplayRotation,
+    );
     _scalar(out, 'Flip horizontal', a.flipHorizontal, b.flipHorizontal);
     _scalar(out, 'Flip vertical', a.flipVertical, b.flipVertical);
 
@@ -61,11 +77,7 @@ class EncodeSettingsDiffer {
     Object? b,
   ) {
     if (a == b) return;
-    out.add(EncodeSettingsDiff(
-      label: label,
-      before: _fmt(a),
-      after: _fmt(b),
-    ));
+    out.add(EncodeSettingsDiff(label: label, before: _fmt(a), after: _fmt(b)));
   }
 
   static String _fmt(Object? v) {
@@ -84,18 +96,22 @@ class EncodeSettingsDiffer {
       _diffOverlay(out, i, a[i], b[i]);
     }
     for (var i = shared; i < a.length; i++) {
-      out.add(EncodeSettingsDiff(
-        label: 'Overlay #${i + 1}',
-        before: _overlaySummary(a[i]),
-        after: _none,
-      ));
+      out.add(
+        EncodeSettingsDiff(
+          label: 'Overlay #${i + 1}',
+          before: _overlaySummary(a[i]),
+          after: _none,
+        ),
+      );
     }
     for (var i = shared; i < b.length; i++) {
-      out.add(EncodeSettingsDiff(
-        label: 'Overlay #${i + 1}',
-        before: _none,
-        after: _overlaySummary(b[i]),
-      ));
+      out.add(
+        EncodeSettingsDiff(
+          label: 'Overlay #${i + 1}',
+          before: _none,
+          after: _overlaySummary(b[i]),
+        ),
+      );
     }
   }
 
@@ -122,7 +138,5 @@ class EncodeSettingsDiffer {
   }
 
   static String _overlaySummary(TextOverlay o) =>
-      o.type == TextOverlayType.timestamp
-          ? '[timestamp]'
-          : '"${o.text}"';
+      o.type == TextOverlayType.timestamp ? '[timestamp]' : '"${o.text}"';
 }
