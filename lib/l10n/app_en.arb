@@ -200,6 +200,11 @@
   "aboutAuthor": "Author",
   "aboutVersion": "Version",
   "aboutAppName": "Video Toolkit",
+  "encodeCompletedTitle": "Encoding complete",
+  "encodeCompletedSummary": "{count} video(s) encoded successfully.",
+  "@encodeCompletedSummary": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "encodeErrorsTitle": "Encoding failed",
   "encodeErrorsSummary": "{count} file(s) failed to encode. Details below:",
   "@encodeErrorsSummary": {

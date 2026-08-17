@@ -1226,6 +1226,18 @@ abstract class AppLocalizations {
   /// **'Video Toolkit'**
   String get aboutAppName;
 
+  /// No description provided for @encodeCompletedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Encoding complete'**
+  String get encodeCompletedTitle;
+
+  /// No description provided for @encodeCompletedSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} video(s) encoded successfully.'**
+  String encodeCompletedSummary(int count);
+
   /// No description provided for @encodeErrorsTitle.
   ///
   /// In en, this message translates to:

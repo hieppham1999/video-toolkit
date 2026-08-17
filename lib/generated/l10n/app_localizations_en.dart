@@ -590,6 +590,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutAppName => 'Video Toolkit';
 
   @override
+  String get encodeCompletedTitle => 'Encoding complete';
+
+  @override
+  String encodeCompletedSummary(int count) {
+    return '$count video(s) encoded successfully.';
+  }
+
+  @override
   String get encodeErrorsTitle => 'Encoding failed';
 
   @override

@@ -200,6 +200,11 @@
   "aboutAuthor": "Tác giả",
   "aboutVersion": "Phiên bản",
   "aboutAppName": "Video Toolkit",
+  "encodeCompletedTitle": "Mã hóa hoàn tất",
+  "encodeCompletedSummary": "Đã mã hóa thành công {count} video.",
+  "@encodeCompletedSummary": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "encodeErrorsTitle": "Mã hóa thất bại",
   "encodeErrorsSummary": "{count} tệp mã hóa thất bại. Chi tiết bên dưới:",
   "@encodeErrorsSummary": {

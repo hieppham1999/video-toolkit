@@ -7,7 +7,9 @@ import 'package:path/path.dart' as p;
 import 'package:video_toolkit/app/base/app_state.dart';
 import 'package:video_toolkit/app/injection.dart';
 import 'package:video_toolkit/app/languages.dart';
+import 'package:video_toolkit/core/notifications/app_notification_service.dart';
 import 'package:video_toolkit/widgets/app_error_dialog.dart';
+import 'package:video_toolkit/widgets/app_success_dialog.dart';
 import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_cubit.dart';
 import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_state.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
@@ -134,9 +136,17 @@ class _HomePageState extends State<HomePage> {
     return BlocListener<VideoEncodeCubit, CubitState<VideoEncodeState>>(
       bloc: _encodeCubit,
       listenWhen: (prev, cur) =>
-          prev.data.status != EncodeStatus.error &&
-          cur.data.status == EncodeStatus.error,
-      listener: (context, state) => _showEncodeErrors(context, state.data),
+          (prev.data.status != EncodeStatus.error &&
+              cur.data.status == EncodeStatus.error) ||
+          (prev.data.status != EncodeStatus.done &&
+              cur.data.status == EncodeStatus.done),
+      listener: (context, state) {
+        if (state.data.status == EncodeStatus.done) {
+          _showEncodeCompleted(context, state.data);
+        } else if (state.data.status == EncodeStatus.error) {
+          _showEncodeErrors(context, state.data);
+        }
+      },
       child: CubitStateBuilder<VideoImportState>(
         cubit: _importCubit,
       builder: (context, importState) {
@@ -206,5 +216,22 @@ class _HomePageState extends State<HomePage> {
       },
       ),
     );
+  }
+
+  void _showEncodeCompleted(BuildContext context, VideoEncodeState state) {
+    final l10n = Languages.translate;
+    final title = l10n.encodeCompletedTitle;
+    final message = l10n.encodeCompletedSummary(state.completedCount);
+
+    if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
+      showAppSuccessDialog(
+        context: context,
+        title: title,
+        message: message,
+      );
+      return;
+    }
+
+    AppNotificationService.show(title: title, message: message);
   }
 }
