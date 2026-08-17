@@ -4,6 +4,7 @@ import 'package:video_toolkit/features/video_encoding/data/models/output_directo
 import 'package:video_toolkit/features/video_encoding/data/models/settings_preset.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/home/data/models/video_file.dart';
+import 'package:video_toolkit/features/home/domain/queue_completion_action.dart';
 
 /// All the data and callbacks a platform-specific home renderer needs.
 /// The renderer is pure UI — zero logic, zero cubit access.
@@ -20,6 +21,7 @@ class HomeViewData {
     required this.isPresetModified,
     required this.presets,
     required this.globalSelectedPresetId,
+    required this.queueCompletionAction,
     required this.onPickFiles,
     required this.onSelectVideo,
     required this.onSaveEncodeSettings,
@@ -31,6 +33,7 @@ class HomeViewData {
     required this.onDividerDrag,
     required this.onStart,
     required this.onStop,
+    required this.onQueueCompletionActionChanged,
     required this.onShowEncodeErrors,
   });
 
@@ -42,28 +45,31 @@ class HomeViewData {
   final EncodeSettings encodeSettings;
   final OutputDirectorySettings outputDirectory;
   final VideoEncodeState encodeState;
+
   /// Name of the currently selected preset, null if no preset is selected.
   final String? currentPresetName;
+
   /// True when current [encodeSettings] differ from the selected preset's saved settings.
   final bool isPresetModified;
+
   /// All available presets (built-in + user). Used by the video table to look up
   /// the preset assigned to each row.
   final List<SettingsPreset> presets;
+
   /// Globally selected preset id (used as fallback when a file has no per-file
   /// preset selection of its own).
   final String? globalSelectedPresetId;
+  final QueueCompletionAction queueCompletionAction;
 
   // ── Callbacks ──
   final VoidCallback onPickFiles;
   final ValueChanged<String> onSelectVideo;
   final ValueChanged<EncodeSettings> onSaveEncodeSettings;
+
   /// (filePath, settings, presetId) — null settings = reset to global; presetId
   /// is the preset selected in the per-file dialog at save time.
-  final void Function(
-    String path,
-    EncodeSettings? settings,
-    String? presetId,
-  ) onUpdateFileSettings;
+  final void Function(String path, EncodeSettings? settings, String? presetId)
+  onUpdateFileSettings;
   final ValueChanged<List<String>> onFilesDropped;
   final ValueChanged<bool> onDragStateChanged;
   final ValueChanged<String> onRemoveFile;
@@ -71,6 +77,7 @@ class HomeViewData {
   final ValueChanged<double> onDividerDrag;
   final VoidCallback? onStart;
   final VoidCallback? onStop;
+  final ValueChanged<QueueCompletionAction> onQueueCompletionActionChanged;
 
   /// Opens the error-details dialog for the current batch. Null when there are
   /// no failures to show.

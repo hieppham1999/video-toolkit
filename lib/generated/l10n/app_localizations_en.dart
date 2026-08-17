@@ -606,6 +606,56 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get afterQueue => 'After queue';
+
+  @override
+  String get queueActionNone => 'Do nothing';
+
+  @override
+  String get queueActionShutdown => 'Shut down';
+
+  @override
+  String get queueActionRestart => 'Restart';
+
+  @override
+  String get queueActionSleep => 'Sleep';
+
+  @override
+  String get powerCountdownTitle => 'Queue complete';
+
+  @override
+  String powerCountdownMessage(String action, int seconds) {
+    return '$action in $seconds seconds.';
+  }
+
+  @override
+  String powerCountdownLogPath(String path) {
+    return 'Error log: $path';
+  }
+
+  @override
+  String get executeNow => 'Execute now';
+
+  @override
+  String get powerActionFailedTitle => 'Power action failed';
+
+  @override
+  String get powerActionFailedMessage =>
+      'The requested system action could not be completed.';
+
+  @override
+  String get failureLogUpdateFailedTitle => 'Could not update error log';
+
+  @override
+  String get failureLogUpdateFailedMessage =>
+      'The power action was cancelled because the latest queue log could not be updated.';
+
+  @override
+  String failureLogSavedAt(String path) {
+    return 'Error log saved at: $path';
+  }
+
+  @override
   String get errorDetails => 'Details';
 
   @override

@@ -1250,6 +1250,90 @@ abstract class AppLocalizations {
   /// **'{count} file(s) failed to encode. Details below:'**
   String encodeErrorsSummary(int count);
 
+  /// No description provided for @afterQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'After queue'**
+  String get afterQueue;
+
+  /// No description provided for @queueActionNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Do nothing'**
+  String get queueActionNone;
+
+  /// No description provided for @queueActionShutdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Shut down'**
+  String get queueActionShutdown;
+
+  /// No description provided for @queueActionRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart'**
+  String get queueActionRestart;
+
+  /// No description provided for @queueActionSleep.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep'**
+  String get queueActionSleep;
+
+  /// No description provided for @powerCountdownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Queue complete'**
+  String get powerCountdownTitle;
+
+  /// No description provided for @powerCountdownMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{action} in {seconds} seconds.'**
+  String powerCountdownMessage(String action, int seconds);
+
+  /// No description provided for @powerCountdownLogPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Error log: {path}'**
+  String powerCountdownLogPath(String path);
+
+  /// No description provided for @executeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Execute now'**
+  String get executeNow;
+
+  /// No description provided for @powerActionFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Power action failed'**
+  String get powerActionFailedTitle;
+
+  /// No description provided for @powerActionFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested system action could not be completed.'**
+  String get powerActionFailedMessage;
+
+  /// No description provided for @failureLogUpdateFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update error log'**
+  String get failureLogUpdateFailedTitle;
+
+  /// No description provided for @failureLogUpdateFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The power action was cancelled because the latest queue log could not be updated.'**
+  String get failureLogUpdateFailedMessage;
+
+  /// No description provided for @failureLogSavedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Error log saved at: {path}'**
+  String failureLogSavedAt(String path);
+
   /// No description provided for @errorDetails.
   ///
   /// In en, this message translates to:

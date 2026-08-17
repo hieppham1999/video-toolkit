@@ -179,6 +179,9 @@ class MacosHomeRenderer extends StatelessWidget {
                         ),
                         AppOverallProgressBar(
                           encodeState: data.encodeState,
+                          queueCompletionAction: data.queueCompletionAction,
+                          onQueueCompletionActionChanged:
+                              data.onQueueCompletionActionChanged,
                           onShowEncodeErrors: data.onShowEncodeErrors,
                         ),
                       ],

@@ -16,6 +16,7 @@ import 'package:video_toolkit/app/injection.dart' as _i747;
 import 'package:video_toolkit/core/cli/bundled_binary_resolver.dart' as _i753;
 import 'package:video_toolkit/core/cli/cli_tool_runner.dart' as _i297;
 import 'package:video_toolkit/core/cli/cli_tool_runner_impl.dart' as _i873;
+import 'package:video_toolkit/core/system/system_power_service.dart' as _i737;
 import 'package:video_toolkit/core/utils/app_logger.dart' as _i70;
 import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_cubit.dart'
     as _i762;
@@ -35,6 +36,8 @@ import 'package:video_toolkit/features/home/presentation/cubit/preview_cubit.dar
     as _i883;
 import 'package:video_toolkit/features/home/presentation/cubit/video_import_cubit.dart'
     as _i709;
+import 'package:video_toolkit/features/video_encoding/data/datasources/encode_failure_log_writer.dart'
+    as _i956;
 import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_datasource.dart'
     as _i1066;
 import 'package:video_toolkit/features/video_encoding/data/datasources/preset_datasource.dart'
@@ -78,22 +81,31 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i753.BundledBinaryResolver>(
       () => _i753.BundledBinaryResolver(),
     );
-    gh.lazySingleton<_i814.SystemFontDatasource>(
-      () => _i814.SystemFontDatasource(),
-    );
     gh.lazySingleton<_i393.BundledFontDatasource>(
       () => _i393.BundledFontDatasource(),
     );
+    gh.lazySingleton<_i814.SystemFontDatasource>(
+      () => _i814.SystemFontDatasource(),
+    );
+    gh.lazySingleton<_i956.EncodeFailureLogWriter>(
+      () => _i956.EncodeFailureLogWriter(),
+    );
+    gh.lazySingleton<_i1063.PresetDatasource>(() => _i1063.PresetDatasource());
     gh.lazySingleton<_i1056.UserSettingsDatasource>(
       () => _i1056.UserSettingsDatasource(),
     );
-    gh.lazySingleton<_i1063.PresetDatasource>(() => _i1063.PresetDatasource());
     gh.lazySingleton<_i762.AppSettingCubit>(
       () => _i762.AppSettingCubit(gh<_i1056.UserSettingsDatasource>()),
     );
     gh.lazySingleton<_i974.Logger>(
       () => loggerModule.devLogger,
       registerFor: {_dev},
+    );
+    gh.lazySingleton<_i737.SystemCommandRunner>(
+      () => _i737.DartSystemCommandRunner(),
+    );
+    gh.lazySingleton<_i737.SystemPowerService>(
+      () => _i737.SystemPowerServiceImpl(gh<_i737.SystemCommandRunner>()),
     );
     gh.lazySingleton<_i297.CliToolRunner>(
       () => _i873.CliToolRunnerImpl(gh<_i753.BundledBinaryResolver>()),
@@ -141,11 +153,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i702.FontResolver>(),
       ),
     );
-    gh.lazySingleton<_i735.FfprobeDatasource>(
-      () => _i735.FfprobeDatasource(gh<_i297.CliToolRunner>()),
-    );
     gh.lazySingleton<_i675.ExiftoolDatasource>(
       () => _i675.ExiftoolDatasource(gh<_i297.CliToolRunner>()),
+    );
+    gh.lazySingleton<_i735.FfprobeDatasource>(
+      () => _i735.FfprobeDatasource(gh<_i297.CliToolRunner>()),
     );
     gh.lazySingleton<_i987.VideoEncodeCubit>(
       () => _i987.VideoEncodeCubit(

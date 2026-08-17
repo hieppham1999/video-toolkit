@@ -604,6 +604,56 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get afterQueue => 'Sau queue';
+
+  @override
+  String get queueActionNone => 'Không làm gì';
+
+  @override
+  String get queueActionShutdown => 'Tắt máy';
+
+  @override
+  String get queueActionRestart => 'Khởi động lại';
+
+  @override
+  String get queueActionSleep => 'Ngủ';
+
+  @override
+  String get powerCountdownTitle => 'Queue đã hoàn tất';
+
+  @override
+  String powerCountdownMessage(String action, int seconds) {
+    return '$action sau $seconds giây.';
+  }
+
+  @override
+  String powerCountdownLogPath(String path) {
+    return 'Log lỗi: $path';
+  }
+
+  @override
+  String get executeNow => 'Thực hiện ngay';
+
+  @override
+  String get powerActionFailedTitle => 'Không thể thực hiện thao tác nguồn';
+
+  @override
+  String get powerActionFailedMessage =>
+      'Hệ thống không thể hoàn tất thao tác đã yêu cầu.';
+
+  @override
+  String get failureLogUpdateFailedTitle => 'Không thể cập nhật log lỗi';
+
+  @override
+  String get failureLogUpdateFailedMessage =>
+      'Đã hủy thao tác nguồn vì không thể cập nhật log của queue gần nhất.';
+
+  @override
+  String failureLogSavedAt(String path) {
+    return 'Log lỗi đã lưu tại: $path';
+  }
+
+  @override
   String get errorDetails => 'Chi tiết';
 
   @override

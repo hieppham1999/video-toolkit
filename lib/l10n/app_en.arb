@@ -210,6 +210,32 @@
   "@encodeErrorsSummary": {
     "placeholders": { "count": { "type": "int" } }
   },
+  "afterQueue": "After queue",
+  "queueActionNone": "Do nothing",
+  "queueActionShutdown": "Shut down",
+  "queueActionRestart": "Restart",
+  "queueActionSleep": "Sleep",
+  "powerCountdownTitle": "Queue complete",
+  "powerCountdownMessage": "{action} in {seconds} seconds.",
+  "@powerCountdownMessage": {
+    "placeholders": {
+      "action": { "type": "String" },
+      "seconds": { "type": "int" }
+    }
+  },
+  "powerCountdownLogPath": "Error log: {path}",
+  "@powerCountdownLogPath": {
+    "placeholders": { "path": { "type": "String" } }
+  },
+  "executeNow": "Execute now",
+  "powerActionFailedTitle": "Power action failed",
+  "powerActionFailedMessage": "The requested system action could not be completed.",
+  "failureLogUpdateFailedTitle": "Could not update error log",
+  "failureLogUpdateFailedMessage": "The power action was cancelled because the latest queue log could not be updated.",
+  "failureLogSavedAt": "Error log saved at: {path}",
+  "@failureLogSavedAt": {
+    "placeholders": { "path": { "type": "String" } }
+  },
   "errorDetails": "Details",
   "copy": "Copy",
   "copied": "Copied",

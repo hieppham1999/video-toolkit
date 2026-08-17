@@ -210,6 +210,32 @@
   "@encodeErrorsSummary": {
     "placeholders": { "count": { "type": "int" } }
   },
+  "afterQueue": "Sau queue",
+  "queueActionNone": "Không làm gì",
+  "queueActionShutdown": "Tắt máy",
+  "queueActionRestart": "Khởi động lại",
+  "queueActionSleep": "Ngủ",
+  "powerCountdownTitle": "Queue đã hoàn tất",
+  "powerCountdownMessage": "{action} sau {seconds} giây.",
+  "@powerCountdownMessage": {
+    "placeholders": {
+      "action": { "type": "String" },
+      "seconds": { "type": "int" }
+    }
+  },
+  "powerCountdownLogPath": "Log lỗi: {path}",
+  "@powerCountdownLogPath": {
+    "placeholders": { "path": { "type": "String" } }
+  },
+  "executeNow": "Thực hiện ngay",
+  "powerActionFailedTitle": "Không thể thực hiện thao tác nguồn",
+  "powerActionFailedMessage": "Hệ thống không thể hoàn tất thao tác đã yêu cầu.",
+  "failureLogUpdateFailedTitle": "Không thể cập nhật log lỗi",
+  "failureLogUpdateFailedMessage": "Đã hủy thao tác nguồn vì không thể cập nhật log của queue gần nhất.",
+  "failureLogSavedAt": "Log lỗi đã lưu tại: {path}",
+  "@failureLogSavedAt": {
+    "placeholders": { "path": { "type": "String" } }
+  },
   "errorDetails": "Chi tiết",
   "copy": "Sao chép",
   "copied": "Đã sao chép",
