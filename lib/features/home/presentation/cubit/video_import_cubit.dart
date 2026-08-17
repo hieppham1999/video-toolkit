@@ -60,7 +60,9 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
             importedAt: DateTime.now(),
             // Populate the Windows filesystem creation timestamp immediately
             // so filename previews do not wait for asynchronous CLI metadata.
-            // exiftool will later replace it with its FileCreateDate value.
+            // The source is provisional, so do not label it _FILEDATE yet.
+            // Metadata extraction will replace it and set the flag only when
+            // no embedded creation date can be extracted.
             metadata: _initialFileCreateMetadata(file),
           );
         })
@@ -79,10 +81,7 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
   VideoMetadata? _initialFileCreateMetadata(File file) {
     if (!Platform.isWindows || !file.existsSync()) return null;
     try {
-      return VideoMetadata(
-        creationDate: file.statSync().changed,
-        creationDateFromFileSystem: true,
-      );
+      return VideoMetadata(creationDate: file.statSync().changed);
     } catch (_) {
       return null;
     }

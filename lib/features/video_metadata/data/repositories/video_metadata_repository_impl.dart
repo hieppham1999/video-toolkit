@@ -24,23 +24,39 @@ class VideoMetadataRepositoryImpl implements VideoMetadataRepository {
     ]);
     final ffprobeData = results[0] ?? const VideoMetadata();
     final exiftoolData = results[1];
-    final extractedCreationDate =
-        exiftoolData?.creationDate ?? ffprobeData.creationDate;
+    // ExifTool returns FileCreateDate as a fallback and marks it explicitly.
+    // If that happens while ffprobe found an embedded date, the embedded date
+    // must win; otherwise the filename is incorrectly marked as _FILEDATE.
+    final exiftoolEmbeddedDate =
+        exiftoolData != null && !exiftoolData.creationDateFromFileSystem
+        ? exiftoolData.creationDate
+        : null;
+    final ffprobeEmbeddedDate = ffprobeData.creationDate;
+    final exiftoolFileDate = exiftoolData?.creationDateFromFileSystem == true
+        ? exiftoolData?.creationDate
+        : null;
+    final embeddedCreationDate = exiftoolEmbeddedDate ?? ffprobeEmbeddedDate;
+    final extractedCreationDate = embeddedCreationDate ?? exiftoolFileDate;
     final nativeFileCreateDate = extractedCreationDate == null
         ? await _readWindowsFileCreateDate(filePath)
         : null;
+    final creationDateFromFileSystem =
+        embeddedCreationDate == null &&
+        (exiftoolFileDate != null || nativeFileCreateDate != null);
+    final timezoneOffset = embeddedCreationDate != null
+        ? (exiftoolEmbeddedDate != null
+              ? exiftoolData?.timezoneOffset
+              : ffprobeData.timezoneOffset)
+        : exiftoolData?.timezoneOffset ??
+              ffprobeData.timezoneOffset ??
+              _formatOffset(nativeFileCreateDate?.timeZoneOffset);
 
     return ffprobeData.copyWith(
       // Do not discard a valid ffprobe date when exiftool has no matching
       // creation-date tag (or cannot parse it).
       creationDate: extractedCreationDate ?? nativeFileCreateDate,
-      creationDateFromFileSystem: exiftoolData?.creationDate != null
-          ? exiftoolData!.creationDateFromFileSystem
-          : nativeFileCreateDate != null,
-      timezoneOffset:
-          exiftoolData?.timezoneOffset ??
-          ffprobeData.timezoneOffset ??
-          _formatOffset(nativeFileCreateDate?.timeZoneOffset),
+      creationDateFromFileSystem: creationDateFromFileSystem,
+      timezoneOffset: timezoneOffset,
       gpsLatitude: ffprobeData.gpsLatitude ?? exiftoolData?.gpsLatitude,
       gpsLongitude: ffprobeData.gpsLongitude ?? exiftoolData?.gpsLongitude,
       cameraModel: ffprobeData.cameraModel ?? exiftoolData?.cameraModel,

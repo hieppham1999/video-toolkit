@@ -51,6 +51,54 @@ void main() {
     expect(metadata.creationDate, DateTime.utc(2026, 7, 22, 8, 9, 10));
   });
 
+  test('prefers embedded ffprobe date over exiftool FileCreateDate', () async {
+    final runner = _FakeCliToolRunner({
+      'ffprobe': const CliResult(
+        stdout: '''
+            {
+              "streams": [
+                {
+                  "codec_type": "video",
+                  "tags": {"creation_time": "2026-07-22T08:09:10Z"}
+                }
+              ],
+              "format": {}
+            }
+          ''',
+        stderr: '',
+        exitCode: 0,
+      ),
+      'exiftool': const CliResult(
+        stdout: '''
+            [{
+              "SourceFile": "video.mp4",
+              "FileCreateDate": "2026:07:11 08:31:24+07:00"
+            }]
+          ''',
+        stderr: '',
+        exitCode: 0,
+      ),
+    });
+    final repository = VideoMetadataRepositoryImpl(
+      ExiftoolDatasource(runner),
+      FfprobeDatasource(runner),
+    );
+
+    final metadata = await repository.extractMetadata('video.mp4');
+
+    expect(metadata.creationDate, DateTime.utc(2026, 7, 22, 8, 9, 10));
+    expect(metadata.creationDateFromFileSystem, isFalse);
+    expect(
+      FilenameTemplate.apply(
+        '{year}{month}{day}_{hour}{minute}{second}_VID',
+        originalName: 'video',
+        creationDate: metadata.creationDate,
+        creationDateFromFileSystem: metadata.creationDateFromFileSystem,
+        sourceTimezoneOffset: '+00:00',
+      ),
+      '20260722_080910_VID',
+    );
+  });
   test(
     'falls back to exiftool FileCreateDate for an invalid embedded date',
     () async {
