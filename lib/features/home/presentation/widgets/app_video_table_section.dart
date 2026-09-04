@@ -40,6 +40,7 @@ class AppVideoTableSection extends StatefulWidget {
     required this.onRemoveAll,
     required this.onOpenFileSettings,
     required this.onUpdateFileOutputDirectory,
+    required this.onMoveFile,
   });
 
   final List<VideoFile> files;
@@ -55,6 +56,7 @@ class AppVideoTableSection extends StatefulWidget {
   final ValueChanged<VideoFile> onOpenFileSettings;
   final void Function(String path, OutputDirectorySettings? settings)
   onUpdateFileOutputDirectory;
+  final void Function(String path, int delta) onMoveFile;
 
   @override
   State<AppVideoTableSection> createState() => _AppVideoTableSectionState();
@@ -299,7 +301,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
   ) {
     final file = widget.files[index];
     final isSelected = file.path == widget.selectedFilePath;
-    final rowStatus = showStatus ? _rowStatusFor(index, file) : null;
+    final rowStatus = showStatus ? _rowStatusFor(file) : null;
 
     final Color? bgColor = isSelected ? palette.selectedBg : null;
 
@@ -472,6 +474,8 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     }
     final l10n = Languages.translate;
     final showRevealOutput = isCompleted && File(outputPath).existsSync();
+    final index = widget.files.indexWhere((item) => item.path == file.path);
+    final canReorder = widget.encodeState.status != EncodeStatus.encoding;
     showAppContextMenu(
       context: context,
       globalPosition: position,
@@ -484,6 +488,16 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
           AppContextMenuItem(
             label: l10n.revealOutputInFolder,
             onTap: () => revealInOsFileManager(outputPath),
+          ),
+        if (canReorder && index > 0)
+          AppContextMenuItem(
+            label: l10n.moveUp,
+            onTap: () => widget.onMoveFile(file.path, -1),
+          ),
+        if (canReorder && index >= 0 && index < widget.files.length - 1)
+          AppContextMenuItem(
+            label: l10n.moveDown,
+            onTap: () => widget.onMoveFile(file.path, 1),
           ),
         AppContextMenuItem(
           label: l10n.remove,
@@ -499,13 +513,14 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     );
   }
 
-  _RowStatus _rowStatusFor(int index, VideoFile file) {
+  _RowStatus _rowStatusFor(VideoFile file) {
     final s = widget.encodeState;
     if (s.failedPaths.contains(file.path)) return _RowStatus.failed;
+    if (s.skippedPaths.contains(file.path)) return _RowStatus.skipped;
     if (s.currentFilePath == file.path && s.status == EncodeStatus.encoding) {
       return _RowStatus.processing;
     }
-    if (index < s.currentIndex) return _RowStatus.completed;
+    if (s.completedPaths.contains(file.path)) return _RowStatus.completed;
     return _RowStatus.pending;
   }
 
@@ -516,6 +531,8 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
         return _greenColor;
       case _RowStatus.failed:
         return _redColor;
+      case _RowStatus.skipped:
+        return null;
       case _RowStatus.pending:
       case null:
         return null;
@@ -544,6 +561,12 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
       case _RowStatus.failed:
         return Text(
           l10n.statusFailed,
+          style: captionStyle,
+          overflow: TextOverflow.ellipsis,
+        );
+      case _RowStatus.skipped:
+        return Text(
+          l10n.statusSkipped,
           style: captionStyle,
           overflow: TextOverflow.ellipsis,
         );
@@ -788,7 +811,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
   }
 }
 
-enum _RowStatus { pending, processing, completed, failed }
+enum _RowStatus { pending, processing, completed, failed, skipped }
 
 class _Palette {
   const _Palette({

@@ -158,6 +158,33 @@ class _HomePageState extends State<HomePage> {
     unawaited(_encodeCubit.stop());
   }
 
+  void _onSkipCurrent() {
+    unawaited(_encodeCubit.skipCurrent());
+  }
+
+  void _onRetryFailed() {
+    final failedPaths = _encodeCubit.currentData.failedPaths.toSet();
+    final failedFiles = _importCubit.currentData.files
+        .where((file) => failedPaths.contains(file.path))
+        .toList();
+    if (failedFiles.isEmpty) return;
+    _batchStartedAt = DateTime.now();
+    _lastFailureLogPath = null;
+    unawaited(
+      _encodeCubit.startBatchEncode(
+        files: failedFiles,
+        globalSettings: _importCubit.currentData.encodeSettings,
+        outputDirectory: _appSettingCubit.currentData.outputDirectory,
+      ),
+    );
+  }
+
+  void _onMoveFile(String path, int delta) {
+    if (_encodeCubit.currentData.status == EncodeStatus.encoding) return;
+    _importCubit.moveFile(path, delta);
+    _encodeCubit.reset();
+  }
+
   void _onQueueCompletionActionChanged(QueueCompletionAction action) {
     setState(() => _queueCompletionAction = action);
   }
@@ -257,6 +284,11 @@ class _HomePageState extends State<HomePage> {
                             ? null
                             : _onStart,
                         onStop: isEncoding ? _onStop : null,
+                        onSkipCurrent: isEncoding ? _onSkipCurrent : null,
+                        onRetryFailed: encodeState.status == EncodeStatus.error
+                            ? _onRetryFailed
+                            : null,
+                        onMoveFile: _onMoveFile,
                         onQueueCompletionActionChanged:
                             _onQueueCompletionActionChanged,
                         onShowEncodeErrors: encodeState.failures.isEmpty

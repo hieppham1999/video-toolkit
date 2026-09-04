@@ -154,6 +154,7 @@ class WindowsHomeRenderer extends StatelessWidget {
                       ),
                       onUpdateFileOutputDirectory:
                           data.onUpdateFileOutputDirectory,
+                      onMoveFile: data.onMoveFile,
                     ),
                   ),
                   AppOverallProgressBar(
@@ -162,6 +163,8 @@ class WindowsHomeRenderer extends StatelessWidget {
                     onQueueCompletionActionChanged:
                         data.onQueueCompletionActionChanged,
                     onShowEncodeErrors: data.onShowEncodeErrors,
+                    onSkipCurrent: data.onSkipCurrent,
+                    onRetryFailed: data.onRetryFailed,
                   ),
                 ],
               );

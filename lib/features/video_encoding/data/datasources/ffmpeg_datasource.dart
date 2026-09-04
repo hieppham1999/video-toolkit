@@ -20,6 +20,7 @@ class FfmpegDatasource {
 
   static const _executable = 'ffmpeg';
   Process? _activeProcess;
+  bool _activeCancellationRequested = false;
 
   Future<bool> get isAvailable => _runner.isAvailable(_executable);
 
@@ -28,6 +29,7 @@ class FfmpegDatasource {
   Future<void> cancelActiveEncode() async {
     final process = _activeProcess;
     if (process == null) return;
+    _activeCancellationRequested = true;
 
     try {
       process.stdin.writeln('q');
@@ -78,6 +80,7 @@ class FfmpegDatasource {
 
     final process = await Process.start(ffmpegPath, commandArgs);
     _activeProcess = process;
+    _activeCancellationRequested = false;
 
     try {
       final stderrTail = <String>[];
@@ -115,6 +118,10 @@ class FfmpegDatasource {
       final exitCode = await process.exitCode;
       stopwatch.stop();
 
+      if (_activeCancellationRequested) {
+        throw StateError('FFmpeg encode was cancelled.');
+      }
+
       if (exitCode != 0) {
         final tail = stderrTail.join('\n');
         appLogger.e('ffmpeg failed (exit $exitCode):\n$tail');
@@ -131,6 +138,7 @@ class FfmpegDatasource {
       stopwatch.stop();
       if (identical(_activeProcess, process)) {
         _activeProcess = null;
+        _activeCancellationRequested = false;
       }
       // Cancelling an async generator stops the stderr listener before the
       // process necessarily exits. Never leave that process behind.

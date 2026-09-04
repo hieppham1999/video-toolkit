@@ -116,6 +116,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusFailed => 'Failed';
 
   @override
+  String get statusSkipped => 'Skipped';
+
+  @override
+  String get skipCurrent => 'Skip current';
+
+  @override
+  String get retryFailed => 'Retry failed';
+
+  @override
+  String get moveUp => 'Move up';
+
+  @override
+  String get moveDown => 'Move down';
+
+  @override
   String queueEncodingProgress(int current, int total) {
     return 'Encoding $current / $total';
   }

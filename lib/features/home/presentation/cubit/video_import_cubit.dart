@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:injectable/injectable.dart';
@@ -12,23 +13,48 @@ import 'package:video_toolkit/features/video_metadata/data/models/video_metadata
 import 'package:video_toolkit/app/base/base_cubit.dart';
 
 import '../../data/models/video_file.dart';
+import '../../data/datasources/video_queue_datasource.dart';
 import 'video_import_state.dart';
 
 @lazySingleton
 class VideoImportCubit extends BaseCubit<VideoImportState> {
-  VideoImportCubit(this._metadataRepository, this._userSettings)
-    : super.normal(const VideoImportState()) {
+  VideoImportCubit(
+    this._metadataRepository,
+    this._userSettings,
+    this._videoQueue,
+  ) : super.normal(const VideoImportState()) {
     _loadPersistedSettings();
+    _restoreQueue();
   }
 
   final VideoMetadataRepository _metadataRepository;
   final UserSettingsDatasource _userSettings;
+  final VideoQueueDatasource _videoQueue;
 
   Future<void> _loadPersistedSettings() async {
     final persisted = await _userSettings.load();
     final initialSettings =
         persisted?.encodeSettings ?? kBuiltInPresets.first.settings;
     emitNormal(currentData.copyWith(encodeSettings: initialSettings));
+  }
+
+  Future<void> _restoreQueue() async {
+    final items = await _videoQueue.load();
+    if (items.isEmpty || isClosed) return;
+    addFiles(items.map((item) => item.path).toList(), persist: false);
+    final byPath = {for (final item in items) item.path: item};
+    final restored = currentData.files.map((file) {
+      final item = byPath[file.path];
+      return item == null
+          ? file
+          : file.copyWith(
+              overrideSettings: item.overrideSettings,
+              appliedPresetId: item.appliedPresetId,
+              outputDirectoryOverride: item.outputDirectoryOverride,
+            );
+    }).toList();
+    emitNormal(currentData.copyWith(files: restored));
+    _persistQueue();
   }
 
   static const _videoExtensions = {
@@ -44,7 +70,7 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
     '.mts',
   };
 
-  void addFiles(List<String> paths) {
+  void addFiles(List<String> paths, {bool persist = true}) {
     final existing = currentData.files.map((f) => f.path).toSet();
 
     final newFiles = paths
@@ -73,6 +99,7 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
     emitNormal(
       currentData.copyWith(files: [...currentData.files, ...newFiles]),
     );
+    if (persist) _persistQueue();
 
     for (final f in newFiles) {
       _loadMetadata(f.path);
@@ -113,6 +140,7 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
             : currentData.selectedFilePath,
       ),
     );
+    _persistQueue();
   }
 
   void selectVideo(String path) {
@@ -143,6 +171,7 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
         }).toList(),
       ),
     );
+    _persistQueue();
   }
 
   void updateFileOutputDirectory(
@@ -159,6 +188,19 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
         }).toList(),
       ),
     );
+    _persistQueue();
+  }
+
+  void moveFile(String path, int delta) {
+    final from = currentData.files.indexWhere((file) => file.path == path);
+    if (from < 0) return;
+    final to = (from + delta).clamp(0, currentData.files.length - 1);
+    if (from == to) return;
+    final files = [...currentData.files];
+    final item = files.removeAt(from);
+    files.insert(to, item);
+    emitNormal(currentData.copyWith(files: files));
+    _persistQueue();
   }
 
   void setDragging(bool value) {
@@ -167,5 +209,10 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
 
   void clearAll() {
     emitNormal(currentData.copyWith(files: [], selectedFilePath: null));
+    _persistQueue();
+  }
+
+  void _persistQueue() {
+    unawaited(_videoQueue.save(currentData.files));
   }
 }

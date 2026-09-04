@@ -191,6 +191,7 @@ class MacosHomeRenderer extends StatelessWidget {
                             ),
                             onUpdateFileOutputDirectory:
                                 data.onUpdateFileOutputDirectory,
+                            onMoveFile: data.onMoveFile,
                           ),
                         ),
                         AppOverallProgressBar(
@@ -199,6 +200,8 @@ class MacosHomeRenderer extends StatelessWidget {
                           onQueueCompletionActionChanged:
                               data.onQueueCompletionActionChanged,
                           onShowEncodeErrors: data.onShowEncodeErrors,
+                          onSkipCurrent: data.onSkipCurrent,
+                          onRetryFailed: data.onRetryFailed,
                         ),
                       ],
                     );

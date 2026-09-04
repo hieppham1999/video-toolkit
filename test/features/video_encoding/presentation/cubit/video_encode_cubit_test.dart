@@ -147,6 +147,34 @@ void main() {
     await cubit.stop();
     await encodeFuture;
   });
+
+  test('skip current advances without recording an encode failure', () async {
+    final repository = _BlockingVideoEncodeRepository();
+    final runner = _FakeCliToolRunner();
+    final preview = PreviewCubit(
+      FfmpegDatasource(runner, BundledBinaryResolver()),
+    );
+    final cubit = VideoEncodeCubit(
+      repository,
+      preview,
+      ExiftoolDatasource(runner),
+    );
+    addTearDown(cubit.close);
+    addTearDown(preview.close);
+    const path = '/tmp/skipped.mp4';
+
+    final encodeFuture = cubit.startBatchEncode(
+      files: [_videoFile(path)],
+      globalSettings: const EncodeSettings(copySourceMetadata: false),
+    );
+    await Future<void>.delayed(Duration.zero);
+    await cubit.skipCurrent();
+    await encodeFuture;
+
+    expect(cubit.currentData.status, EncodeStatus.done);
+    expect(cubit.currentData.skippedPaths, [path]);
+    expect(cubit.currentData.failures, isEmpty);
+  });
 }
 
 VideoFile _videoFile(

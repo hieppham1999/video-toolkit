@@ -308,6 +308,36 @@ abstract class AppLocalizations {
   /// **'Failed'**
   String get statusFailed;
 
+  /// No description provided for @statusSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get statusSkipped;
+
+  /// No description provided for @skipCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip current'**
+  String get skipCurrent;
+
+  /// No description provided for @retryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry failed'**
+  String get retryFailed;
+
+  /// No description provided for @moveUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get moveUp;
+
+  /// No description provided for @moveDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get moveDown;
+
   /// No description provided for @queueEncodingProgress.
   ///
   /// In en, this message translates to:

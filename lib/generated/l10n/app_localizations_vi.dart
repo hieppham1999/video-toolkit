@@ -116,6 +116,21 @@ class AppLocalizationsVi extends AppLocalizations {
   String get statusFailed => 'Thất bại';
 
   @override
+  String get statusSkipped => 'Đã bỏ qua';
+
+  @override
+  String get skipCurrent => 'Bỏ qua file này';
+
+  @override
+  String get retryFailed => 'Thử lại file lỗi';
+
+  @override
+  String get moveUp => 'Di chuyển lên';
+
+  @override
+  String get moveDown => 'Di chuyển xuống';
+
+  @override
   String queueEncodingProgress(int current, int total) {
     return 'Đang mã hóa $current / $total';
   }

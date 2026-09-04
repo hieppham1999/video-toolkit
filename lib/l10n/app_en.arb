@@ -34,6 +34,11 @@
   "statusPending": "Pending",
   "statusCompleted": "Completed",
   "statusFailed": "Failed",
+  "statusSkipped": "Skipped",
+  "skipCurrent": "Skip current",
+  "retryFailed": "Retry failed",
+  "moveUp": "Move up",
+  "moveDown": "Move down",
   "queueEncodingProgress": "Encoding {current} / {total}",
   "@queueEncodingProgress": {
     "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } }

@@ -7,6 +7,7 @@ import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/features/home/domain/queue_completion_action.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
+import 'package:video_toolkit/widgets/app_button.dart';
 import 'package:video_toolkit/widgets/app_dropdown.dart';
 import 'package:video_toolkit/widgets/app_progress_bar.dart';
 
@@ -19,6 +20,8 @@ class AppOverallProgressBar extends StatelessWidget {
     required this.queueCompletionAction,
     required this.onQueueCompletionActionChanged,
     this.onShowEncodeErrors,
+    this.onSkipCurrent,
+    this.onRetryFailed,
   });
 
   final VideoEncodeState encodeState;
@@ -28,6 +31,8 @@ class AppOverallProgressBar extends StatelessWidget {
   /// Called when the user taps the "failed" status to view error details.
   /// Only wired (and the status made tappable) when there are failures.
   final VoidCallback? onShowEncodeErrors;
+  final VoidCallback? onSkipCurrent;
+  final VoidCallback? onRetryFailed;
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +125,29 @@ class AppOverallProgressBar extends StatelessWidget {
                                     : null,
                               ),
                             ),
+                            if (onSkipCurrent != null) ...[
+                              const SizedBox(width: 8),
+                              AppButton(
+                                secondary: true,
+                                onPressed: onSkipCurrent,
+                                child: Text(
+                                  l10n.skipCurrent,
+                                  style: captionStyle,
+                                ),
+                              ),
+                            ],
+                            if (onRetryFailed != null) ...[
+                              const SizedBox(width: 8),
+                              AppButton(
+                                secondary: true,
+                                onPressed: onRetryFailed,
+                                child: Text(
+                                  l10n.retryFailed,
+                                  style: captionStyle,
+                                ),
+                              ),
+                            ],
+                            const SizedBox(width: 8),
                             Text(
                               '${(overallPercent * 100).toStringAsFixed(0)}%',
                               style: captionStyle?.copyWith(color: subtleText),

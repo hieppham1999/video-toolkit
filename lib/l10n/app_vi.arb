@@ -34,6 +34,11 @@
   "statusPending": "Đang chờ",
   "statusCompleted": "Hoàn tất",
   "statusFailed": "Thất bại",
+  "statusSkipped": "Đã bỏ qua",
+  "skipCurrent": "Bỏ qua file này",
+  "retryFailed": "Thử lại file lỗi",
+  "moveUp": "Di chuyển lên",
+  "moveDown": "Di chuyển xuống",
   "queueEncodingProgress": "Đang mã hóa {current} / {total}",
   "@queueEncodingProgress": {
     "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } }

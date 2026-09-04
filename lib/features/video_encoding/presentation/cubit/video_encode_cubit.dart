@@ -28,6 +28,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   StreamSubscription<void>? _encodeSub;
   Completer<bool>? _activeCompleter;
   bool _cancelled = false;
+  bool _skipRequested = false;
   int _lastLoggedBucket = -1;
 
   List<VideoFile> _queue = [];
@@ -71,6 +72,8 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
         overallProgress: 0,
         estimatedBatchRemaining: null,
         failures: [],
+        completedPaths: [],
+        skippedPaths: [],
         errorMessage: null,
         outputPaths: _outputPaths,
       ),
@@ -100,6 +103,11 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       appLogger.w('Failed to create output dir $dir: $e');
     }
     if (_cancelled) return;
+    if (_skipRequested) {
+      _completedWorkUnits += _workUnits[file.path] ?? 0;
+      await _advanceSkipped(file, index);
+      return;
+    }
 
     emitNormal(
       currentData.copyWith(
@@ -171,6 +179,11 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
 
     _completedWorkUnits += _workUnits[file.path] ?? 0;
 
+    if (_skipRequested) {
+      await _advanceSkipped(file, index);
+      return;
+    }
+
     if (success && settings.copySourceMetadata) {
       // User-chosen source timezone overrides whatever was extracted from the
       // source file. Falls back to extracted value (or machine local TZ at
@@ -196,6 +209,9 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
         completedCount: success
             ? currentData.completedCount + 1
             : currentData.completedCount,
+        completedPaths: success
+            ? [...currentData.completedPaths, file.path]
+            : currentData.completedPaths,
         failures: success
             ? currentData.failures
             : [
@@ -244,9 +260,34 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     _finish();
   }
 
+  Future<void> skipCurrent() async {
+    if (currentData.status != EncodeStatus.encoding) return;
+    _skipRequested = true;
+    final subscription = _encodeSub;
+    final completer = _activeCompleter;
+    await _repository.cancelActiveEncode();
+    await subscription?.cancel();
+    if (completer != null && !completer.isCompleted) {
+      completer.complete(false);
+    }
+  }
+
+  Future<void> _advanceSkipped(VideoFile file, int index) async {
+    _skipRequested = false;
+    emitNormal(
+      currentData.copyWith(
+        currentIndex: index + 1,
+        skippedPaths: [...currentData.skippedPaths, file.path],
+        overallProgress: _completedOverallProgress,
+      ),
+    );
+    await _encodeNext();
+  }
+
   void reset() {
     _encodeSub?.cancel();
     _cancelled = false;
+    _skipRequested = false;
     _queue = [];
     _outputPaths = const {};
     _workUnits = const {};
@@ -320,6 +361,10 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
             _totalWorkUnits)
         .clamp(0, 1);
   }
+
+  double get _completedOverallProgress => _totalWorkUnits > 0
+      ? (_completedWorkUnits / _totalWorkUnits).clamp(0, 1)
+      : 1;
 
   Duration? _estimateBatchRemaining(double progress) {
     if (progress <= 0.01 || !_batchStopwatch.isRunning) return null;

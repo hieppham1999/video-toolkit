@@ -40,6 +40,7 @@ void main() {
         onRemoveAll: () {},
         onOpenFileSettings: (_) {},
         onUpdateFileOutputDirectory: (_, _) {},
+        onMoveFile: (_, _) {},
       ),
     );
 

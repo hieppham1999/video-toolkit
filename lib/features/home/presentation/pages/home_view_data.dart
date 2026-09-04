@@ -35,6 +35,9 @@ class HomeViewData {
     required this.onDividerDrag,
     required this.onStart,
     required this.onStop,
+    required this.onSkipCurrent,
+    required this.onRetryFailed,
+    required this.onMoveFile,
     required this.onQueueCompletionActionChanged,
     required this.onShowEncodeErrors,
   });
@@ -82,6 +85,9 @@ class HomeViewData {
   final ValueChanged<double> onDividerDrag;
   final VoidCallback? onStart;
   final VoidCallback? onStop;
+  final VoidCallback? onSkipCurrent;
+  final VoidCallback? onRetryFailed;
+  final void Function(String path, int delta) onMoveFile;
   final ValueChanged<QueueCompletionAction> onQueueCompletionActionChanged;
 
   /// Opens the error-details dialog for the current batch. Null when there are

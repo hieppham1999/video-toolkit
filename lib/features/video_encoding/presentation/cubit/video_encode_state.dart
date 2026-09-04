@@ -22,6 +22,8 @@ abstract class VideoEncodeState with _$VideoEncodeState {
     @Default(0) double overallProgress,
     Duration? estimatedBatchRemaining,
     @Default([]) List<EncodeFailure> failures,
+    @Default([]) List<String> completedPaths,
+    @Default([]) List<String> skippedPaths,
 
     /// Concrete output paths reserved for the current batch, keyed by input
     /// path. These remain stable for the lifetime of the batch.
