@@ -34,6 +34,22 @@
   "statusPending": "Đang chờ",
   "statusCompleted": "Hoàn tất",
   "statusFailed": "Thất bại",
+  "queueEncodingProgress": "Đang mã hóa {current} / {total}",
+  "@queueEncodingProgress": {
+    "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } }
+  },
+  "queueDoneProgress": "Hoàn tất — {completed} / {total} thành công",
+  "@queueDoneProgress": {
+    "placeholders": { "completed": { "type": "int" }, "total": { "type": "int" } }
+  },
+  "queueErrorProgress": "{completed} thành công, {failed} thất bại",
+  "@queueErrorProgress": {
+    "placeholders": { "completed": { "type": "int" }, "failed": { "type": "int" } }
+  },
+  "remainingTime": "Còn lại {time}",
+  "@remainingTime": {
+    "placeholders": { "time": { "type": "String" } }
+  },
   "resolution": "Độ phân giải",
   "codec": "Codec",
   "frameRate": "Tốc độ khung hình",

@@ -19,6 +19,8 @@ abstract class VideoEncodeState with _$VideoEncodeState {
     @Default(0) int currentIndex,
     @Default(0) int totalFiles,
     @Default(0) int completedCount,
+    @Default(0) double overallProgress,
+    Duration? estimatedBatchRemaining,
     @Default([]) List<EncodeFailure> failures,
 
     /// Concrete output paths reserved for the current batch, keyed by input

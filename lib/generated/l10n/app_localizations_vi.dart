@@ -116,6 +116,26 @@ class AppLocalizationsVi extends AppLocalizations {
   String get statusFailed => 'Thất bại';
 
   @override
+  String queueEncodingProgress(int current, int total) {
+    return 'Đang mã hóa $current / $total';
+  }
+
+  @override
+  String queueDoneProgress(int completed, int total) {
+    return 'Hoàn tất — $completed / $total thành công';
+  }
+
+  @override
+  String queueErrorProgress(int completed, int failed) {
+    return '$completed thành công, $failed thất bại';
+  }
+
+  @override
+  String remainingTime(String time) {
+    return 'Còn lại $time';
+  }
+
+  @override
   String get resolution => 'Độ phân giải';
 
   @override

@@ -34,6 +34,22 @@
   "statusPending": "Pending",
   "statusCompleted": "Completed",
   "statusFailed": "Failed",
+  "queueEncodingProgress": "Encoding {current} / {total}",
+  "@queueEncodingProgress": {
+    "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } }
+  },
+  "queueDoneProgress": "Done — {completed} / {total} completed",
+  "@queueDoneProgress": {
+    "placeholders": { "completed": { "type": "int" }, "total": { "type": "int" } }
+  },
+  "queueErrorProgress": "{completed} completed, {failed} failed",
+  "@queueErrorProgress": {
+    "placeholders": { "completed": { "type": "int" }, "failed": { "type": "int" } }
+  },
+  "remainingTime": "Remaining {time}",
+  "@remainingTime": {
+    "placeholders": { "time": { "type": "String" } }
+  },
   "resolution": "Resolution",
   "codec": "Codec",
   "frameRate": "Frame Rate",

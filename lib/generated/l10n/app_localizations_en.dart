@@ -116,6 +116,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusFailed => 'Failed';
 
   @override
+  String queueEncodingProgress(int current, int total) {
+    return 'Encoding $current / $total';
+  }
+
+  @override
+  String queueDoneProgress(int completed, int total) {
+    return 'Done — $completed / $total completed';
+  }
+
+  @override
+  String queueErrorProgress(int completed, int failed) {
+    return '$completed completed, $failed failed';
+  }
+
+  @override
+  String remainingTime(String time) {
+    return 'Remaining $time';
+  }
+
+  @override
   String get resolution => 'Resolution';
 
   @override

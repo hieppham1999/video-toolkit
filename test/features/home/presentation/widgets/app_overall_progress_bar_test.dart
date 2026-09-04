@@ -49,6 +49,33 @@ void main() {
 
     expect(selected, QueueCompletionAction.shutdown);
   });
+
+  testWidgets(
+    'uses duration-weighted overall progress and localized position',
+    (tester) async {
+      await tester.pumpWidget(
+        _TestApp(
+          child: SizedBox(
+            width: 1000,
+            child: AppOverallProgressBar(
+              encodeState: const VideoEncodeState(
+                status: EncodeStatus.encoding,
+                currentIndex: 0,
+                totalFiles: 2,
+                overallProgress: 0.75,
+              ),
+              queueCompletionAction: QueueCompletionAction.none,
+              onQueueCompletionActionChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Encoding 1 / 2'), findsOneWidget);
+      expect(find.text('75%'), findsOneWidget);
+      await tester.pumpAndSettle();
+    },
+  );
 }
 
 class _TestApp extends StatelessWidget {

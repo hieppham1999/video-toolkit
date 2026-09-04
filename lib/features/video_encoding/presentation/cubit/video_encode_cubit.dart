@@ -34,6 +34,10 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   late EncodeSettings _globalSettings;
   OutputDirectorySettings _outputDirectory = const OutputDirectorySettings();
   Map<String, String> _outputPaths = const {};
+  Map<String, double> _workUnits = const {};
+  double _completedWorkUnits = 0;
+  double _totalWorkUnits = 0;
+  final Stopwatch _batchStopwatch = Stopwatch();
 
   /// Start encoding all [files] sequentially.
   /// Each file uses its own [overrideSettings] if set, otherwise [globalSettings].
@@ -50,6 +54,12 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     _globalSettings = globalSettings;
     _outputDirectory = outputDirectory;
     _outputPaths = _planOutputPaths(files);
+    _workUnits = _planWorkUnits(files);
+    _completedWorkUnits = 0;
+    _totalWorkUnits = _workUnits.values.fold(0, (sum, value) => sum + value);
+    _batchStopwatch
+      ..reset()
+      ..start();
     _cancelled = false;
 
     emitNormal(
@@ -58,6 +68,8 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
         totalFiles: files.length,
         currentIndex: 0,
         completedCount: 0,
+        overallProgress: 0,
+        estimatedBatchRemaining: null,
         failures: [],
         errorMessage: null,
         outputPaths: _outputPaths,
@@ -111,17 +123,29 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
         )
         .listen(
           (progress) {
-            final bucket = (progress.percent / 10).floor();
+            final bucket = (progress.percent * 10).floor();
             if (bucket > _lastLoggedBucket) {
               _lastLoggedBucket = bucket;
               appLogger.i(
-                'Encode ${p.basename(file.path)}: ${progress.percent.toStringAsFixed(0)}% '
+                'Encode ${p.basename(file.path)}: ${(progress.percent * 100).toStringAsFixed(0)}% '
                 'fps=${progress.fps.toStringAsFixed(1)} '
                 'speed=${progress.speed.toStringAsFixed(2)}x '
                 'eta=${progress.estimatedRemaining ?? "-"}',
               );
             }
-            emitNormal(currentData.copyWith(progress: progress));
+            final overallProgress = _overallProgress(
+              currentFile: file,
+              currentFileProgress: progress.percent,
+            );
+            emitNormal(
+              currentData.copyWith(
+                progress: progress,
+                overallProgress: overallProgress,
+                estimatedBatchRemaining: _estimateBatchRemaining(
+                  overallProgress,
+                ),
+              ),
+            );
             _previewCubit.updateLiveContext(
               file: file,
               settings: settings,
@@ -145,6 +169,8 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
 
     if (_cancelled) return;
 
+    _completedWorkUnits += _workUnits[file.path] ?? 0;
+
     if (success && settings.copySourceMetadata) {
       // User-chosen source timezone overrides whatever was extracted from the
       // source file. Falls back to extracted value (or machine local TZ at
@@ -164,6 +190,9 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     emitNormal(
       currentData.copyWith(
         currentIndex: index + 1,
+        overallProgress: _totalWorkUnits > 0
+            ? (_completedWorkUnits / _totalWorkUnits).clamp(0, 1)
+            : 1,
         completedCount: success
             ? currentData.completedCount + 1
             : currentData.completedCount,
@@ -183,6 +212,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   }
 
   void _finish() {
+    _batchStopwatch.stop();
     _previewCubit.stopLiveMode();
     final failed = currentData.failures;
     emitNormal(
@@ -196,6 +226,8 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
             ? '${failed.length} file(s) failed: ${failed.map((f) => p.basename(f.filePath)).join(', ')}'
             : null,
         currentFilePath: null,
+        overallProgress: _cancelled ? currentData.overallProgress : 1,
+        estimatedBatchRemaining: null,
       ),
     );
   }
@@ -217,6 +249,10 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     _cancelled = false;
     _queue = [];
     _outputPaths = const {};
+    _workUnits = const {};
+    _completedWorkUnits = 0;
+    _totalWorkUnits = 0;
+    _batchStopwatch.reset();
     emitNormal(const VideoEncodeState());
   }
 
@@ -251,6 +287,46 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
       );
     }
     return result;
+  }
+
+  Map<String, double> _planWorkUnits(List<VideoFile> files) {
+    final knownDurations = files
+        .map((file) => file.metadata?.duration?.inMilliseconds ?? 0)
+        .where((duration) => duration > 0)
+        .toList();
+    final fallbackDuration = knownDurations.isEmpty
+        ? const Duration(minutes: 1).inMilliseconds
+        : knownDurations.reduce((a, b) => a + b) / knownDurations.length;
+    return {
+      for (final file in files)
+        file.path:
+            ((file.metadata?.duration?.inMilliseconds ?? 0) > 0
+                ? file.metadata!.duration!.inMilliseconds
+                : fallbackDuration) *
+            (_usesTwoPass(_effectiveSettingsFor(file)) ? 2 : 1),
+    };
+  }
+
+  bool _usesTwoPass(EncodeSettings settings) =>
+      settings.qualityMode == QualityMode.avgBitrate && settings.twoPass;
+
+  double _overallProgress({
+    required VideoFile currentFile,
+    required double currentFileProgress,
+  }) {
+    if (_totalWorkUnits <= 0) return 0;
+    final currentWork = _workUnits[currentFile.path] ?? 0;
+    return ((_completedWorkUnits + currentWork * currentFileProgress) /
+            _totalWorkUnits)
+        .clamp(0, 1);
+  }
+
+  Duration? _estimateBatchRemaining(double progress) {
+    if (progress <= 0.01 || !_batchStopwatch.isRunning) return null;
+    final elapsedUs = _batchStopwatch.elapsedMicroseconds;
+    final remainingUs = (elapsedUs / progress - elapsedUs).round();
+    if (remainingUs <= 0) return null;
+    return Duration(microseconds: remainingUs);
   }
 
   @override

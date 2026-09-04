@@ -308,6 +308,30 @@ abstract class AppLocalizations {
   /// **'Failed'**
   String get statusFailed;
 
+  /// No description provided for @queueEncodingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Encoding {current} / {total}'**
+  String queueEncodingProgress(int current, int total);
+
+  /// No description provided for @queueDoneProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Done — {completed} / {total} completed'**
+  String queueDoneProgress(int completed, int total);
+
+  /// No description provided for @queueErrorProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} completed, {failed} failed'**
+  String queueErrorProgress(int completed, int failed);
+
+  /// No description provided for @remainingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining {time}'**
+  String remainingTime(String time);
+
   /// No description provided for @resolution.
   ///
   /// In en, this message translates to:

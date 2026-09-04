@@ -19,6 +19,7 @@ import 'package:video_toolkit/features/video_encoding/data/repositories/video_en
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/video_metadata/data/datasources/exiftool_datasource.dart';
+import 'package:video_toolkit/features/video_metadata/data/models/video_metadata.dart';
 
 void main() {
   setUpAll(() {
@@ -115,16 +116,51 @@ void main() {
       await encodeFuture;
     },
   );
+
+  test('weights overall progress by video duration', () async {
+    final repository = _BlockingVideoEncodeRepository();
+    final runner = _FakeCliToolRunner();
+    final preview = PreviewCubit(
+      FfmpegDatasource(runner, BundledBinaryResolver()),
+    );
+    final cubit = VideoEncodeCubit(
+      repository,
+      preview,
+      ExiftoolDatasource(runner),
+    );
+    addTearDown(cubit.close);
+    addTearDown(preview.close);
+
+    final encodeFuture = cubit.startBatchEncode(
+      files: [
+        _videoFile('/tmp/short.mp4', duration: const Duration(seconds: 10)),
+        _videoFile('/tmp/long.mp4', duration: const Duration(seconds: 30)),
+      ],
+      globalSettings: const EncodeSettings(copySourceMetadata: false),
+    );
+    await Future<void>.delayed(Duration.zero);
+    repository.add(const EncodeProgress(percent: 0.5));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(cubit.currentData.overallProgress, closeTo(0.125, 0.000001));
+
+    await cubit.stop();
+    await encodeFuture;
+  });
 }
 
-VideoFile _videoFile(String path, {OutputDirectorySettings? outputOverride}) =>
-    VideoFile(
-      path: path,
-      name: p.basename(path),
-      sizeInBytes: 0,
-      importedAt: DateTime(2026),
-      outputDirectoryOverride: outputOverride,
-    );
+VideoFile _videoFile(
+  String path, {
+  OutputDirectorySettings? outputOverride,
+  Duration? duration,
+}) => VideoFile(
+  path: path,
+  name: p.basename(path),
+  sizeInBytes: 0,
+  importedAt: DateTime(2026),
+  outputDirectoryOverride: outputOverride,
+  metadata: duration == null ? null : VideoMetadata(duration: duration),
+);
 
 class _FakeVideoEncodeRepository implements VideoEncodeRepository {
   final outputPaths = <String>[];
@@ -163,6 +199,8 @@ class _FakeCliToolRunner implements CliToolRunner {
 class _BlockingVideoEncodeRepository implements VideoEncodeRepository {
   final _controller = StreamController<EncodeProgress>();
   int cancelCount = 0;
+
+  void add(EncodeProgress progress) => _controller.add(progress);
 
   @override
   Future<void> cancelActiveEncode() async {

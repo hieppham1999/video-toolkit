@@ -31,18 +31,14 @@ class AppOverallProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = Languages.translate;
     final status = encodeState.status;
 
     final total = encodeState.totalFiles;
     final current = encodeState.currentIndex;
     final completed = encodeState.completedCount;
     final failed = encodeState.failures;
-    final currentFileFraction = status == EncodeStatus.encoding
-        ? encodeState.progress.percent
-        : 0.0;
-    final overallPercent = total > 0
-        ? ((current + currentFileFraction) / total).clamp(0.0, 1.0)
-        : 0.0;
+    final overallPercent = encodeState.overallProgress;
 
     final isWindows = Platform.isWindows;
 
@@ -66,19 +62,27 @@ class AppOverallProgressBar extends StatelessWidget {
       captionStyle = theme.typography.caption1;
     }
 
-    final String statusText;
+    String statusText;
     final Color statusColor;
     switch (status) {
       case EncodeStatus.encoding:
-        statusText =
-            'Encoding $current / $total'
-            '${encodeState.progress.speed > 0 ? '  ·  ${encodeState.progress.speed.toStringAsFixed(1)}x' : ''}';
+        final details = <String>[
+          if (encodeState.progress.speed > 0)
+            '${encodeState.progress.speed.toStringAsFixed(1)}x',
+          if (encodeState.estimatedBatchRemaining case final remaining?)
+            l10n.remainingTime(_formatEta(remaining)),
+        ];
+        statusText = l10n.queueEncodingProgress(
+          total == 0 ? 0 : (current + 1).clamp(1, total),
+          total,
+        );
+        if (details.isNotEmpty) statusText += '  ·  ${details.join('  ·  ')}';
         statusColor = subtleText;
       case EncodeStatus.done:
-        statusText = 'Done — $completed / $total completed';
+        statusText = l10n.queueDoneProgress(completed, total);
         statusColor = AppColors.success;
       case EncodeStatus.error:
-        statusText = '$completed completed, ${failed.length} failed';
+        statusText = l10n.queueErrorProgress(completed, failed.length);
         statusColor = AppColors.error;
       case EncodeStatus.idle:
         statusText = '';
@@ -160,6 +164,16 @@ class AppOverallProgressBar extends StatelessWidget {
       QueueCompletionAction.restart => l10n.queueActionRestart,
       QueueCompletionAction.sleep => l10n.queueActionSleep,
     };
+  }
+
+  String _formatEta(Duration remaining) {
+    final total = remaining.inSeconds;
+    final hours = total ~/ 3600;
+    final minutes = (total % 3600) ~/ 60;
+    final seconds = total % 60;
+    final mm = minutes.toString().padLeft(2, '0');
+    final ss = seconds.toString().padLeft(2, '0');
+    return hours > 0 ? '$hours:$mm:$ss' : '$mm:$ss';
   }
 }
 

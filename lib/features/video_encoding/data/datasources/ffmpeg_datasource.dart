@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:injectable/injectable.dart';
@@ -7,6 +8,8 @@ import 'package:video_toolkit/core/cli/cli_exception.dart';
 import 'package:video_toolkit/core/cli/cli_tool_runner.dart';
 import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
+
+import 'ffmpeg_progress_parser.dart';
 
 @lazySingleton
 class FfmpegDatasource {
@@ -68,43 +71,47 @@ class FfmpegDatasource {
       throw const ToolNotFoundException(_executable);
     }
 
-    appLogger.d('FfmpegDatasource: $ffmpegPath ${args.join(' ')}');
+    final commandArgs = ['-progress', 'pipe:1', '-nostats', ...args];
+    appLogger.d('FfmpegDatasource: $ffmpegPath ${commandArgs.join(' ')}');
 
     final stopwatch = Stopwatch()..start();
 
-    final process = await Process.start(ffmpegPath, args);
+    final process = await Process.start(ffmpegPath, commandArgs);
     _activeProcess = process;
 
     try {
-      // ffmpeg writes progress AND errors to stderr. Keep a rolling tail so we
-      // can surface the actual error message when exit code != 0.
       final stderrTail = <String>[];
       const maxTailLines = 40;
+      final stderrDrain = process.stderr
+          .transform(const SystemEncoding().decoder)
+          .transform(const LineSplitter())
+          .forEach((line) {
+            if (line.trim().isEmpty) return;
+            stderrTail.add(line);
+            if (stderrTail.length > maxTailLines) stderrTail.removeAt(0);
+          });
 
-      // Drain stdout in parallel to avoid blocking ffmpeg on a full pipe buffer.
-      final stdoutDrain = process.stdout.drain<void>();
-
-      await for (final chunk in process.stderr.transform(
-        const SystemEncoding().decoder,
-      )) {
-        for (final line in chunk.split('\n')) {
-          if (line.trim().isEmpty) continue;
-          stderrTail.add(line);
-          if (stderrTail.length > maxTailLines) {
-            stderrTail.removeAt(0);
-          }
-        }
-        final progress = _parseProgress(
-          chunk,
-          totalDuration,
-          stopwatch.elapsed,
-        );
-        if (progress != null) {
-          yield progress;
+      final snapshot = <String, String>{};
+      await for (final line
+          in process.stdout
+              .transform(const SystemEncoding().decoder)
+              .transform(const LineSplitter())) {
+        final separator = line.indexOf('=');
+        if (separator <= 0) continue;
+        final key = line.substring(0, separator);
+        snapshot[key] = line.substring(separator + 1);
+        if (key == 'progress') {
+          final progress = FfmpegProgressParser.parse(
+            snapshot,
+            totalDuration: totalDuration,
+            elapsed: stopwatch.elapsed,
+          );
+          if (progress != null) yield progress;
+          snapshot.clear();
         }
       }
 
-      await stdoutDrain;
+      await stderrDrain;
       final exitCode = await process.exitCode;
       stopwatch.stop();
 
@@ -153,61 +160,6 @@ class FfmpegDatasource {
     } catch (e) {
       appLogger.w('Unable to terminate FFmpeg process: $e');
     }
-  }
-
-  EncodeProgress? _parseProgress(
-    String chunk,
-    Duration totalDuration,
-    Duration elapsed,
-  ) {
-    // ffmpeg progress lines look like:
-    // frame=  120 fps= 60 ... time=00:00:05.00 ... speed=2.0x
-    final timeMatch = RegExp(
-      r'time=(\d+):(\d+):(\d+)\.(\d+)',
-    ).firstMatch(chunk);
-    if (timeMatch == null) return null;
-
-    final hours = int.parse(timeMatch.group(1)!);
-    final minutes = int.parse(timeMatch.group(2)!);
-    final seconds = int.parse(timeMatch.group(3)!);
-    final centiseconds = int.parse(timeMatch.group(4)!);
-
-    final currentTime = Duration(
-      hours: hours,
-      minutes: minutes,
-      seconds: seconds,
-      milliseconds: centiseconds * 10,
-    );
-
-    final totalMs = totalDuration.inMilliseconds;
-    final percent = totalMs > 0
-        ? (currentTime.inMilliseconds / totalMs).clamp(0.0, 1.0)
-        : 0.0;
-
-    // Parse fps
-    final fpsMatch = RegExp(r'fps=\s*([\d.]+)').firstMatch(chunk);
-    final fps = double.tryParse(fpsMatch?.group(1) ?? '') ?? 0;
-
-    // Parse speed
-    final speedMatch = RegExp(r'speed=\s*([\d.]+)x').firstMatch(chunk);
-    final speed = double.tryParse(speedMatch?.group(1) ?? '') ?? 0;
-
-    // Estimate remaining time
-    Duration? estimatedRemaining;
-    if (percent > 0.01) {
-      final totalEstimated = Duration(
-        milliseconds: (elapsed.inMilliseconds / percent).round(),
-      );
-      estimatedRemaining = totalEstimated - elapsed;
-    }
-
-    return EncodeProgress(
-      percent: percent,
-      elapsed: elapsed,
-      estimatedRemaining: estimatedRemaining,
-      fps: fps,
-      speed: speed,
-    );
   }
 
   /// Extracts a single frame from [inputPath] at [atSeconds], optionally
