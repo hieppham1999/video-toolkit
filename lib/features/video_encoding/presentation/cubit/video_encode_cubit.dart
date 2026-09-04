@@ -26,6 +26,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   final PreviewCubit _previewCubit;
   final ExiftoolDatasource _exiftool;
   StreamSubscription<void>? _encodeSub;
+  Completer<bool>? _activeCompleter;
   bool _cancelled = false;
   int _lastLoggedBucket = -1;
 
@@ -43,6 +44,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   }) async {
     if (files.isEmpty) return;
     await _encodeSub?.cancel();
+    await _repository.cancelActiveEncode();
 
     _queue = List.of(files);
     _globalSettings = globalSettings;
@@ -85,6 +87,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     } catch (e) {
       appLogger.w('Failed to create output dir $dir: $e');
     }
+    if (_cancelled) return;
 
     emitNormal(
       currentData.copyWith(
@@ -95,6 +98,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     );
 
     final completer = Completer<bool>();
+    _activeCompleter = completer;
     String? errorDetail;
 
     _encodeSub = _repository
@@ -135,6 +139,9 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
         );
 
     final success = await completer.future;
+    if (identical(_activeCompleter, completer)) {
+      _activeCompleter = null;
+    }
 
     if (_cancelled) return;
 
@@ -193,9 +200,15 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     );
   }
 
-  void stop() {
+  Future<void> stop() async {
+    if (currentData.status != EncodeStatus.encoding) return;
     _cancelled = true;
-    _encodeSub?.cancel();
+    final completer = _activeCompleter;
+    if (completer != null && !completer.isCompleted) {
+      completer.complete(false);
+    }
+    await _repository.cancelActiveEncode();
+    await _encodeSub?.cancel();
     _finish();
   }
 
@@ -241,8 +254,14 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   }
 
   @override
-  Future<void> close() {
-    _encodeSub?.cancel();
-    return super.close();
+  Future<void> close() async {
+    _cancelled = true;
+    final completer = _activeCompleter;
+    if (completer != null && !completer.isCompleted) {
+      completer.complete(false);
+    }
+    await _repository.cancelActiveEncode();
+    await _encodeSub?.cancel();
+    await super.close();
   }
 }

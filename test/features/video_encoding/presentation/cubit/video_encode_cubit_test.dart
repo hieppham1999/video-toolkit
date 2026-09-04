@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -16,6 +17,7 @@ import 'package:video_toolkit/features/video_encoding/data/models/encode_setting
 import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
+import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
 import 'package:video_toolkit/features/video_metadata/data/datasources/exiftool_datasource.dart';
 
 void main() {
@@ -82,6 +84,37 @@ void main() {
       });
     },
   );
+
+  test(
+    'stop cancels an in-flight encode without leaving the batch waiting',
+    () async {
+      final repository = _BlockingVideoEncodeRepository();
+      final runner = _FakeCliToolRunner();
+      final preview = PreviewCubit(
+        FfmpegDatasource(runner, BundledBinaryResolver()),
+      );
+      final cubit = VideoEncodeCubit(
+        repository,
+        preview,
+        ExiftoolDatasource(runner),
+      );
+      addTearDown(cubit.close);
+      addTearDown(preview.close);
+
+      final encodeFuture = cubit.startBatchEncode(
+        files: [_videoFile('/tmp/long-video.mp4')],
+        globalSettings: const EncodeSettings(copySourceMetadata: false),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(cubit.currentData.status, EncodeStatus.encoding);
+      await cubit.stop();
+
+      expect(cubit.currentData.status, EncodeStatus.idle);
+      expect(repository.cancelCount, greaterThanOrEqualTo(2));
+      await encodeFuture;
+    },
+  );
 }
 
 VideoFile _videoFile(String path, {OutputDirectorySettings? outputOverride}) =>
@@ -95,6 +128,9 @@ VideoFile _videoFile(String path, {OutputDirectorySettings? outputOverride}) =>
 
 class _FakeVideoEncodeRepository implements VideoEncodeRepository {
   final outputPaths = <String>[];
+
+  @override
+  Future<void> cancelActiveEncode() async {}
 
   @override
   Future<bool> isFfmpegAvailable() async => true;
@@ -122,4 +158,26 @@ class _FakeCliToolRunner implements CliToolRunner {
     List<String> args, {
     Duration timeout = const Duration(seconds: 30),
   }) async => const CliResult(stdout: '', stderr: '', exitCode: 0);
+}
+
+class _BlockingVideoEncodeRepository implements VideoEncodeRepository {
+  final _controller = StreamController<EncodeProgress>();
+  int cancelCount = 0;
+
+  @override
+  Future<void> cancelActiveEncode() async {
+    cancelCount++;
+  }
+
+  @override
+  Stream<EncodeProgress> encode({
+    required String inputPath,
+    required String outputPath,
+    required EncodeSettings settings,
+    required Duration totalDuration,
+    DateTime? creationDate,
+  }) => _controller.stream;
+
+  @override
+  Future<bool> isFfmpegAvailable() async => true;
 }

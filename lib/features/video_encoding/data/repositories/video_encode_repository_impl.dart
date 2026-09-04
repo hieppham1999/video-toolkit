@@ -22,6 +22,9 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
   Future<bool> isFfmpegAvailable() => _ffmpeg.isAvailable;
 
   @override
+  Future<void> cancelActiveEncode() => _ffmpeg.cancelActiveEncode();
+
+  @override
   Stream<EncodeProgress> encode({
     required String inputPath,
     required String outputPath,
@@ -29,8 +32,16 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
     required Duration totalDuration,
     DateTime? creationDate,
   }) {
-    final controller = StreamController<EncodeProgress>();
+    var cancelled = false;
+    late final StreamController<EncodeProgress> controller;
+    controller = StreamController<EncodeProgress>(
+      onCancel: () async {
+        cancelled = true;
+        await _ffmpeg.cancelActiveEncode();
+      },
+    );
     () async {
+      final temporaryOutputPath = _temporaryOutputPath(outputPath);
       try {
         String? timestampSubtitlePath;
         try {
@@ -67,7 +78,7 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
             try {
               final pass1Args = resolved.buildArgs(
                 inputPath,
-                outputPath,
+                temporaryOutputPath,
                 creationDate: effectiveCreationDate,
                 pass: 1,
                 passLogPrefix: logPrefix,
@@ -110,7 +121,7 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
 
               final pass2Args = resolved.buildArgs(
                 inputPath,
-                outputPath,
+                temporaryOutputPath,
                 creationDate: effectiveCreationDate,
                 pass: 2,
                 passLogPrefix: logPrefix,
@@ -137,7 +148,7 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
           } else {
             final args = resolved.buildArgs(
               inputPath,
-              outputPath,
+              temporaryOutputPath,
               creationDate: effectiveCreationDate,
               timestampSubtitlePath: timestampSubtitlePath,
             );
@@ -149,6 +160,12 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
               ),
             );
           }
+
+          if (cancelled) return;
+          await _publishOutput(
+            temporaryOutputPath: temporaryOutputPath,
+            outputPath: outputPath,
+          );
         } finally {
           if (timestampSubtitlePath != null) {
             final subtitleFile = File(timestampSubtitlePath);
@@ -160,12 +177,48 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
           }
         }
       } catch (e, st) {
-        controller.addError(e, st);
+        if (!cancelled && !controller.isClosed) {
+          controller.addError(e, st);
+        }
       } finally {
+        await _deleteIfExists(temporaryOutputPath);
         await controller.close();
       }
     }();
     return controller.stream;
+  }
+
+  String _temporaryOutputPath(String outputPath) {
+    final extension = p.extension(outputPath);
+    final stem = p.basenameWithoutExtension(outputPath);
+    final token = DateTime.now().microsecondsSinceEpoch;
+    return p.join(p.dirname(outputPath), '.$stem.$token.part$extension');
+  }
+
+  Future<void> _publishOutput({
+    required String temporaryOutputPath,
+    required String outputPath,
+  }) async {
+    final temporary = File(temporaryOutputPath);
+    if (!await temporary.exists() || await temporary.length() == 0) {
+      throw StateError(
+        'FFmpeg completed without producing a valid output file.',
+      );
+    }
+    if (await FileSystemEntity.type(outputPath, followLinks: false) !=
+        FileSystemEntityType.notFound) {
+      throw StateError('The planned output path became occupied: $outputPath');
+    }
+    await temporary.rename(outputPath);
+  }
+
+  Future<void> _deleteIfExists(String path) async {
+    final file = File(path);
+    try {
+      if (await file.exists()) await file.delete();
+    } catch (e) {
+      appLogger.w('Failed to clean up temporary encode output $path: $e');
+    }
   }
 
   /// Removes the ffmpeg 2-pass stats files generated under [prefix]

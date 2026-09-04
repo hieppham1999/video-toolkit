@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
       _queueCompletionAction = QueueCompletionAction.none;
       _batchStartedAt = null;
     });
-    _encodeCubit.stop();
+    unawaited(_encodeCubit.stop());
   }
 
   void _onQueueCompletionActionChanged(QueueCompletionAction action) {
