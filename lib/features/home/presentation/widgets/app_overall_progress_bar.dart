@@ -143,6 +143,7 @@ class AppOverallProgressBar extends StatelessWidget {
                 items: QueueCompletionAction.values,
                 itemLabel: _actionLabel,
                 onChanged: onQueueCompletionActionChanged,
+                mainAxisSize: MainAxisSize.min,
               ),
             ),
           ),

@@ -14,6 +14,7 @@ class AppDropdown<T> extends StatelessWidget {
     required this.itemLabel,
     required this.onChanged,
     this.enabled = true,
+    this.mainAxisSize = MainAxisSize.max,
   });
 
   final String label;
@@ -22,6 +23,7 @@ class AppDropdown<T> extends StatelessWidget {
   final String Function(T) itemLabel;
   final ValueChanged<T> onChanged;
   final bool enabled;
+  final MainAxisSize mainAxisSize;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class AppDropdown<T> extends StatelessWidget {
         itemLabel: itemLabel,
         onChanged: onChanged,
         enabled: enabled,
+        mainAxisSize: mainAxisSize,
       );
     }
     return _MacosDropdown<T>(
@@ -42,6 +45,7 @@ class AppDropdown<T> extends StatelessWidget {
       itemLabel: itemLabel,
       onChanged: onChanged,
       enabled: enabled,
+      mainAxisSize: mainAxisSize,
     );
   }
 }
@@ -54,6 +58,7 @@ class _MacosDropdown<T> extends StatelessWidget {
     required this.itemLabel,
     required this.onChanged,
     required this.enabled,
+    required this.mainAxisSize,
   });
 
   final String label;
@@ -62,6 +67,7 @@ class _MacosDropdown<T> extends StatelessWidget {
   final String Function(T) itemLabel;
   final ValueChanged<T> onChanged;
   final bool enabled;
+  final MainAxisSize mainAxisSize;
 
   @override
   Widget build(BuildContext context) {
@@ -69,15 +75,21 @@ class _MacosDropdown<T> extends StatelessWidget {
     return Opacity(
       opacity: enabled ? 1.0 : 0.4,
       child: Row(
+        mainAxisSize: mainAxisSize,
         children: [
-          SizedBox(width: 100, child: Text(label, style: theme.typography.body)),
+          SizedBox(
+            width: 100,
+            child: Text(label, style: theme.typography.body),
+          ),
           const SizedBox(width: 8),
           MacosPopupButton<T>(
             value: value,
             onChanged: enabled ? (v) => onChanged(v as T) : null,
             items: items
-                .map((e) =>
-                    MacosPopupMenuItem(value: e, child: Text(itemLabel(e))))
+                .map(
+                  (e) =>
+                      MacosPopupMenuItem(value: e, child: Text(itemLabel(e))),
+                )
                 .toList(),
           ),
         ],
@@ -94,6 +106,7 @@ class _FluentDropdown<T> extends StatelessWidget {
     required this.itemLabel,
     required this.onChanged,
     required this.enabled,
+    required this.mainAxisSize,
   });
 
   final String label;
@@ -102,6 +115,7 @@ class _FluentDropdown<T> extends StatelessWidget {
   final String Function(T) itemLabel;
   final ValueChanged<T> onChanged;
   final bool enabled;
+  final MainAxisSize mainAxisSize;
 
   @override
   Widget build(BuildContext context) {
@@ -109,15 +123,21 @@ class _FluentDropdown<T> extends StatelessWidget {
     return Opacity(
       opacity: enabled ? 1.0 : 0.4,
       child: Row(
+        mainAxisSize: mainAxisSize,
         children: [
-          SizedBox(width: 100, child: Text(label, style: theme.typography.body)),
+          SizedBox(
+            width: 100,
+            child: Text(label, style: theme.typography.body),
+          ),
           const SizedBox(width: 8),
           fluent.ComboBox<T>(
             value: value,
             onChanged: enabled ? (v) => onChanged(v as T) : null,
             items: items
-                .map((e) =>
-                    fluent.ComboBoxItem(value: e, child: Text(itemLabel(e))))
+                .map(
+                  (e) =>
+                      fluent.ComboBoxItem(value: e, child: Text(itemLabel(e))),
+                )
                 .toList(),
           ),
         ],

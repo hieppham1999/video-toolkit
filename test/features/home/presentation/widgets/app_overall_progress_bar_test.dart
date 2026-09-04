@@ -35,6 +35,13 @@ void main() {
     expect(find.text('After queue'), findsOneWidget);
     expect(find.text('Do nothing'), findsOneWidget);
 
+    final progressBarRect = tester.getRect(find.byType(AppOverallProgressBar));
+    final dropdown = Platform.isWindows
+        ? find.byType(fluent.ComboBox<QueueCompletionAction>)
+        : find.byType(MacosPopupButton<QueueCompletionAction>);
+    final dropdownRect = tester.getRect(dropdown);
+    expect(dropdownRect.right, closeTo(progressBarRect.right - 12, 0.1));
+
     await tester.tap(find.text('Do nothing'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Shut down'));
