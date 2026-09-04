@@ -428,6 +428,12 @@ abstract class AppLocalizations {
   /// **'The selected video profile is not supported by this codec.'**
   String get preflightIncompatibleVideoProfile;
 
+  /// No description provided for @preflightInvalidAudioGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio gain must be between -60 and +60 dB.'**
+  String get preflightInvalidAudioGain;
+
   /// No description provided for @preflightInvalidCrf.
   ///
   /// In en, this message translates to:
@@ -811,6 +817,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Preserve all source audio tracks'**
   String get preserveAllAudioTracks;
+
+  /// No description provided for @noAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'No audio'**
+  String get noAudio;
+
+  /// No description provided for @passthrough.
+  ///
+  /// In en, this message translates to:
+  /// **'Passthrough'**
+  String get passthrough;
+
+  /// No description provided for @audioChannels.
+  ///
+  /// In en, this message translates to:
+  /// **'Channels'**
+  String get audioChannels;
+
+  /// No description provided for @mono.
+  ///
+  /// In en, this message translates to:
+  /// **'Mono'**
+  String get mono;
+
+  /// No description provided for @stereo.
+  ///
+  /// In en, this message translates to:
+  /// **'Stereo'**
+  String get stereo;
+
+  /// No description provided for @surround51.
+  ///
+  /// In en, this message translates to:
+  /// **'5.1 surround'**
+  String get surround51;
+
+  /// No description provided for @sampleRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample rate'**
+  String get sampleRate;
+
+  /// No description provided for @audioGainDb.
+  ///
+  /// In en, this message translates to:
+  /// **'Gain (dB)'**
+  String get audioGainDb;
+
+  /// No description provided for @normalizeAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Normalize loudness (EBU R128)'**
+  String get normalizeAudio;
 
   /// No description provided for @outputName.
   ///

@@ -193,6 +193,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Profile video đã chọn không được codec này hỗ trợ.';
 
   @override
+  String get preflightInvalidAudioGain =>
+      'Mức tăng âm thanh phải nằm trong khoảng -60 đến +60 dB.';
+
+  @override
   String get preflightInvalidCrf => 'CRF phải nằm trong khoảng từ 0 đến 63.';
 
   @override
@@ -390,6 +394,33 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get preserveAllAudioTracks => 'Giữ tất cả track âm thanh nguồn';
+
+  @override
+  String get noAudio => 'Không có âm thanh';
+
+  @override
+  String get passthrough => 'Giữ nguyên';
+
+  @override
+  String get audioChannels => 'Số kênh';
+
+  @override
+  String get mono => 'Mono';
+
+  @override
+  String get stereo => 'Stereo';
+
+  @override
+  String get surround51 => 'Âm thanh vòm 5.1';
+
+  @override
+  String get sampleRate => 'Tần số lấy mẫu';
+
+  @override
+  String get audioGainDb => 'Tăng âm (dB)';
+
+  @override
+  String get normalizeAudio => 'Chuẩn hóa âm lượng (EBU R128)';
 
   @override
   String get outputName => 'Mẫu tên file';

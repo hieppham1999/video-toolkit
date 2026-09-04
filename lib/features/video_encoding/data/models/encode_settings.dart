@@ -182,6 +182,10 @@ abstract class EncodeSettings with _$EncodeSettings {
     String? resolution,
     @Default(AudioCodec.passthrough) AudioCodec audioCodec,
     @Default(AudioBitrate.k128) AudioBitrate audioBitrate,
+    @Default(AudioChannelMode.source) AudioChannelMode audioChannels,
+    @Default(AudioSampleRate.source) AudioSampleRate audioSampleRate,
+    @Default(false) bool normalizeAudio,
+    @Default(0) double audioGainDb,
     @Default(true) bool preserveAllAudioTracks,
     @Default([]) List<TextOverlay> textOverlays,
     @Default(false) bool embedTimestampSubtitle,
@@ -327,6 +331,14 @@ abstract class EncodeSettings with _$EncodeSettings {
         embedTimestampSubtitle &&
         timestampSubtitlePath != null &&
         subtitleCodec != null;
+    final audioFilters = <String>[
+      if (normalizeAudio) 'loudnorm=I=-16:LRA=11:TP=-1.5',
+      if (audioGainDb != 0) 'volume=${_formatNumber(audioGainDb)}dB',
+    ];
+    final effectiveAudioCodec =
+        audioCodec == AudioCodec.passthrough && requiresAudioEncoding
+        ? AudioCodec.aac
+        : audioCodec;
 
     return [
       '-i', inputPath,
@@ -392,18 +404,23 @@ abstract class EncodeSettings with _$EncodeSettings {
         '-metadata:s:s:0',
         'title=timestamp',
       ],
-      if (pass == 1) ...[
+      if (pass == 1 || effectiveAudioCodec == AudioCodec.none) ...[
         '-an',
-        '-f',
-        'null',
       ] else ...[
         '-c:a',
-        audioCodec.value,
-        if (audioCodec != AudioCodec.passthrough) ...[
+        effectiveAudioCodec.value,
+        if (effectiveAudioCodec != AudioCodec.passthrough) ...[
           '-b:a',
           audioBitrate.value,
         ],
+        if (audioChannels.value != null) ...['-ac', '${audioChannels.value}'],
+        if (audioSampleRate.value != null) ...[
+          '-ar',
+          '${audioSampleRate.value}',
+        ],
+        if (audioFilters.isNotEmpty) ...['-af', audioFilters.join(',')],
       ],
+      if (pass == 1) ...['-f', 'null'],
       if (pass != 1 &&
           webOptimized &&
           (outputExtension == OutputExtension.mp4 ||
@@ -447,7 +464,9 @@ abstract class EncodeSettings with _$EncodeSettings {
     };
   }
 
-  String _formatFrameRate(double value) => value == value.roundToDouble()
+  String _formatFrameRate(double value) => _formatNumber(value);
+
+  String _formatNumber(double value) => value == value.roundToDouble()
       ? value.toInt().toString()
       : value.toString();
 
@@ -466,6 +485,12 @@ abstract class EncodeSettings with _$EncodeSettings {
     VideoEncoder.prores => videoProfile == VideoProfile.auto,
   };
 
+  bool get requiresAudioEncoding =>
+      audioChannels != AudioChannelMode.source ||
+      audioSampleRate != AudioSampleRate.source ||
+      normalizeAudio ||
+      audioGainDb != 0;
+
   List<String> _qualityArgs(String encoder, int? resolvedVideoBitrateKbps) {
     if (encoder != codec.value || qualityMode != QualityMode.crf) {
       return ['-b:v', '${resolvedVideoBitrateKbps ?? avgBitrateKbps}k'];
@@ -479,9 +504,15 @@ abstract class EncodeSettings with _$EncodeSettings {
   /// configured bitrate, so a conservative 192 kbps estimate is used.
   int targetVideoBitrateKbps(Duration duration) {
     if (duration <= Duration.zero || targetSizeMb <= 0) return 0;
-    final audioKbps = audioCodec == AudioCodec.passthrough
-        ? 192
-        : audioBitrate.kbps;
+    final effectiveAudioCodec =
+        audioCodec == AudioCodec.passthrough && requiresAudioEncoding
+        ? AudioCodec.aac
+        : audioCodec;
+    final audioKbps = switch (effectiveAudioCodec) {
+      AudioCodec.none => 0,
+      AudioCodec.passthrough => 192,
+      _ => audioBitrate.kbps,
+    };
     final durationSeconds =
         duration.inMilliseconds / Duration.millisecondsPerSecond;
     final totalKbps = targetSizeMb * 8000 * 0.98 / durationSeconds;
@@ -656,6 +687,7 @@ enum OutputExtension {
 }
 
 enum AudioCodec {
+  none(''),
   aac('aac'),
   mp3('mp3'),
   ac3('ac3'),
@@ -665,6 +697,28 @@ enum AudioCodec {
   const AudioCodec(this.value);
 
   final String value;
+}
+
+enum AudioChannelMode {
+  source(null),
+  mono(1),
+  stereo(2),
+  surround51(6);
+
+  const AudioChannelMode(this.value);
+
+  final int? value;
+}
+
+enum AudioSampleRate {
+  source(null),
+  hz44100(44100),
+  hz48000(48000),
+  hz96000(96000);
+
+  const AudioSampleRate(this.value);
+
+  final int? value;
 }
 
 /// Deinterlacing via ffmpeg.

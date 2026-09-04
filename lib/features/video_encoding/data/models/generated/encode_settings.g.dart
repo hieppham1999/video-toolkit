@@ -92,6 +92,14 @@ _EncodeSettings _$EncodeSettingsFromJson(
   audioBitrate:
       $enumDecodeNullable(_$AudioBitrateEnumMap, json['audioBitrate']) ??
       AudioBitrate.k128,
+  audioChannels:
+      $enumDecodeNullable(_$AudioChannelModeEnumMap, json['audioChannels']) ??
+      AudioChannelMode.source,
+  audioSampleRate:
+      $enumDecodeNullable(_$AudioSampleRateEnumMap, json['audioSampleRate']) ??
+      AudioSampleRate.source,
+  normalizeAudio: json['normalizeAudio'] as bool? ?? false,
+  audioGainDb: (json['audioGainDb'] as num?)?.toDouble() ?? 0,
   preserveAllAudioTracks: json['preserveAllAudioTracks'] as bool? ?? true,
   textOverlays:
       (json['textOverlays'] as List<dynamic>?)
@@ -138,6 +146,10 @@ Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
       'resolution': instance.resolution,
       'audioCodec': _$AudioCodecEnumMap[instance.audioCodec]!,
       'audioBitrate': _$AudioBitrateEnumMap[instance.audioBitrate]!,
+      'audioChannels': _$AudioChannelModeEnumMap[instance.audioChannels]!,
+      'audioSampleRate': _$AudioSampleRateEnumMap[instance.audioSampleRate]!,
+      'normalizeAudio': instance.normalizeAudio,
+      'audioGainDb': instance.audioGainDb,
       'preserveAllAudioTracks': instance.preserveAllAudioTracks,
       'textOverlays': instance.textOverlays,
       'embedTimestampSubtitle': instance.embedTimestampSubtitle,
@@ -225,6 +237,7 @@ const _$OutputExtensionEnumMap = {
 };
 
 const _$AudioCodecEnumMap = {
+  AudioCodec.none: 'none',
   AudioCodec.aac: 'aac',
   AudioCodec.mp3: 'mp3',
   AudioCodec.ac3: 'ac3',
@@ -238,6 +251,20 @@ const _$AudioBitrateEnumMap = {
   AudioBitrate.k192: 'k192',
   AudioBitrate.k256: 'k256',
   AudioBitrate.k320: 'k320',
+};
+
+const _$AudioChannelModeEnumMap = {
+  AudioChannelMode.source: 'source',
+  AudioChannelMode.mono: 'mono',
+  AudioChannelMode.stereo: 'stereo',
+  AudioChannelMode.surround51: 'surround51',
+};
+
+const _$AudioSampleRateEnumMap = {
+  AudioSampleRate.source: 'source',
+  AudioSampleRate.hz44100: 'hz44100',
+  AudioSampleRate.hz48000: 'hz48000',
+  AudioSampleRate.hz96000: 'hz96000',
 };
 
 const _$DeinterlaceEnumMap = {

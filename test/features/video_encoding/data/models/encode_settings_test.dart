@@ -33,6 +33,10 @@ void main() {
     expect(settings.pixelFormat, PixelFormat.auto);
     expect(settings.frameRate, isNull);
     expect(settings.toneMapMode, ToneMapMode.off);
+    expect(settings.audioChannels, AudioChannelMode.source);
+    expect(settings.audioSampleRate, AudioSampleRate.source);
+    expect(settings.normalizeAudio, isFalse);
+    expect(settings.audioGainDb, 0);
   });
 
   test('derives target-size bitrate and forwards the resolved value', () {
@@ -229,4 +233,38 @@ void main() {
       expect(filter, endsWith('format=yuv420p'));
     },
   );
+
+  test(
+    'builds audio processing args and replaces incompatible passthrough',
+    () {
+      const settings = EncodeSettings(
+        audioCodec: AudioCodec.passthrough,
+        audioChannels: AudioChannelMode.stereo,
+        audioSampleRate: AudioSampleRate.hz48000,
+        normalizeAudio: true,
+        audioGainDb: 2.5,
+      );
+
+      final args = settings.buildArgs('input.mov', 'output.mp4');
+
+      expect(args, containsAllInOrder(['-c:a', 'aac', '-b:a', '128k']));
+      expect(args, containsAllInOrder(['-ac', '2', '-ar', '48000']));
+      expect(
+        args,
+        containsAllInOrder([
+          '-af',
+          'loudnorm=I=-16:LRA=11:TP=-1.5,volume=2.5dB',
+        ]),
+      );
+    },
+  );
+
+  test('can remove audio from the output', () {
+    const settings = EncodeSettings(audioCodec: AudioCodec.none);
+
+    final args = settings.buildArgs('input.mov', 'output.mp4');
+
+    expect(args, contains('-an'));
+    expect(args, isNot(contains('-c:a')));
+  });
 }

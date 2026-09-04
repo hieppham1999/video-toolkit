@@ -14,19 +14,33 @@ class AppField extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.hint,
+    this.enabled = true,
   });
 
   final String label;
   final String value;
   final ValueChanged<String> onChanged;
   final String? hint;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     if (Platform.isWindows) {
-      return _FluentField(label: label, value: value, onChanged: onChanged, hint: hint);
+      return _FluentField(
+        label: label,
+        value: value,
+        onChanged: onChanged,
+        hint: hint,
+        enabled: enabled,
+      );
     }
-    return _MacosField(label: label, value: value, onChanged: onChanged, hint: hint);
+    return _MacosField(
+      label: label,
+      value: value,
+      onChanged: onChanged,
+      hint: hint,
+      enabled: enabled,
+    );
   }
 }
 
@@ -36,12 +50,14 @@ class _MacosField extends StatefulWidget {
     required this.value,
     required this.onChanged,
     this.hint,
+    required this.enabled,
   });
 
   final String label;
   final String value;
   final ValueChanged<String> onChanged;
   final String? hint;
+  final bool enabled;
 
   @override
   State<_MacosField> createState() => _MacosFieldState();
@@ -88,6 +104,7 @@ class _MacosFieldState extends State<_MacosField> {
             controller: _controller,
             placeholder: widget.hint,
             onChanged: widget.onChanged,
+            enabled: widget.enabled,
           ),
         ),
       ],
@@ -101,12 +118,14 @@ class _FluentField extends StatefulWidget {
     required this.value,
     required this.onChanged,
     this.hint,
+    required this.enabled,
   });
 
   final String label;
   final String value;
   final ValueChanged<String> onChanged;
   final String? hint;
+  final bool enabled;
 
   @override
   State<_FluentField> createState() => _FluentFieldState();
@@ -153,6 +172,7 @@ class _FluentFieldState extends State<_FluentField> {
             controller: _controller,
             placeholder: widget.hint,
             onChanged: widget.onChanged,
+            enabled: widget.enabled,
           ),
         ),
       ],

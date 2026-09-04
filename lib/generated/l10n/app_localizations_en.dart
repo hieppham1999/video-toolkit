@@ -194,6 +194,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'The selected video profile is not supported by this codec.';
 
   @override
+  String get preflightInvalidAudioGain =>
+      'Audio gain must be between -60 and +60 dB.';
+
+  @override
   String get preflightInvalidCrf => 'CRF must be between 0 and 63.';
 
   @override
@@ -392,6 +396,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get preserveAllAudioTracks => 'Preserve all source audio tracks';
+
+  @override
+  String get noAudio => 'No audio';
+
+  @override
+  String get passthrough => 'Passthrough';
+
+  @override
+  String get audioChannels => 'Channels';
+
+  @override
+  String get mono => 'Mono';
+
+  @override
+  String get stereo => 'Stereo';
+
+  @override
+  String get surround51 => '5.1 surround';
+
+  @override
+  String get sampleRate => 'Sample rate';
+
+  @override
+  String get audioGainDb => 'Gain (dB)';
+
+  @override
+  String get normalizeAudio => 'Normalize loudness (EBU R128)';
 
   @override
   String get outputName => 'Name template';

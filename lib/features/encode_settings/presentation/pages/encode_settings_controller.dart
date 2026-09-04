@@ -87,6 +87,10 @@ class EncodeSettingsController extends ChangeNotifier {
   late OutputExtension outputExtension;
   late AudioCodec audioCodec;
   late AudioBitrate audioBitrate;
+  late AudioChannelMode audioChannels;
+  late AudioSampleRate audioSampleRate;
+  late bool normalizeAudio;
+  String audioGainDb = '';
   late bool preserveAllAudioTracks;
   late List<TextOverlay> textOverlays;
   late bool embedTimestampSubtitle;
@@ -167,6 +171,10 @@ class EncodeSettingsController extends ChangeNotifier {
     outputExtension = s.outputExtension;
     audioCodec = s.audioCodec;
     audioBitrate = s.audioBitrate;
+    audioChannels = s.audioChannels;
+    audioSampleRate = s.audioSampleRate;
+    normalizeAudio = s.normalizeAudio;
+    audioGainDb = s.audioGainDb == 0 ? '' : s.audioGainDb.toString();
     preserveAllAudioTracks = s.preserveAllAudioTracks;
     textOverlays = List.of(s.textOverlays);
     embedTimestampSubtitle =
@@ -226,6 +234,10 @@ class EncodeSettingsController extends ChangeNotifier {
       resolution: resolution,
       audioCodec: audioCodec,
       audioBitrate: audioBitrate,
+      audioChannels: audioChannels,
+      audioSampleRate: audioSampleRate,
+      normalizeAudio: normalizeAudio,
+      audioGainDb: double.tryParse(audioGainDb) ?? 0,
       preserveAllAudioTracks: preserveAllAudioTracks,
       textOverlays: textOverlays,
       embedTimestampSubtitle: embedTimestampSubtitle,
@@ -325,12 +337,49 @@ class EncodeSettingsController extends ChangeNotifier {
 
   void setAudioCodec(AudioCodec v) {
     audioCodec = v;
+    if (v == AudioCodec.passthrough || v == AudioCodec.none) {
+      audioChannels = AudioChannelMode.source;
+      audioSampleRate = AudioSampleRate.source;
+      normalizeAudio = false;
+      audioGainDb = '';
+    }
     notifyListeners();
   }
 
   void setAudioBitrate(AudioBitrate v) {
     audioBitrate = v;
     notifyListeners();
+  }
+
+  void setAudioChannels(AudioChannelMode v) {
+    audioChannels = v;
+    if (v != AudioChannelMode.source) _ensureAudioEncoding();
+    notifyListeners();
+  }
+
+  void setAudioSampleRate(AudioSampleRate v) {
+    audioSampleRate = v;
+    if (v != AudioSampleRate.source) _ensureAudioEncoding();
+    notifyListeners();
+  }
+
+  void setNormalizeAudio(bool v) {
+    normalizeAudio = v;
+    if (v) _ensureAudioEncoding();
+    notifyListeners();
+  }
+
+  void setAudioGainDb(String v) {
+    audioGainDb = v;
+    final parsed = double.tryParse(v);
+    if (parsed != null && parsed != 0) _ensureAudioEncoding();
+    notifyListeners();
+  }
+
+  void _ensureAudioEncoding() {
+    if (audioCodec == AudioCodec.passthrough || audioCodec == AudioCodec.none) {
+      audioCodec = AudioCodec.aac;
+    }
   }
 
   void setPreserveAllAudioTracks(bool v) {

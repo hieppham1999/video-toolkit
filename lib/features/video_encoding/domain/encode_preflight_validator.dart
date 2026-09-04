@@ -113,6 +113,11 @@ class EncodePreflightValidator {
     if (!settings.isVideoProfileSupported) {
       return l10n.preflightIncompatibleVideoProfile;
     }
+    if (!settings.audioGainDb.isFinite ||
+        settings.audioGainDb < -60 ||
+        settings.audioGainDb > 60) {
+      return l10n.preflightInvalidAudioGain;
+    }
     final resolution = settings.resolution;
     if (resolution != null) {
       final parts = resolution.split(':');
