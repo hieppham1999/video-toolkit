@@ -2,7 +2,7 @@ name: video_toolkit
 description: "A video encoding toolkit app for Windows and macOS."
 publish_to: 'none'
 
-version: 1.1.0+1
+version: 1.2.0+2
 
 environment:
   sdk: ^3.9.2
