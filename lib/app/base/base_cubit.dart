@@ -9,7 +9,7 @@ class BaseCubit<T> extends Cubit<CubitState<T>> {
   BaseCubit.loading(T initialState) : super(CubitState.loading(initialState));
 
   BaseCubit.error(String message, T initialState)
-      : super(CubitState.error(message: message, data: initialState));
+    : super(CubitState.error(message: message, data: initialState));
 
   void emitNormal([T? data]) {
     emit(CubitState.normal(data ?? state.data));
@@ -23,8 +23,8 @@ class BaseCubit<T> extends Cubit<CubitState<T>> {
     emit(CubitState.error(message: message, data: state.data));
   }
 
-
-  Future<void> makeAnAction(Future<void> Function() action, {
+  Future<void> makeAnAction(
+    Future<void> Function() action, {
     bool showLoading = true,
     Function(Object)? onError,
   }) async {
@@ -32,7 +32,7 @@ class BaseCubit<T> extends Cubit<CubitState<T>> {
       LoadingUtil.show();
     }
     try {
-      final result = await action();
+      await action();
     } catch (e) {
       if (onError != null) {
         onError(e);
@@ -73,7 +73,9 @@ class BaseCubit<T> extends Cubit<CubitState<T>> {
       newState.data?.toString() ?? 'null',
     );
     final errorMessageDiff = _diffErrorMessage(oldState, newState);
-    if (!stateTypeChanged && dataFieldDiff.isEmpty && errorMessageDiff == null) {
+    if (!stateTypeChanged &&
+        dataFieldDiff.isEmpty &&
+        errorMessageDiff == null) {
       return null;
     }
 
@@ -278,11 +280,15 @@ class BaseCubit<T> extends Cubit<CubitState<T>> {
   String _formatValue(String value) {
     if (value.length <= _maxInlineValueLength) return value;
     if (value.startsWith('[') && value.endsWith(']')) {
-      final itemCount = _countTopLevelElements(value.substring(1, value.length - 1));
+      final itemCount = _countTopLevelElements(
+        value.substring(1, value.length - 1),
+      );
       return '[$itemCount items]';
     }
     if (value.startsWith('{') && value.endsWith('}')) {
-      final entryCount = _countTopLevelElements(value.substring(1, value.length - 1));
+      final entryCount = _countTopLevelElements(
+        value.substring(1, value.length - 1),
+      );
       return '{$entryCount entries}';
     }
     return '${value.substring(0, _maxInlineValueLength - 3)}...';
