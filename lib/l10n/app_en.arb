@@ -55,6 +55,17 @@
   "@remainingTime": {
     "placeholders": { "time": { "type": "String" } }
   },
+  "preflightFfmpegMissing": "FFmpeg is unavailable. Reinstall the application or configure FFmpeg on PATH.",
+  "preflightInputMissing": "The input file no longer exists.",
+  "preflightInputEmpty": "The input file is empty.",
+  "preflightOutputUnresolved": "The output path could not be resolved.",
+  "preflightOutputNotWritable": "The output directory is not writable: {path}",
+  "@preflightOutputNotWritable": {
+    "placeholders": { "path": { "type": "String" } }
+  },
+  "preflightInvalidBitrate": "Average bitrate must be greater than zero.",
+  "preflightInvalidCrf": "CRF must be between 0 and 63.",
+  "preflightInvalidResolution": "Resolution must use a positive width:height value.",
   "resolution": "Resolution",
   "codec": "Codec",
   "frameRate": "Frame Rate",

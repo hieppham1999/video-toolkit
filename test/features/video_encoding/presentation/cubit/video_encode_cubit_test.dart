@@ -12,12 +12,14 @@ import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/home/data/models/video_file.dart';
 import 'package:video_toolkit/features/home/presentation/cubit/preview_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_datasource.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/encode_failure.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_state.dart';
+import 'package:video_toolkit/features/video_encoding/domain/encode_preflight_validator.dart';
 import 'package:video_toolkit/features/video_metadata/data/datasources/exiftool_datasource.dart';
 import 'package:video_toolkit/features/video_metadata/data/models/video_metadata.dart';
 
@@ -46,6 +48,7 @@ void main() {
         repository,
         preview,
         ExiftoolDatasource(runner),
+        _PassingPreflightValidator(),
       );
       addTearDown(cubit.close);
       addTearDown(preview.close);
@@ -98,6 +101,7 @@ void main() {
         repository,
         preview,
         ExiftoolDatasource(runner),
+        _PassingPreflightValidator(),
       );
       addTearDown(cubit.close);
       addTearDown(preview.close);
@@ -127,6 +131,7 @@ void main() {
       repository,
       preview,
       ExiftoolDatasource(runner),
+      _PassingPreflightValidator(),
     );
     addTearDown(cubit.close);
     addTearDown(preview.close);
@@ -158,6 +163,7 @@ void main() {
       repository,
       preview,
       ExiftoolDatasource(runner),
+      _PassingPreflightValidator(),
     );
     addTearDown(cubit.close);
     addTearDown(preview.close);
@@ -210,6 +216,16 @@ class _FakeVideoEncodeRepository implements VideoEncodeRepository {
     outputPaths.add(outputPath);
     return const Stream<EncodeProgress>.empty();
   }
+}
+
+class _PassingPreflightValidator extends EncodePreflightValidator {
+  @override
+  Future<List<EncodeFailure>> validate({
+    required List<VideoFile> files,
+    required Map<String, String> outputPaths,
+    required EncodeSettings Function(VideoFile file) settingsFor,
+    required bool ffmpegAvailable,
+  }) async => const [];
 }
 
 class _FakeCliToolRunner implements CliToolRunner {

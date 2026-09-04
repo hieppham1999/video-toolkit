@@ -151,6 +151,35 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get preflightFfmpegMissing =>
+      'Không tìm thấy FFmpeg. Hãy cài lại ứng dụng hoặc cấu hình FFmpeg trong PATH.';
+
+  @override
+  String get preflightInputMissing => 'File nguồn không còn tồn tại.';
+
+  @override
+  String get preflightInputEmpty => 'File nguồn rỗng.';
+
+  @override
+  String get preflightOutputUnresolved =>
+      'Không thể xác định đường dẫn output.';
+
+  @override
+  String preflightOutputNotWritable(String path) {
+    return 'Không thể ghi vào thư mục output: $path';
+  }
+
+  @override
+  String get preflightInvalidBitrate => 'Bitrate trung bình phải lớn hơn 0.';
+
+  @override
+  String get preflightInvalidCrf => 'CRF phải nằm trong khoảng từ 0 đến 63.';
+
+  @override
+  String get preflightInvalidResolution =>
+      'Độ phân giải phải có dạng chiều-rộng:chiều-cao với giá trị dương.';
+
+  @override
   String get resolution => 'Độ phân giải';
 
   @override

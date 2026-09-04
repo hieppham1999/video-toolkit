@@ -54,6 +54,8 @@ import 'package:video_toolkit/features/video_encoding/data/repositories/video_en
     as _i954;
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository_impl.dart'
     as _i848;
+import 'package:video_toolkit/features/video_encoding/domain/encode_preflight_validator.dart'
+    as _i38;
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart'
     as _i657;
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/video_encode_cubit.dart'
@@ -98,6 +100,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i84.VideoQueueDatasource>(
       () => _i84.VideoQueueDatasource(),
+    );
+    gh.lazySingleton<_i38.EncodePreflightValidator>(
+      () => _i38.EncodePreflightValidator(),
     );
     gh.lazySingleton<_i762.AppSettingCubit>(
       () => _i762.AppSettingCubit(gh<_i1056.UserSettingsDatasource>()),
@@ -152,23 +157,25 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1056.UserSettingsDatasource>(),
       ),
     );
-    gh.lazySingleton<_i954.VideoEncodeRepository>(
-      () => _i848.VideoEncodeRepositoryImpl(
-        gh<_i1066.FfmpegDatasource>(),
-        gh<_i702.FontResolver>(),
-      ),
-    );
     gh.lazySingleton<_i735.FfprobeDatasource>(
       () => _i735.FfprobeDatasource(gh<_i297.CliToolRunner>()),
     );
     gh.lazySingleton<_i675.ExiftoolDatasource>(
       () => _i675.ExiftoolDatasource(gh<_i297.CliToolRunner>()),
     );
+    gh.lazySingleton<_i954.VideoEncodeRepository>(
+      () => _i848.VideoEncodeRepositoryImpl(
+        gh<_i1066.FfmpegDatasource>(),
+        gh<_i702.FontResolver>(),
+        gh<_i735.FfprobeDatasource>(),
+      ),
+    );
     gh.lazySingleton<_i987.VideoEncodeCubit>(
       () => _i987.VideoEncodeCubit(
         gh<_i954.VideoEncodeRepository>(),
         gh<_i883.PreviewCubit>(),
         gh<_i675.ExiftoolDatasource>(),
+        gh<_i38.EncodePreflightValidator>(),
       ),
     );
     gh.lazySingleton<_i993.VideoMetadataRepository>(

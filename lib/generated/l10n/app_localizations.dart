@@ -362,6 +362,54 @@ abstract class AppLocalizations {
   /// **'Remaining {time}'**
   String remainingTime(String time);
 
+  /// No description provided for @preflightFfmpegMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'FFmpeg is unavailable. Reinstall the application or configure FFmpeg on PATH.'**
+  String get preflightFfmpegMissing;
+
+  /// No description provided for @preflightInputMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'The input file no longer exists.'**
+  String get preflightInputMissing;
+
+  /// No description provided for @preflightInputEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'The input file is empty.'**
+  String get preflightInputEmpty;
+
+  /// No description provided for @preflightOutputUnresolved.
+  ///
+  /// In en, this message translates to:
+  /// **'The output path could not be resolved.'**
+  String get preflightOutputUnresolved;
+
+  /// No description provided for @preflightOutputNotWritable.
+  ///
+  /// In en, this message translates to:
+  /// **'The output directory is not writable: {path}'**
+  String preflightOutputNotWritable(String path);
+
+  /// No description provided for @preflightInvalidBitrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Average bitrate must be greater than zero.'**
+  String get preflightInvalidBitrate;
+
+  /// No description provided for @preflightInvalidCrf.
+  ///
+  /// In en, this message translates to:
+  /// **'CRF must be between 0 and 63.'**
+  String get preflightInvalidCrf;
+
+  /// No description provided for @preflightInvalidResolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution must use a positive width:height value.'**
+  String get preflightInvalidResolution;
+
   /// No description provided for @resolution.
   ///
   /// In en, this message translates to:

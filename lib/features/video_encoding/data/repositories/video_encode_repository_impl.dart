@@ -10,13 +10,15 @@ import 'package:video_toolkit/features/video_encoding/data/models/encode_progres
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/domain/timestamp_subtitle.dart';
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart';
+import 'package:video_toolkit/features/video_metadata/data/datasources/ffprobe_datasource.dart';
 
 @LazySingleton(as: VideoEncodeRepository)
 class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
-  VideoEncodeRepositoryImpl(this._ffmpeg, this._fontResolver);
+  VideoEncodeRepositoryImpl(this._ffmpeg, this._fontResolver, this._ffprobe);
 
   final FfmpegDatasource _ffmpeg;
   final FontResolver _fontResolver;
+  final FfprobeDatasource _ffprobe;
 
   @override
   Future<bool> isFfmpegAvailable() => _ffmpeg.isAvailable;
@@ -162,6 +164,7 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
           }
 
           if (cancelled) return;
+          await _verifyOutput(temporaryOutputPath);
           await _publishOutput(
             temporaryOutputPath: temporaryOutputPath,
             outputPath: outputPath,
@@ -210,6 +213,17 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
       throw StateError('The planned output path became occupied: $outputPath');
     }
     await temporary.rename(outputPath);
+  }
+
+  Future<void> _verifyOutput(String path) async {
+    final metadata = await _ffprobe.extract(path);
+    if (metadata == null ||
+        metadata.width == null ||
+        metadata.height == null ||
+        metadata.width! <= 0 ||
+        metadata.height! <= 0) {
+      throw StateError('The encoded output could not be verified by ffprobe.');
+    }
   }
 
   Future<void> _deleteIfExists(String path) async {

@@ -10,6 +10,7 @@ import 'package:video_toolkit/features/video_encoding/data/models/encode_setting
 import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/repositories/video_encode_repository.dart';
 import 'package:video_toolkit/features/video_encoding/domain/output_path_resolver.dart';
+import 'package:video_toolkit/features/video_encoding/domain/encode_preflight_validator.dart';
 import 'package:video_toolkit/features/home/data/models/video_file.dart';
 import 'package:video_toolkit/features/home/presentation/cubit/preview_cubit.dart';
 import 'package:video_toolkit/features/video_metadata/data/datasources/exiftool_datasource.dart';
@@ -19,12 +20,17 @@ import 'video_encode_state.dart';
 
 @lazySingleton
 class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
-  VideoEncodeCubit(this._repository, this._previewCubit, this._exiftool)
-    : super.normal(const VideoEncodeState());
+  VideoEncodeCubit(
+    this._repository,
+    this._previewCubit,
+    this._exiftool,
+    this._preflightValidator,
+  ) : super.normal(const VideoEncodeState());
 
   final VideoEncodeRepository _repository;
   final PreviewCubit _previewCubit;
   final ExiftoolDatasource _exiftool;
+  final EncodePreflightValidator _preflightValidator;
   StreamSubscription<void>? _encodeSub;
   Completer<bool>? _activeCompleter;
   bool _cancelled = false;
@@ -78,6 +84,26 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
         outputPaths: _outputPaths,
       ),
     );
+
+    final preflightFailures = await _preflightValidator.validate(
+      files: files,
+      outputPaths: _outputPaths,
+      settingsFor: _effectiveSettingsFor,
+      ffmpegAvailable: await _repository.isFfmpegAvailable(),
+    );
+    if (_cancelled) return;
+    if (preflightFailures.isNotEmpty) {
+      _batchStopwatch.stop();
+      emitNormal(
+        currentData.copyWith(
+          status: EncodeStatus.error,
+          failures: preflightFailures,
+          errorMessage: preflightFailures.first.message,
+          estimatedBatchRemaining: null,
+        ),
+      );
+      return;
+    }
 
     _previewCubit.startLiveMode();
 

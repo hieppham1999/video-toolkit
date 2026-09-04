@@ -151,6 +151,36 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get preflightFfmpegMissing =>
+      'FFmpeg is unavailable. Reinstall the application or configure FFmpeg on PATH.';
+
+  @override
+  String get preflightInputMissing => 'The input file no longer exists.';
+
+  @override
+  String get preflightInputEmpty => 'The input file is empty.';
+
+  @override
+  String get preflightOutputUnresolved =>
+      'The output path could not be resolved.';
+
+  @override
+  String preflightOutputNotWritable(String path) {
+    return 'The output directory is not writable: $path';
+  }
+
+  @override
+  String get preflightInvalidBitrate =>
+      'Average bitrate must be greater than zero.';
+
+  @override
+  String get preflightInvalidCrf => 'CRF must be between 0 and 63.';
+
+  @override
+  String get preflightInvalidResolution =>
+      'Resolution must use a positive width:height value.';
+
+  @override
   String get resolution => 'Resolution';
 
   @override

@@ -55,6 +55,17 @@
   "@remainingTime": {
     "placeholders": { "time": { "type": "String" } }
   },
+  "preflightFfmpegMissing": "Không tìm thấy FFmpeg. Hãy cài lại ứng dụng hoặc cấu hình FFmpeg trong PATH.",
+  "preflightInputMissing": "File nguồn không còn tồn tại.",
+  "preflightInputEmpty": "File nguồn rỗng.",
+  "preflightOutputUnresolved": "Không thể xác định đường dẫn output.",
+  "preflightOutputNotWritable": "Không thể ghi vào thư mục output: {path}",
+  "@preflightOutputNotWritable": {
+    "placeholders": { "path": { "type": "String" } }
+  },
+  "preflightInvalidBitrate": "Bitrate trung bình phải lớn hơn 0.",
+  "preflightInvalidCrf": "CRF phải nằm trong khoảng từ 0 đến 63.",
+  "preflightInvalidResolution": "Độ phân giải phải có dạng chiều-rộng:chiều-cao với giá trị dương.",
   "resolution": "Độ phân giải",
   "codec": "Codec",
   "frameRate": "Tốc độ khung hình",
