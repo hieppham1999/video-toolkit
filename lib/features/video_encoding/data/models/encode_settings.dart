@@ -177,8 +177,10 @@ abstract class EncodeSettings with _$EncodeSettings {
     String? resolution,
     @Default(AudioCodec.passthrough) AudioCodec audioCodec,
     @Default(AudioBitrate.k128) AudioBitrate audioBitrate,
+    @Default(true) bool preserveAllAudioTracks,
     @Default([]) List<TextOverlay> textOverlays,
     @Default(false) bool embedTimestampSubtitle,
+    @Default(false) bool preserveSourceSubtitles,
 
     /// Template for output file name (without extension). Empty = default
     /// `<name>_encoded`. See [FilenameTemplate] for supported tags.
@@ -218,6 +220,9 @@ abstract class EncodeSettings with _$EncodeSettings {
       _$EncodeSettingsFromJson(json);
 
   bool get supportsTimestampSubtitle => timestampSubtitleCodec != null;
+
+  bool get supportsSourceSubtitlePassthrough =>
+      outputExtension == OutputExtension.mkv;
 
   String? get timestampSubtitleCodec => switch (outputExtension) {
     OutputExtension.mp4 || OutputExtension.mov => 'mov_text',
@@ -319,16 +324,19 @@ abstract class EncodeSettings with _$EncodeSettings {
         '-i',
         _requireSubtitleValue(timestampSubtitlePath),
       ],
-      if (includeTimestampSubtitle && pass == 1) ...[
+      if (pass == 1) ...[
         '-map',
         '0:v:0',
-      ] else if (includeTimestampSubtitle) ...[
+      ] else ...[
         '-map',
         '0:v:0',
         '-map',
-        '0:a?',
-        '-map',
-        '1:0',
+        preserveAllAudioTracks ? '0:a?' : '0:a:0?',
+        if (includeTimestampSubtitle) ...['-map', '1:0'],
+        if (preserveSourceSubtitles && supportsSourceSubtitlePassthrough) ...[
+          '-map',
+          '0:s?',
+        ],
       ],
       '-c:v', encoder,
       ..._speedArgs(encoder),
@@ -350,9 +358,16 @@ abstract class EncodeSettings with _$EncodeSettings {
       if (codecParamsFlag == null && extraParams.trim().isNotEmpty)
         ...extraParams.trim().split(RegExp(r'\s+')),
       if (filterChain != null) ...['-vf', filterChain],
-      if (includeTimestampSubtitle && pass != 1) ...[
+      if (pass != 1 &&
+          (includeTimestampSubtitle ||
+              (preserveSourceSubtitles &&
+                  supportsSourceSubtitlePassthrough))) ...[
         '-c:s',
-        _requireSubtitleValue(subtitleCodec),
+        preserveSourceSubtitles && supportsSourceSubtitlePassthrough
+            ? 'copy'
+            : _requireSubtitleValue(subtitleCodec),
+      ],
+      if (includeTimestampSubtitle && pass != 1) ...[
         '-metadata:s:s:0',
         'title=timestamp',
       ],
@@ -388,6 +403,12 @@ abstract class EncodeSettings with _$EncodeSettings {
       if (pass != 1 && useDisplayRotation && rotation != Rotation.none) ...[
         '-metadata:s:v:0',
         'rotate=${rotation.degrees}',
+      ],
+      if (pass != 1 && copySourceMetadata) ...[
+        '-map_metadata',
+        '0',
+        '-map_chapters',
+        '0',
       ],
       pass == 1 ? '-y' : '-n',
       pass == 1 ? nullSink : outputPath,

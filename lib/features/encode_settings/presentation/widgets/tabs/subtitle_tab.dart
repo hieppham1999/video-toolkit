@@ -12,6 +12,8 @@ class SubtitleTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = Languages.translate;
     final supported = controller.supportsTimestampSubtitle;
+    final sourceSupported = controller.supportsSourceSubtitlePassthrough;
+    final textStyle = DefaultTextStyle.of(context).style;
 
     return SingleChildScrollView(
       child: Column(
@@ -21,13 +23,28 @@ class SubtitleTab extends StatelessWidget {
             value: controller.embedTimestampSubtitle,
             onChanged: controller.setEmbedTimestampSubtitle,
             enabled: supported,
-            label: Text(l10n.embedTimestampSubtitle),
+            label: Text(l10n.embedTimestampSubtitle, style: textStyle),
           ),
           const SizedBox(height: 10),
           Text(
             supported
                 ? l10n.embedTimestampSubtitleDescription
                 : l10n.subtitleUnsupportedContainer,
+            style: textStyle,
+          ),
+          const SizedBox(height: 18),
+          AppCheckbox(
+            value: controller.preserveSourceSubtitles,
+            onChanged: controller.setPreserveSourceSubtitles,
+            enabled: sourceSupported,
+            label: Text(l10n.preserveSourceSubtitles, style: textStyle),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            sourceSupported
+                ? l10n.preserveSourceSubtitlesDescription
+                : l10n.sourceSubtitlesMkvOnly,
+            style: textStyle,
           ),
         ],
       ),

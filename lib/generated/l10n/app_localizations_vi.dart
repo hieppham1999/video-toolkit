@@ -283,6 +283,17 @@ class AppLocalizationsVi extends AppLocalizations {
       'Timestamp subtitle chỉ hỗ trợ MP4, MOV và MKV';
 
   @override
+  String get preserveSourceSubtitles => 'Giữ các track subtitle nguồn';
+
+  @override
+  String get preserveSourceSubtitlesDescription =>
+      'Sao chép toàn bộ track subtitle nguồn mà không encode lại';
+
+  @override
+  String get sourceSubtitlesMkvOnly =>
+      'Chỉ có thể giữ nguyên subtitle nguồn khi output là MKV';
+
+  @override
   String get quality => 'Chất lượng';
 
   @override
@@ -344,6 +355,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get encoderModeHardware => 'Phần cứng (tốc độ)';
+
+  @override
+  String get preserveAllAudioTracks => 'Giữ tất cả track âm thanh nguồn';
 
   @override
   String get outputName => 'Mẫu tên file';

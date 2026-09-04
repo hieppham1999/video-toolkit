@@ -79,12 +79,14 @@ _EncodeSettings _$EncodeSettingsFromJson(
   audioBitrate:
       $enumDecodeNullable(_$AudioBitrateEnumMap, json['audioBitrate']) ??
       AudioBitrate.k128,
+  preserveAllAudioTracks: json['preserveAllAudioTracks'] as bool? ?? true,
   textOverlays:
       (json['textOverlays'] as List<dynamic>?)
           ?.map((e) => TextOverlay.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
   embedTimestampSubtitle: json['embedTimestampSubtitle'] as bool? ?? false,
+  preserveSourceSubtitles: json['preserveSourceSubtitles'] as bool? ?? false,
   outputNameTemplate: json['outputNameTemplate'] as String? ?? '',
   cropAspectRatio: json['cropAspectRatio'] as String?,
   deinterlace:
@@ -118,8 +120,10 @@ Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
       'resolution': instance.resolution,
       'audioCodec': _$AudioCodecEnumMap[instance.audioCodec]!,
       'audioBitrate': _$AudioBitrateEnumMap[instance.audioBitrate]!,
+      'preserveAllAudioTracks': instance.preserveAllAudioTracks,
       'textOverlays': instance.textOverlays,
       'embedTimestampSubtitle': instance.embedTimestampSubtitle,
+      'preserveSourceSubtitles': instance.preserveSourceSubtitles,
       'outputNameTemplate': instance.outputNameTemplate,
       'cropAspectRatio': instance.cropAspectRatio,
       'deinterlace': _$DeinterlaceEnumMap[instance.deinterlace]!,

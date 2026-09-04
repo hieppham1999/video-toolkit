@@ -602,6 +602,24 @@ abstract class AppLocalizations {
   /// **'Timestamp subtitles are supported for MP4, MOV and MKV only'**
   String get subtitleUnsupportedContainer;
 
+  /// No description provided for @preserveSourceSubtitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Preserve source subtitle tracks'**
+  String get preserveSourceSubtitles;
+
+  /// No description provided for @preserveSourceSubtitlesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy all source subtitle tracks without re-encoding'**
+  String get preserveSourceSubtitlesDescription;
+
+  /// No description provided for @sourceSubtitlesMkvOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Source subtitle passthrough is available for MKV output only'**
+  String get sourceSubtitlesMkvOnly;
+
   /// No description provided for @quality.
   ///
   /// In en, this message translates to:
@@ -727,6 +745,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hardware (speed)'**
   String get encoderModeHardware;
+
+  /// No description provided for @preserveAllAudioTracks.
+  ///
+  /// In en, this message translates to:
+  /// **'Preserve all source audio tracks'**
+  String get preserveAllAudioTracks;
 
   /// No description provided for @outputName.
   ///

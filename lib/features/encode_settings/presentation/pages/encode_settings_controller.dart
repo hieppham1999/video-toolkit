@@ -82,8 +82,10 @@ class EncodeSettingsController extends ChangeNotifier {
   late OutputExtension outputExtension;
   late AudioCodec audioCodec;
   late AudioBitrate audioBitrate;
+  late bool preserveAllAudioTracks;
   late List<TextOverlay> textOverlays;
   late bool embedTimestampSubtitle;
+  late bool preserveSourceSubtitles;
   late String outputNameTemplate;
   late Deinterlace deinterlace;
   late QualityMode qualityMode;
@@ -116,6 +118,9 @@ class EncodeSettingsController extends ChangeNotifier {
       outputExtension == OutputExtension.mov ||
       outputExtension == OutputExtension.mkv;
 
+  bool get supportsSourceSubtitlePassthrough =>
+      outputExtension == OutputExtension.mkv;
+
   bool get supportsHardwareEncoder =>
       codec == VideoEncoder.h264 || codec == VideoEncoder.h265;
 
@@ -130,9 +135,12 @@ class EncodeSettingsController extends ChangeNotifier {
     outputExtension = s.outputExtension;
     audioCodec = s.audioCodec;
     audioBitrate = s.audioBitrate;
+    preserveAllAudioTracks = s.preserveAllAudioTracks;
     textOverlays = List.of(s.textOverlays);
     embedTimestampSubtitle =
         s.embedTimestampSubtitle && s.supportsTimestampSubtitle;
+    preserveSourceSubtitles =
+        s.preserveSourceSubtitles && s.supportsSourceSubtitlePassthrough;
     outputNameTemplate = s.outputNameTemplate;
     deinterlace = s.deinterlace;
     qualityMode = s.qualityMode;
@@ -181,8 +189,10 @@ class EncodeSettingsController extends ChangeNotifier {
       resolution: resolution,
       audioCodec: audioCodec,
       audioBitrate: audioBitrate,
+      preserveAllAudioTracks: preserveAllAudioTracks,
       textOverlays: textOverlays,
       embedTimestampSubtitle: embedTimestampSubtitle,
+      preserveSourceSubtitles: preserveSourceSubtitles,
       outputNameTemplate: outputNameTemplate,
       cropAspectRatio: cropAspectRatio,
       deinterlace: deinterlace,
@@ -243,6 +253,7 @@ class EncodeSettingsController extends ChangeNotifier {
   void setOutputExtension(OutputExtension v) {
     outputExtension = v;
     if (!supportsTimestampSubtitle) embedTimestampSubtitle = false;
+    if (!supportsSourceSubtitlePassthrough) preserveSourceSubtitles = false;
     notifyListeners();
   }
 
@@ -256,9 +267,20 @@ class EncodeSettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setPreserveAllAudioTracks(bool v) {
+    preserveAllAudioTracks = v;
+    notifyListeners();
+  }
+
   void setEmbedTimestampSubtitle(bool v) {
     if (!supportsTimestampSubtitle) return;
     embedTimestampSubtitle = v;
+    notifyListeners();
+  }
+
+  void setPreserveSourceSubtitles(bool v) {
+    if (!supportsSourceSubtitlePassthrough) return;
+    preserveSourceSubtitles = v;
     notifyListeners();
   }
 

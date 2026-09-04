@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/widgets/app_checkbox.dart';
 import 'package:video_toolkit/widgets/app_dropdown.dart';
 import 'package:video_toolkit/features/encode_settings/presentation/pages/encode_settings_controller.dart';
 
@@ -32,6 +33,15 @@ class AudioTab extends StatelessWidget {
           itemLabel: (e) => e.value,
           onChanged: c.setAudioBitrate,
           enabled: c.audioCodec != AudioCodec.passthrough,
+        ),
+        const SizedBox(height: 12),
+        AppCheckbox(
+          value: c.preserveAllAudioTracks,
+          onChanged: c.setPreserveAllAudioTracks,
+          label: Text(
+            l10n.preserveAllAudioTracks,
+            style: DefaultTextStyle.of(context).style,
+          ),
         ),
       ],
     );

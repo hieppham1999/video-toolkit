@@ -285,6 +285,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Timestamp subtitles are supported for MP4, MOV and MKV only';
 
   @override
+  String get preserveSourceSubtitles => 'Preserve source subtitle tracks';
+
+  @override
+  String get preserveSourceSubtitlesDescription =>
+      'Copy all source subtitle tracks without re-encoding';
+
+  @override
+  String get sourceSubtitlesMkvOnly =>
+      'Source subtitle passthrough is available for MKV output only';
+
+  @override
   String get quality => 'Quality';
 
   @override
@@ -346,6 +357,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get encoderModeHardware => 'Hardware (speed)';
+
+  @override
+  String get preserveAllAudioTracks => 'Preserve all source audio tracks';
 
   @override
   String get outputName => 'Name template';

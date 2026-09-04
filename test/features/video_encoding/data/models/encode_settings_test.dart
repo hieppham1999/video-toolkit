@@ -26,6 +26,8 @@ void main() {
     expect(settings.embedTimestampSubtitle, isFalse);
     expect(settings.encoderMode, EncoderMode.software);
     expect(settings.targetSizeMb, 100);
+    expect(settings.preserveAllAudioTracks, isTrue);
+    expect(settings.preserveSourceSubtitles, isFalse);
   });
 
   test('derives target-size bitrate and forwards the resolved value', () {
@@ -170,5 +172,32 @@ void main() {
 
     expect(args, isNot(contains('timestamp.srt')));
     expect(settings.supportsTimestampSubtitle, isFalse);
+  });
+
+  test('maps all audio, source subtitles, metadata, and chapters', () {
+    const settings = EncodeSettings(
+      outputExtension: OutputExtension.mkv,
+      preserveSourceSubtitles: true,
+      copySourceMetadata: true,
+    );
+
+    final args = settings.buildArgs('input.mkv', 'output.mkv');
+
+    expect(
+      args,
+      containsAllInOrder(['-map', '0:v:0', '-map', '0:a?', '-map', '0:s?']),
+    );
+    expect(args, containsAllInOrder(['-c:s', 'copy']));
+    expect(args, containsAllInOrder(['-map_metadata', '0']));
+    expect(args, containsAllInOrder(['-map_chapters', '0']));
+  });
+
+  test('can limit audio mapping to the first source track', () {
+    const settings = EncodeSettings(preserveAllAudioTracks: false);
+
+    final args = settings.buildArgs('input.mp4', 'output.mp4');
+
+    expect(args, containsAllInOrder(['-map', '0:a:0?']));
+    expect(args, isNot(contains('0:a?')));
   });
 }
