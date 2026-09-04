@@ -94,6 +94,7 @@ _EncodeSettings _$EncodeSettingsFromJson(
       $enumDecodeNullable(_$QualityModeEnumMap, json['qualityMode']) ??
       QualityMode.crf,
   avgBitrateKbps: (json['avgBitrateKbps'] as num?)?.toInt() ?? 4000,
+  targetSizeMb: (json['targetSizeMb'] as num?)?.toInt() ?? 100,
   twoPass: json['twoPass'] as bool? ?? false,
   turboFirstPass: json['turboFirstPass'] as bool? ?? false,
   extraParams: json['extraParams'] as String? ?? '',
@@ -124,6 +125,7 @@ Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
       'deinterlace': _$DeinterlaceEnumMap[instance.deinterlace]!,
       'qualityMode': _$QualityModeEnumMap[instance.qualityMode]!,
       'avgBitrateKbps': instance.avgBitrateKbps,
+      'targetSizeMb': instance.targetSizeMb,
       'twoPass': instance.twoPass,
       'turboFirstPass': instance.turboFirstPass,
       'extraParams': instance.extraParams,
@@ -196,6 +198,7 @@ const _$DeinterlaceEnumMap = {
 const _$QualityModeEnumMap = {
   QualityMode.crf: 'crf',
   QualityMode.avgBitrate: 'avgBitrate',
+  QualityMode.targetSize: 'targetSize',
 };
 
 const _$RotationEnumMap = {

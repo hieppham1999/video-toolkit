@@ -64,6 +64,9 @@
     "placeholders": { "path": { "type": "String" } }
   },
   "preflightInvalidBitrate": "Bitrate trung bình phải lớn hơn 0.",
+  "preflightInvalidTargetSize": "Dung lượng mục tiêu phải lớn hơn 0.",
+  "preflightTargetSizeDurationMissing": "Encode theo dung lượng cần biết thời lượng video.",
+  "preflightTargetSizeTooSmall": "Dung lượng mục tiêu quá nhỏ so với thời lượng video và bitrate âm thanh.",
   "preflightInvalidCrf": "CRF phải nằm trong khoảng từ 0 đến 63.",
   "preflightInvalidResolution": "Độ phân giải phải có dạng chiều-rộng:chiều-cao với giá trị dương.",
   "preflightIncompatibleWebm": "Output WebM yêu cầu video VP9 hoặc AV1.",
@@ -97,6 +100,7 @@
   "subtitleUnsupportedContainer": "Timestamp subtitle chỉ hỗ trợ MP4, MOV và MKV",
   "quality": "Chất lượng",
   "avgBitrateKbps": "Bitrate trung bình (kbps)",
+  "targetFileSizeMb": "Dung lượng mục tiêu (MB)",
   "constantQuality": "Chất lượng cố định",
   "twoPassEncoding": "Mã hoá hai lượt",
   "copySourceMetadata": "Sao chép metadata từ video gốc",

@@ -375,7 +375,10 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   }
 
   bool _usesTwoPass(EncodeSettings settings) =>
-      settings.qualityMode == QualityMode.avgBitrate && settings.twoPass;
+      settings.qualityMode != QualityMode.crf &&
+      settings.encoderMode == EncoderMode.software &&
+      settings.codec != VideoEncoder.prores &&
+      settings.twoPass;
 
   double _overallProgress({
     required VideoFile currentFile,

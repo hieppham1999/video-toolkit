@@ -25,6 +25,29 @@ void main() {
 
     expect(settings.embedTimestampSubtitle, isFalse);
     expect(settings.encoderMode, EncoderMode.software);
+    expect(settings.targetSizeMb, 100);
+  });
+
+  test('derives target-size bitrate and forwards the resolved value', () {
+    const settings = EncodeSettings(
+      qualityMode: QualityMode.targetSize,
+      targetSizeMb: 100,
+      audioCodec: AudioCodec.aac,
+      audioBitrate: AudioBitrate.k128,
+    );
+
+    final bitrate = settings.targetVideoBitrateKbps(
+      const Duration(minutes: 10),
+    );
+    final args = settings.buildArgs(
+      'input.mp4',
+      'output.mp4',
+      resolvedVideoBitrateKbps: bitrate,
+    );
+
+    expect(bitrate, 1178);
+    expect(args, containsAllInOrder(['-b:v', '1178k']));
+    expect(args, isNot(contains('-crf')));
   });
 
   test('builds codec-specific AV1, VP9, and ProRes arguments', () {

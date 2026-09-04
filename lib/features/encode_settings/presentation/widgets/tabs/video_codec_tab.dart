@@ -21,6 +21,7 @@ class VideoCodecTab extends StatelessWidget {
     final c = controller;
     final isAvg = c.qualityMode == QualityMode.avgBitrate;
     final isCrf = c.qualityMode == QualityMode.crf;
+    final isTargetSize = c.qualityMode == QualityMode.targetSize;
 
     return SingleChildScrollView(
       child: Column(
@@ -81,7 +82,7 @@ class VideoCodecTab extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 4),
                     child: AppCheckbox(
                       value: c.twoPass,
-                      enabled: isAvg && c.supportsTwoPass,
+                      enabled: (isAvg || isTargetSize) && c.supportsTwoPass,
                       onChanged: c.setTwoPass,
                       label: Text(l10n.twoPassEncoding),
                     ),
@@ -91,12 +92,41 @@ class VideoCodecTab extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 22),
                     child: AppCheckbox(
                       value: c.turboFirstPass,
-                      enabled: isAvg && c.twoPass && c.supportsTwoPass,
+                      enabled:
+                          (isAvg || isTargetSize) &&
+                          c.twoPass &&
+                          c.supportsTwoPass,
                       onChanged: c.setTurboFirstPass,
                       label: Text(l10n.turboFirstPass),
                     ),
                   ),
                 ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              AppRadio<QualityMode>(
+                value: QualityMode.targetSize,
+                groupValue: c.qualityMode,
+                onChanged: c.setQualityMode,
+                label: Text(
+                  l10n.targetFileSizeMb,
+                  style: DefaultTextStyle.of(context).style,
+                ),
+              ),
+              const SizedBox(width: 12),
+              SizedBox(
+                width: 100,
+                child: _BareNumberField(
+                  value: '${c.targetSizeMb}',
+                  enabled: isTargetSize,
+                  onChanged: (v) {
+                    final n = int.tryParse(v);
+                    if (n != null) c.setTargetSizeMb(n);
+                  },
+                ),
               ),
             ],
           ),

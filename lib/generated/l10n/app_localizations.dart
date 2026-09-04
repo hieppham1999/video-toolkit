@@ -398,6 +398,24 @@ abstract class AppLocalizations {
   /// **'Average bitrate must be greater than zero.'**
   String get preflightInvalidBitrate;
 
+  /// No description provided for @preflightInvalidTargetSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Target file size must be greater than zero.'**
+  String get preflightInvalidTargetSize;
+
+  /// No description provided for @preflightTargetSizeDurationMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Target-size encoding requires a known video duration.'**
+  String get preflightTargetSizeDurationMissing;
+
+  /// No description provided for @preflightTargetSizeTooSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'The target size is too small for this video\'s duration and audio bitrate.'**
+  String get preflightTargetSizeTooSmall;
+
   /// No description provided for @preflightInvalidCrf.
   ///
   /// In en, this message translates to:
@@ -595,6 +613,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Avg bitrate (kbps)'**
   String get avgBitrateKbps;
+
+  /// No description provided for @targetFileSizeMb.
+  ///
+  /// In en, this message translates to:
+  /// **'Target file size (MB)'**
+  String get targetFileSizeMb;
 
   /// No description provided for @constantQuality.
   ///

@@ -174,6 +174,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Average bitrate must be greater than zero.';
 
   @override
+  String get preflightInvalidTargetSize =>
+      'Target file size must be greater than zero.';
+
+  @override
+  String get preflightTargetSizeDurationMissing =>
+      'Target-size encoding requires a known video duration.';
+
+  @override
+  String get preflightTargetSizeTooSmall =>
+      'The target size is too small for this video\'s duration and audio bitrate.';
+
+  @override
   String get preflightInvalidCrf => 'CRF must be between 0 and 63.';
 
   @override
@@ -277,6 +289,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get avgBitrateKbps => 'Avg bitrate (kbps)';
+
+  @override
+  String get targetFileSizeMb => 'Target file size (MB)';
 
   @override
   String get constantQuality => 'Constant quality';

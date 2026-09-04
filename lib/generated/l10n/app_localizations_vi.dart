@@ -173,6 +173,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get preflightInvalidBitrate => 'Bitrate trung bình phải lớn hơn 0.';
 
   @override
+  String get preflightInvalidTargetSize =>
+      'Dung lượng mục tiêu phải lớn hơn 0.';
+
+  @override
+  String get preflightTargetSizeDurationMissing =>
+      'Encode theo dung lượng cần biết thời lượng video.';
+
+  @override
+  String get preflightTargetSizeTooSmall =>
+      'Dung lượng mục tiêu quá nhỏ so với thời lượng video và bitrate âm thanh.';
+
+  @override
   String get preflightInvalidCrf => 'CRF phải nằm trong khoảng từ 0 đến 63.';
 
   @override
@@ -275,6 +287,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get avgBitrateKbps => 'Bitrate trung bình (kbps)';
+
+  @override
+  String get targetFileSizeMb => 'Dung lượng mục tiêu (MB)';
 
   @override
   String get constantQuality => 'Chất lượng cố định';

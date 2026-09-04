@@ -192,6 +192,7 @@ abstract class EncodeSettings with _$EncodeSettings {
     @Default(Deinterlace.off) Deinterlace deinterlace,
     @Default(QualityMode.crf) QualityMode qualityMode,
     @Default(4000) int avgBitrateKbps,
+    @Default(100) int targetSizeMb,
     @Default(false) bool twoPass,
     @Default(false) bool turboFirstPass,
 
@@ -299,6 +300,7 @@ abstract class EncodeSettings with _$EncodeSettings {
     String? passLogPrefix,
     String? timestampSubtitlePath,
     String? resolvedVideoEncoder,
+    int? resolvedVideoBitrateKbps,
   }) {
     final filterChain = buildVideoFilterChain(creationDate: creationDate);
     final nullSink = Platform.isWindows ? 'NUL' : '/dev/null';
@@ -334,7 +336,7 @@ abstract class EncodeSettings with _$EncodeSettings {
         '-profile:v',
         '3',
       ] else ...[
-        ..._qualityArgs(encoder),
+        ..._qualityArgs(encoder, resolvedVideoBitrateKbps),
       ],
       if (pass != null) ...['-pass', '$pass'],
       if (pass != null && passLogPrefix != null) ...[
@@ -403,11 +405,26 @@ abstract class EncodeSettings with _$EncodeSettings {
     };
   }
 
-  List<String> _qualityArgs(String encoder) {
-    if (encoder != codec.value || qualityMode == QualityMode.avgBitrate) {
-      return ['-b:v', '${avgBitrateKbps}k'];
+  List<String> _qualityArgs(String encoder, int? resolvedVideoBitrateKbps) {
+    if (encoder != codec.value || qualityMode != QualityMode.crf) {
+      return ['-b:v', '${resolvedVideoBitrateKbps ?? avgBitrateKbps}k'];
     }
     return ['-crf', '$crf'];
+  }
+
+  /// Calculates the video bitrate needed to approach [targetSizeMb].
+  ///
+  /// Two percent is reserved for container overhead. Passthrough audio has no
+  /// configured bitrate, so a conservative 192 kbps estimate is used.
+  int targetVideoBitrateKbps(Duration duration) {
+    if (duration <= Duration.zero || targetSizeMb <= 0) return 0;
+    final audioKbps = audioCodec == AudioCodec.passthrough
+        ? 192
+        : audioBitrate.kbps;
+    final durationSeconds =
+        duration.inMilliseconds / Duration.millisecondsPerSecond;
+    final totalKbps = targetSizeMb * 8000 * 0.98 / durationSeconds;
+    return (totalKbps - audioKbps).floor();
   }
 
   List<String> _speedArgs(String encoder) {
@@ -566,7 +583,8 @@ enum Rotation {
 /// How the encoder picks a bitrate.
 /// - [crf]: constant quality, variable bitrate (`-crf <N>`).
 /// - [avgBitrate]: target average bitrate in kbps (`-b:v <N>k`), optional 2-pass.
-enum QualityMode { crf, avgBitrate }
+/// - [targetSize]: derive bitrate from the duration and desired output size.
+enum QualityMode { crf, avgBitrate, targetSize }
 
 enum AudioBitrate {
   k64('64k'),
@@ -578,4 +596,6 @@ enum AudioBitrate {
   const AudioBitrate(this.value);
 
   final String value;
+
+  int get kbps => int.parse(value.substring(0, value.length - 1));
 }

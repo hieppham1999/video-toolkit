@@ -88,6 +88,7 @@ class EncodeSettingsController extends ChangeNotifier {
   late Deinterlace deinterlace;
   late QualityMode qualityMode;
   late int avgBitrateKbps;
+  late int targetSizeMb;
   late bool twoPass;
   late bool turboFirstPass;
   late String extraParams;
@@ -136,6 +137,7 @@ class EncodeSettingsController extends ChangeNotifier {
     deinterlace = s.deinterlace;
     qualityMode = s.qualityMode;
     avgBitrateKbps = s.avgBitrateKbps;
+    targetSizeMb = s.targetSizeMb;
     twoPass = s.twoPass;
     turboFirstPass = s.turboFirstPass;
     extraParams = s.extraParams;
@@ -186,6 +188,7 @@ class EncodeSettingsController extends ChangeNotifier {
       deinterlace: deinterlace,
       qualityMode: qualityMode,
       avgBitrateKbps: avgBitrateKbps,
+      targetSizeMb: targetSizeMb,
       twoPass: twoPass,
       turboFirstPass: turboFirstPass,
       extraParams: extraParams,
@@ -276,6 +279,11 @@ class EncodeSettingsController extends ChangeNotifier {
 
   void setAvgBitrateKbps(int v) {
     avgBitrateKbps = v;
+    notifyListeners();
+  }
+
+  void setTargetSizeMb(int v) {
+    targetSizeMb = v;
     notifyListeners();
   }
 

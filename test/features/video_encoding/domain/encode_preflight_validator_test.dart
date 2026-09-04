@@ -7,6 +7,7 @@ import 'package:video_toolkit/core/navigation/app_navigator.dart';
 import 'package:video_toolkit/features/home/data/models/video_file.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/domain/encode_preflight_validator.dart';
+import 'package:video_toolkit/features/video_metadata/data/models/video_metadata.dart';
 import 'package:video_toolkit/generated/l10n/app_localizations.dart';
 
 void main() {
@@ -67,13 +68,40 @@ void main() {
 
     expect(failures, isEmpty);
   });
+
+  testWidgets('rejects an impossible target size before encoding', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const _TestApp());
+    final temp = Directory.systemTemp.createTempSync(
+      'video-toolkit-preflight-',
+    );
+    addTearDown(() => temp.deleteSync(recursive: true));
+    final input = File(p.join(temp.path, 'input.mp4'))..writeAsStringSync('x');
+    final video = _video(input.path, duration: const Duration(hours: 2));
+
+    final failures = (await tester.runAsync(
+      () => EncodePreflightValidator().validate(
+        files: [video],
+        outputPaths: {video.path: p.join(temp.path, 'output.mp4')},
+        settingsFor: (_) => const EncodeSettings(
+          qualityMode: QualityMode.targetSize,
+          targetSizeMb: 1,
+        ),
+        ffmpegAvailable: true,
+      ),
+    ))!;
+
+    expect(failures.single.message, contains('too small'));
+  });
 }
 
-VideoFile _video(String path) => VideoFile(
+VideoFile _video(String path, {Duration? duration}) => VideoFile(
   path: path,
   name: p.basename(path),
   sizeInBytes: File(path).lengthSync(),
   importedAt: DateTime(2026),
+  metadata: duration == null ? null : VideoMetadata(duration: duration),
 );
 
 class _TestApp extends StatelessWidget {

@@ -46,7 +46,10 @@ class EncodePreflightValidator {
         continue;
       }
 
-      final settingsError = _settingsError(settingsFor(file));
+      final settingsError = _settingsError(
+        settingsFor(file),
+        duration: file.metadata?.duration,
+      );
       if (settingsError != null) {
         failures.add(
           EncodeFailure(filePath: file.path, message: settingsError),
@@ -80,7 +83,7 @@ class EncodePreflightValidator {
     return failures;
   }
 
-  String? _settingsError(EncodeSettings settings) {
+  String? _settingsError(EncodeSettings settings, {Duration? duration}) {
     final l10n = Languages.translate;
     if (settings.qualityMode == QualityMode.avgBitrate &&
         settings.avgBitrateKbps <= 0) {
@@ -89,6 +92,17 @@ class EncodePreflightValidator {
     if (settings.qualityMode == QualityMode.crf &&
         (settings.crf < 0 || settings.crf > 63)) {
       return l10n.preflightInvalidCrf;
+    }
+    if (settings.qualityMode == QualityMode.targetSize) {
+      if (settings.targetSizeMb <= 0) {
+        return l10n.preflightInvalidTargetSize;
+      }
+      if (duration == null || duration <= Duration.zero) {
+        return l10n.preflightTargetSizeDurationMissing;
+      }
+      if (settings.targetVideoBitrateKbps(duration) < 100) {
+        return l10n.preflightTargetSizeTooSmall;
+      }
     }
     final resolution = settings.resolution;
     if (resolution != null) {
