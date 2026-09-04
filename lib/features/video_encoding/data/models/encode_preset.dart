@@ -47,4 +47,26 @@ const List<SettingsPreset> kBuiltInPresets = [
       outputExtension: OutputExtension.mkv,
     ),
   ),
+  SettingsPreset(
+    id: 'builtin.av1',
+    name: 'AV1 (Efficient)',
+    isBuiltIn: true,
+    settings: EncodeSettings(
+      codec: VideoEncoder.av1,
+      preset: EncodePreset.fast,
+      crf: 30,
+      outputExtension: OutputExtension.webm,
+      audioCodec: AudioCodec.opus,
+    ),
+  ),
+  SettingsPreset(
+    id: 'builtin.prores',
+    name: 'ProRes 422 HQ',
+    isBuiltIn: true,
+    settings: EncodeSettings(
+      codec: VideoEncoder.prores,
+      outputExtension: OutputExtension.mov,
+      audioCodec: AudioCodec.aac,
+    ),
+  ),
 ];

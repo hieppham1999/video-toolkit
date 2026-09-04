@@ -24,6 +24,52 @@ void main() {
     });
 
     expect(settings.embedTimestampSubtitle, isFalse);
+    expect(settings.encoderMode, EncoderMode.software);
+  });
+
+  test('builds codec-specific AV1, VP9, and ProRes arguments', () {
+    final av1 = const EncodeSettings(
+      codec: VideoEncoder.av1,
+      preset: EncodePreset.fast,
+      outputExtension: OutputExtension.webm,
+      audioCodec: AudioCodec.opus,
+    ).buildArgs('input.mp4', 'output.webm');
+    final vp9 = const EncodeSettings(
+      codec: VideoEncoder.vp9,
+    ).buildArgs('input.mp4', 'output.mkv');
+    final prores = const EncodeSettings(
+      codec: VideoEncoder.prores,
+    ).buildArgs('input.mp4', 'output.mov');
+
+    expect(av1, containsAllInOrder(['-c:v', 'libsvtav1', '-preset', '8']));
+    expect(av1, containsAllInOrder(['-c:a', 'libopus']));
+    expect(vp9, containsAllInOrder(['-deadline', 'good', '-cpu-used', '8']));
+    expect(
+      prores,
+      containsAllInOrder(['-c:v', 'prores_ks', '-profile:v', '3']),
+    );
+    expect(prores, isNot(contains('-crf')));
+    expect(prores, isNot(contains('-b:v')));
+  });
+
+  test('hardware encoder uses bitrate and omits software-only parameters', () {
+    const settings = EncodeSettings(
+      codec: VideoEncoder.h264,
+      encoderMode: EncoderMode.hardware,
+      extraParams: 'keyint=60',
+    );
+
+    final args = settings.buildArgs(
+      'input.mp4',
+      'output.mp4',
+      resolvedVideoEncoder: 'h264_videotoolbox',
+    );
+
+    expect(args, containsAllInOrder(['-c:v', 'h264_videotoolbox']));
+    expect(args, containsAllInOrder(['-b:v', '4000k']));
+    expect(args, isNot(contains('-crf')));
+    expect(args, isNot(contains('-preset')));
+    expect(args, isNot(contains('-x264-params')));
   });
 
   test('builds MP4 subtitle arguments with timestamp track title', () {

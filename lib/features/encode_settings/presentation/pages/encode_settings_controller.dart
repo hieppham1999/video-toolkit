@@ -76,6 +76,7 @@ class EncodeSettingsController extends ChangeNotifier {
 
   // Form state
   late VideoEncoder codec;
+  late EncoderMode encoderMode;
   late EncodePreset preset;
   late int crf;
   late OutputExtension outputExtension;
@@ -114,8 +115,15 @@ class EncodeSettingsController extends ChangeNotifier {
       outputExtension == OutputExtension.mov ||
       outputExtension == OutputExtension.mkv;
 
+  bool get supportsHardwareEncoder =>
+      codec == VideoEncoder.h264 || codec == VideoEncoder.h265;
+
+  bool get supportsTwoPass =>
+      codec != VideoEncoder.prores && encoderMode == EncoderMode.software;
+
   void _loadFromSettings(EncodeSettings s) {
     codec = s.codec;
+    encoderMode = s.encoderMode;
     preset = s.preset;
     crf = s.crf;
     outputExtension = s.outputExtension;
@@ -164,6 +172,7 @@ class EncodeSettingsController extends ChangeNotifier {
         : null;
     return EncodeSettings(
       codec: codec,
+      encoderMode: encoderMode,
       preset: preset,
       crf: crf,
       outputExtension: outputExtension,
@@ -198,6 +207,23 @@ class EncodeSettingsController extends ChangeNotifier {
 
   void setCodec(VideoEncoder v) {
     codec = v;
+    if (!supportsHardwareEncoder) encoderMode = EncoderMode.software;
+    if (!supportsTwoPass) {
+      twoPass = false;
+      turboFirstPass = false;
+    }
+    notifyListeners();
+  }
+
+  void setEncoderMode(EncoderMode v) {
+    encoderMode = supportsHardwareEncoder ? v : EncoderMode.software;
+    if (encoderMode != EncoderMode.software) {
+      qualityMode = QualityMode.avgBitrate;
+    }
+    if (!supportsTwoPass) {
+      twoPass = false;
+      turboFirstPass = false;
+    }
     notifyListeners();
   }
 

@@ -181,6 +181,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Resolution must use a positive width:height value.';
 
   @override
+  String get preflightIncompatibleWebm =>
+      'WebM output requires VP9 or AV1 video.';
+
+  @override
+  String get preflightIncompatibleProres =>
+      'ProRes output requires a MOV or MKV container.';
+
+  @override
   String get resolution => 'Resolution';
 
   @override
@@ -305,6 +313,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moreSettingsHintVpx => 'e.g. -row-mt 1 -tile-columns 2';
+
+  @override
+  String get moreSettingsHintAv1 => 'e.g. tune=0:film-grain=8';
+
+  @override
+  String get moreSettingsHintProres => 'e.g. -vendor apl0 -bits_per_mb 8000';
+
+  @override
+  String get encoderMode => 'Encoder';
+
+  @override
+  String get encoderModeSoftware => 'Software (quality)';
+
+  @override
+  String get encoderModeAuto => 'Auto hardware';
+
+  @override
+  String get encoderModeHardware => 'Hardware (speed)';
 
   @override
   String get outputName => 'Name template';

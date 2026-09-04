@@ -34,6 +34,19 @@ class VideoCodecTab extends StatelessWidget {
             onChanged: c.setCodec,
           ),
           const SizedBox(height: 16),
+          AppDropdown<EncoderMode>(
+            label: l10n.encoderMode,
+            value: c.encoderMode,
+            items: EncoderMode.values,
+            itemLabel: (mode) => switch (mode) {
+              EncoderMode.software => l10n.encoderModeSoftware,
+              EncoderMode.auto => l10n.encoderModeAuto,
+              EncoderMode.hardware => l10n.encoderModeHardware,
+            },
+            onChanged: c.setEncoderMode,
+            enabled: c.supportsHardwareEncoder,
+          ),
+          const SizedBox(height: 16),
           _QualityLabel(text: l10n.quality),
           const SizedBox(height: 8),
           Row(
@@ -68,7 +81,7 @@ class VideoCodecTab extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 4),
                     child: AppCheckbox(
                       value: c.twoPass,
-                      enabled: isAvg,
+                      enabled: isAvg && c.supportsTwoPass,
                       onChanged: c.setTwoPass,
                       label: Text(l10n.twoPassEncoding),
                     ),
@@ -78,7 +91,7 @@ class VideoCodecTab extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 22),
                     child: AppCheckbox(
                       value: c.turboFirstPass,
-                      enabled: isAvg && c.twoPass,
+                      enabled: isAvg && c.twoPass && c.supportsTwoPass,
                       onChanged: c.setTurboFirstPass,
                       label: Text(l10n.turboFirstPass),
                     ),
@@ -145,10 +158,12 @@ class VideoCodecTab extends StatelessWidget {
   }
 
   String _moreSettingsHint(VideoEncoder codec, dynamic l10n) => switch (codec) {
-        VideoEncoder.h264 => l10n.moreSettingsHintX264,
-        VideoEncoder.h265 => l10n.moreSettingsHintX265,
-        VideoEncoder.vp9 => l10n.moreSettingsHintVpx,
-      };
+    VideoEncoder.h264 => l10n.moreSettingsHintX264,
+    VideoEncoder.h265 => l10n.moreSettingsHintX265,
+    VideoEncoder.vp9 => l10n.moreSettingsHintVpx,
+    VideoEncoder.av1 => l10n.moreSettingsHintAv1,
+    VideoEncoder.prores => l10n.moreSettingsHintProres,
+  };
 }
 
 class _QualityLabel extends StatelessWidget {

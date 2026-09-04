@@ -168,6 +168,7 @@ abstract class EncodeSettings with _$EncodeSettings {
 
   const factory EncodeSettings({
     @Default(VideoEncoder.h264) VideoEncoder codec,
+    @Default(EncoderMode.software) EncoderMode encoderMode,
     @Default(EncodePreset.veryfast) EncodePreset preset,
     @Default(23) int crf,
     @Default(OutputExtension.mp4) OutputExtension outputExtension,
@@ -220,7 +221,7 @@ abstract class EncodeSettings with _$EncodeSettings {
   String? get timestampSubtitleCodec => switch (outputExtension) {
     OutputExtension.mp4 || OutputExtension.mov => 'mov_text',
     OutputExtension.mkv => 'subrip',
-    OutputExtension.avi || OutputExtension.mts => null,
+    OutputExtension.avi || OutputExtension.mts || OutputExtension.webm => null,
   };
 
   /// Builds the ffmpeg `-vf` filter chain from these settings.
@@ -297,10 +298,12 @@ abstract class EncodeSettings with _$EncodeSettings {
     int? pass,
     String? passLogPrefix,
     String? timestampSubtitlePath,
+    String? resolvedVideoEncoder,
   }) {
     final filterChain = buildVideoFilterChain(creationDate: creationDate);
     final nullSink = Platform.isWindows ? 'NUL' : '/dev/null';
-    final codecParamsFlag = _codecParamsFlag;
+    final encoder = resolvedVideoEncoder ?? codec.value;
+    final codecParamsFlag = _codecParamsFlag(encoder);
     final mergedParams = _mergedCodecParams(pass: pass);
     final subtitleCodec = timestampSubtitleCodec;
     final includeTimestampSubtitle =
@@ -325,14 +328,13 @@ abstract class EncodeSettings with _$EncodeSettings {
         '-map',
         '1:0',
       ],
-      '-c:v', codec.value,
-      if (preset.value.isNotEmpty) ...['-preset', preset.value],
-      if (qualityMode == QualityMode.crf) ...[
-        '-crf',
-        '$crf',
+      '-c:v', encoder,
+      ..._speedArgs(encoder),
+      if (codec == VideoEncoder.prores) ...[
+        '-profile:v',
+        '3',
       ] else ...[
-        '-b:v',
-        '${avgBitrateKbps}k',
+        ..._qualityArgs(encoder),
       ],
       if (pass != null) ...['-pass', '$pass'],
       if (pass != null && passLogPrefix != null) ...[
@@ -390,11 +392,38 @@ abstract class EncodeSettings with _$EncodeSettings {
     ];
   }
 
-  String? get _codecParamsFlag => switch (codec) {
-    VideoEncoder.h264 => '-x264-params',
-    VideoEncoder.h265 => '-x265-params',
-    VideoEncoder.vp9 => null,
-  };
+  String? _codecParamsFlag(String encoder) {
+    if (encoder != codec.value) return null;
+    return switch (codec) {
+      VideoEncoder.h264 => '-x264-params',
+      VideoEncoder.h265 => '-x265-params',
+      VideoEncoder.vp9 => null,
+      VideoEncoder.av1 => '-svtav1-params',
+      VideoEncoder.prores => null,
+    };
+  }
+
+  List<String> _qualityArgs(String encoder) {
+    if (encoder != codec.value || qualityMode == QualityMode.avgBitrate) {
+      return ['-b:v', '${avgBitrateKbps}k'];
+    }
+    return ['-crf', '$crf'];
+  }
+
+  List<String> _speedArgs(String encoder) {
+    if (encoder != codec.value) return const [];
+    return switch (codec) {
+      VideoEncoder.h264 || VideoEncoder.h265 => ['-preset', preset.value],
+      VideoEncoder.vp9 => [
+        '-deadline',
+        'good',
+        '-cpu-used',
+        '${preset.speedRank}',
+      ],
+      VideoEncoder.av1 => ['-preset', '${preset.av1Preset}'],
+      VideoEncoder.prores => const [],
+    };
+  }
 
   /// Merges user [extraParams] with the codec-specific turbo-first-pass string
   /// when [pass] is 1 and [turboFirstPass] is on.
@@ -416,6 +445,8 @@ abstract class EncodeSettings with _$EncodeSettings {
     VideoEncoder.h265 =>
       'no-rect=1:no-amp=1:max-merge=1:early-skip=1:fast-intra=1:ref=1:rd=2:subme=1',
     VideoEncoder.vp9 => '',
+    VideoEncoder.av1 => '',
+    VideoEncoder.prores => '',
   };
 }
 
@@ -430,12 +461,16 @@ extension StringOnWindows on String {
 enum VideoEncoder {
   h264('libx264'),
   h265('libx265'),
-  vp9('libvpx-vp9');
+  vp9('libvpx-vp9'),
+  av1('libsvtav1'),
+  prores('prores_ks');
 
   const VideoEncoder(this.value);
 
   final String value;
 }
+
+enum EncoderMode { software, auto, hardware }
 
 enum EncodePreset {
   veryfast('veryfast'),
@@ -449,6 +484,26 @@ enum EncodePreset {
   const EncodePreset(this.value);
 
   final String value;
+
+  int get speedRank => switch (this) {
+    EncodePreset.veryfast => 8,
+    EncodePreset.faster => 7,
+    EncodePreset.fast => 6,
+    EncodePreset.medium => 4,
+    EncodePreset.slow => 3,
+    EncodePreset.slower => 2,
+    EncodePreset.veryslow => 1,
+  };
+
+  int get av1Preset => switch (this) {
+    EncodePreset.veryfast => 10,
+    EncodePreset.faster => 9,
+    EncodePreset.fast => 8,
+    EncodePreset.medium => 6,
+    EncodePreset.slow => 4,
+    EncodePreset.slower => 2,
+    EncodePreset.veryslow => 0,
+  };
 }
 
 enum OutputExtension {
@@ -456,7 +511,8 @@ enum OutputExtension {
   mov('mov'),
   avi('avi'),
   mkv('mkv'),
-  mts('mts');
+  mts('mts'),
+  webm('webm');
 
   const OutputExtension(this.value);
 
@@ -467,6 +523,7 @@ enum AudioCodec {
   aac('aac'),
   mp3('mp3'),
   ac3('ac3'),
+  opus('libopus'),
   passthrough('copy');
 
   const AudioCodec(this.value);

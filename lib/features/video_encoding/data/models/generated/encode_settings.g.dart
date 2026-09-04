@@ -62,6 +62,9 @@ _EncodeSettings _$EncodeSettingsFromJson(
   codec:
       $enumDecodeNullable(_$VideoEncoderEnumMap, json['codec']) ??
       VideoEncoder.h264,
+  encoderMode:
+      $enumDecodeNullable(_$EncoderModeEnumMap, json['encoderMode']) ??
+      EncoderMode.software,
   preset:
       $enumDecodeNullable(_$EncodePresetEnumMap, json['preset']) ??
       EncodePreset.veryfast,
@@ -107,6 +110,7 @@ _EncodeSettings _$EncodeSettingsFromJson(
 Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
     <String, dynamic>{
       'codec': _$VideoEncoderEnumMap[instance.codec]!,
+      'encoderMode': _$EncoderModeEnumMap[instance.encoderMode]!,
       'preset': _$EncodePresetEnumMap[instance.preset]!,
       'crf': instance.crf,
       'outputExtension': _$OutputExtensionEnumMap[instance.outputExtension]!,
@@ -136,6 +140,14 @@ const _$VideoEncoderEnumMap = {
   VideoEncoder.h264: 'h264',
   VideoEncoder.h265: 'h265',
   VideoEncoder.vp9: 'vp9',
+  VideoEncoder.av1: 'av1',
+  VideoEncoder.prores: 'prores',
+};
+
+const _$EncoderModeEnumMap = {
+  EncoderMode.software: 'software',
+  EncoderMode.auto: 'auto',
+  EncoderMode.hardware: 'hardware',
 };
 
 const _$EncodePresetEnumMap = {
@@ -154,12 +166,14 @@ const _$OutputExtensionEnumMap = {
   OutputExtension.avi: 'avi',
   OutputExtension.mkv: 'mkv',
   OutputExtension.mts: 'mts',
+  OutputExtension.webm: 'webm',
 };
 
 const _$AudioCodecEnumMap = {
   AudioCodec.aac: 'aac',
   AudioCodec.mp3: 'mp3',
   AudioCodec.ac3: 'ac3',
+  AudioCodec.opus: 'opus',
   AudioCodec.passthrough: 'passthrough',
 };
 

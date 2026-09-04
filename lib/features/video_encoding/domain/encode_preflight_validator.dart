@@ -99,6 +99,16 @@ class EncodePreflightValidator {
         return l10n.preflightInvalidResolution;
       }
     }
+    if (settings.outputExtension == OutputExtension.webm &&
+        settings.codec != VideoEncoder.vp9 &&
+        settings.codec != VideoEncoder.av1) {
+      return l10n.preflightIncompatibleWebm;
+    }
+    if (settings.codec == VideoEncoder.prores &&
+        settings.outputExtension != OutputExtension.mov &&
+        settings.outputExtension != OutputExtension.mkv) {
+      return l10n.preflightIncompatibleProres;
+    }
     return null;
   }
 

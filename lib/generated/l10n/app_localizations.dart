@@ -410,6 +410,18 @@ abstract class AppLocalizations {
   /// **'Resolution must use a positive width:height value.'**
   String get preflightInvalidResolution;
 
+  /// No description provided for @preflightIncompatibleWebm.
+  ///
+  /// In en, this message translates to:
+  /// **'WebM output requires VP9 or AV1 video.'**
+  String get preflightIncompatibleWebm;
+
+  /// No description provided for @preflightIncompatibleProres.
+  ///
+  /// In en, this message translates to:
+  /// **'ProRes output requires a MOV or MKV container.'**
+  String get preflightIncompatibleProres;
+
   /// No description provided for @resolution.
   ///
   /// In en, this message translates to:
@@ -655,6 +667,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'e.g. -row-mt 1 -tile-columns 2'**
   String get moreSettingsHintVpx;
+
+  /// No description provided for @moreSettingsHintAv1.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. tune=0:film-grain=8'**
+  String get moreSettingsHintAv1;
+
+  /// No description provided for @moreSettingsHintProres.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. -vendor apl0 -bits_per_mb 8000'**
+  String get moreSettingsHintProres;
+
+  /// No description provided for @encoderMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Encoder'**
+  String get encoderMode;
+
+  /// No description provided for @encoderModeSoftware.
+  ///
+  /// In en, this message translates to:
+  /// **'Software (quality)'**
+  String get encoderModeSoftware;
+
+  /// No description provided for @encoderModeAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto hardware'**
+  String get encoderModeAuto;
+
+  /// No description provided for @encoderModeHardware.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware (speed)'**
+  String get encoderModeHardware;
 
   /// No description provided for @outputName.
   ///

@@ -180,6 +180,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Độ phân giải phải có dạng chiều-rộng:chiều-cao với giá trị dương.';
 
   @override
+  String get preflightIncompatibleWebm =>
+      'Output WebM yêu cầu video VP9 hoặc AV1.';
+
+  @override
+  String get preflightIncompatibleProres =>
+      'Output ProRes yêu cầu container MOV hoặc MKV.';
+
+  @override
   String get resolution => 'Độ phân giải';
 
   @override
@@ -303,6 +311,24 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get moreSettingsHintVpx => 'VD: -row-mt 1 -tile-columns 2';
+
+  @override
+  String get moreSettingsHintAv1 => 'VD: tune=0:film-grain=8';
+
+  @override
+  String get moreSettingsHintProres => 'VD: -vendor apl0 -bits_per_mb 8000';
+
+  @override
+  String get encoderMode => 'Bộ mã hóa';
+
+  @override
+  String get encoderModeSoftware => 'Phần mềm (chất lượng)';
+
+  @override
+  String get encoderModeAuto => 'Phần cứng tự động';
+
+  @override
+  String get encoderModeHardware => 'Phần cứng (tốc độ)';
 
   @override
   String get outputName => 'Mẫu tên file';

@@ -68,9 +68,14 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
           }
 
           final resolved = await _resolveFonts(settings);
+          final videoEncoder = await _ffmpeg.resolveVideoEncoder(
+            resolved.codec,
+            resolved.encoderMode,
+          );
           final useTwoPass =
               resolved.qualityMode == QualityMode.avgBitrate &&
-              resolved.twoPass;
+              resolved.twoPass &&
+              videoEncoder == resolved.codec.value;
 
           if (useTwoPass) {
             final logPrefix = p.join(
@@ -85,6 +90,7 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
                 pass: 1,
                 passLogPrefix: logPrefix,
                 timestampSubtitlePath: timestampSubtitlePath,
+                resolvedVideoEncoder: videoEncoder,
               );
               appLogger.d('2-pass: prefix=$logPrefix');
               // Pass 1 → maps into [0%, 50%]. estimatedRemaining is doubled to
@@ -128,6 +134,7 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
                 pass: 2,
                 passLogPrefix: logPrefix,
                 timestampSubtitlePath: timestampSubtitlePath,
+                resolvedVideoEncoder: videoEncoder,
               );
               appLogger.i('ffmpeg pass2 args: ${pass2Args.join(' ')}');
               // Pass 2 → maps into [50%, 100%].
@@ -153,6 +160,7 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
               temporaryOutputPath,
               creationDate: effectiveCreationDate,
               timestampSubtitlePath: timestampSubtitlePath,
+              resolvedVideoEncoder: videoEncoder,
             );
             await controller.addStream(
               _ffmpeg.encode(

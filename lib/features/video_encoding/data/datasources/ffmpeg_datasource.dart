@@ -8,6 +8,7 @@ import 'package:video_toolkit/core/cli/cli_exception.dart';
 import 'package:video_toolkit/core/cli/cli_tool_runner.dart';
 import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 
 import 'ffmpeg_progress_parser.dart';
 
@@ -21,8 +22,96 @@ class FfmpegDatasource {
   static const _executable = 'ffmpeg';
   Process? _activeProcess;
   bool _activeCancellationRequested = false;
+  Set<String>? _compiledEncodersCache;
+  final Map<String, bool> _encoderProbeCache = {};
 
   Future<bool> get isAvailable => _runner.isAvailable(_executable);
+
+  /// Resolves the requested semantic codec to a working hardware encoder when
+  /// possible. A one-frame probe prevents selecting an encoder that is merely
+  /// compiled in but has no matching GPU on the current machine.
+  Future<String> resolveVideoEncoder(
+    VideoEncoder codec,
+    EncoderMode mode,
+  ) async {
+    if (mode == EncoderMode.software ||
+        (codec != VideoEncoder.h264 && codec != VideoEncoder.h265)) {
+      return codec.value;
+    }
+
+    final compiled = await _compiledEncoders();
+    for (final candidate in _hardwareCandidates(codec)) {
+      if (!compiled.contains(candidate)) continue;
+      if (await _canInitializeEncoder(candidate)) {
+        appLogger.i('Selected hardware encoder: $candidate');
+        return candidate;
+      }
+    }
+    appLogger.w(
+      'No working hardware encoder found for ${codec.name}; using ${codec.value}',
+    );
+    return codec.value;
+  }
+
+  Future<Set<String>> _compiledEncoders() async {
+    final cached = _compiledEncodersCache;
+    if (cached != null) return cached;
+    try {
+      final result = await _runner.run(_executable, const [
+        '-hide_banner',
+        '-encoders',
+      ]);
+      final encoders = <String>{};
+      final pattern = RegExp(r'^\s*[A-Z.]{6}\s+(\S+)', multiLine: true);
+      for (final match in pattern.allMatches(result.stdout)) {
+        encoders.add(match.group(1)!);
+      }
+      _compiledEncodersCache = encoders;
+      return encoders;
+    } catch (e) {
+      appLogger.w('Unable to inspect FFmpeg encoders: $e');
+      return const {};
+    }
+  }
+
+  List<String> _hardwareCandidates(VideoEncoder codec) {
+    if (codec == VideoEncoder.h264) {
+      return Platform.isMacOS
+          ? const ['h264_videotoolbox']
+          : const ['h264_nvenc', 'h264_qsv', 'h264_amf'];
+    }
+    return Platform.isMacOS
+        ? const ['hevc_videotoolbox']
+        : const ['hevc_nvenc', 'hevc_qsv', 'hevc_amf'];
+  }
+
+  Future<bool> _canInitializeEncoder(String encoder) async {
+    final cached = _encoderProbeCache[encoder];
+    if (cached != null) return cached;
+    try {
+      final result = await _runner.run(_executable, [
+        '-hide_banner',
+        '-loglevel',
+        'error',
+        '-f',
+        'lavfi',
+        '-i',
+        'color=size=64x64:rate=1',
+        '-frames:v',
+        '1',
+        '-c:v',
+        encoder,
+        '-f',
+        'null',
+        Platform.isWindows ? 'NUL' : '/dev/null',
+      ], timeout: const Duration(seconds: 10));
+      _encoderProbeCache[encoder] = result.isSuccess;
+      return result.isSuccess;
+    } catch (_) {
+      _encoderProbeCache[encoder] = false;
+      return false;
+    }
+  }
 
   /// Stops the active FFmpeg process, preferring FFmpeg's own graceful quit
   /// command so it can flush and close its output before process termination.
