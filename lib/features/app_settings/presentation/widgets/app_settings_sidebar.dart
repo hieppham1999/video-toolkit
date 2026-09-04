@@ -6,7 +6,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
 
-enum AppSettingsTab { general, appearance, fileHandling, about }
+enum AppSettingsTab { general, appearance, about }
 
 class AppSettingsSidebar extends StatelessWidget {
   const AppSettingsSidebar({
@@ -48,12 +48,6 @@ List<_SidebarItem> _items() {
       CupertinoIcons.paintbrush,
       fluent.FluentIcons.color,
       l10n.appearance,
-    ),
-    _SidebarItem(
-      AppSettingsTab.fileHandling,
-      CupertinoIcons.folder,
-      fluent.FluentIcons.folder_open,
-      l10n.settingsTabFileHandling,
     ),
     _SidebarItem(
       AppSettingsTab.about,

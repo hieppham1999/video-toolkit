@@ -549,6 +549,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get outputDirectory => 'Thư mục output';
 
   @override
+  String get output => 'Output';
+
+  @override
+  String get setOutputDirectory => 'Đặt thư mục output';
+
+  @override
+  String get useGlobalOutputDirectory => 'Dùng thư mục output global';
+
+  @override
+  String get perFileOutputOverrideTooltip =>
+      'File này đang dùng thư mục output riêng';
+
+  @override
   String get outputDirSameAsSource => 'Cùng thư mục với file gốc';
 
   @override
@@ -568,6 +581,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get outputDirCustomNotSet => 'Chưa chọn thư mục';
+
+  @override
+  String get outputDirCustomRequired =>
+      'Hãy chọn thư mục output tùy chọn trước khi lưu.';
+
+  @override
+  String get outputDirSubfolderRequired =>
+      'Hãy nhập tên thư mục con trước khi lưu.';
 
   @override
   String get settingsTabGeneral => 'Chung';

@@ -25,7 +25,9 @@ class HomeViewData {
     required this.onPickFiles,
     required this.onSelectVideo,
     required this.onSaveEncodeSettings,
+    required this.onSaveOutputDirectory,
     required this.onUpdateFileSettings,
+    required this.onUpdateFileOutputDirectory,
     required this.onFilesDropped,
     required this.onDragStateChanged,
     required this.onRemoveFile,
@@ -65,11 +67,14 @@ class HomeViewData {
   final VoidCallback onPickFiles;
   final ValueChanged<String> onSelectVideo;
   final ValueChanged<EncodeSettings> onSaveEncodeSettings;
+  final ValueChanged<OutputDirectorySettings> onSaveOutputDirectory;
 
   /// (filePath, settings, presetId) — null settings = reset to global; presetId
   /// is the preset selected in the per-file dialog at save time.
   final void Function(String path, EncodeSettings? settings, String? presetId)
   onUpdateFileSettings;
+  final void Function(String path, OutputDirectorySettings? settings)
+  onUpdateFileOutputDirectory;
   final ValueChanged<List<String>> onFilesDropped;
   final ValueChanged<bool> onDragStateChanged;
   final ValueChanged<String> onRemoveFile;

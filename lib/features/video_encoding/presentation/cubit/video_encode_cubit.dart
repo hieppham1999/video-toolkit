@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/core/utils/app_logger.dart';
-import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_failure.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
@@ -33,6 +32,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
   List<VideoFile> _queue = [];
   late EncodeSettings _globalSettings;
   OutputDirectorySettings _outputDirectory = const OutputDirectorySettings();
+  Map<String, String> _outputPaths = const {};
 
   /// Start encoding all [files] sequentially.
   /// Each file uses its own [overrideSettings] if set, otherwise [globalSettings].
@@ -47,6 +47,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     _queue = List.of(files);
     _globalSettings = globalSettings;
     _outputDirectory = outputDirectory;
+    _outputPaths = _planOutputPaths(files);
     _cancelled = false;
 
     emitNormal(
@@ -57,6 +58,7 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
         completedCount: 0,
         failures: [],
         errorMessage: null,
+        outputPaths: _outputPaths,
       ),
     );
 
@@ -74,32 +76,9 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
 
     _lastLoggedBucket = -1;
     final file = _queue[index];
-    final rawSettings = file.overrideSettings ?? _globalSettings;
-    // When user keeps TZ on "Auto", fall back to the source's auto-detected
-    // offset so filename / overlay timestamps reflect the recording's local
-    // wall-clock instead of the encode machine's TZ.
-    final settings = rawSettings.sourceTimezoneOffset == null
-        ? rawSettings.copyWith(
-            sourceTimezoneOffset: file.metadata?.timezoneOffset,
-          )
-        : rawSettings;
-    final dir = OutputPathResolver.resolveDir(
-      inputPath: file.path,
-      settings: _outputDirectory,
-    );
-    final baseName = p.basenameWithoutExtension(file.path);
-    final outName = FilenameTemplate.apply(
-      settings.outputNameTemplate,
-      originalName: baseName,
-      creationDate: file.metadata?.creationDate,
-      creationDateFromFileSystem:
-          file.metadata?.creationDateFromFileSystem ?? false,
-      sourceTimezoneOffset: settings.sourceTimezoneOffset,
-    );
-    final outputPath = p.join(
-      dir,
-      '$outName.${settings.outputExtension.value}',
-    );
+    final settings = _effectiveSettingsFor(file);
+    final outputPath = _outputPaths[file.path]!;
+    final dir = p.dirname(outputPath);
 
     try {
       await Directory(dir).create(recursive: true);
@@ -121,12 +100,10 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     _encodeSub = _repository
         .encode(
           inputPath: file.path,
+          outputPath: outputPath,
           settings: settings,
           totalDuration: file.metadata?.duration ?? Duration.zero,
-          outputDir: dir,
           creationDate: file.metadata?.creationDate,
-          creationDateFromFileSystem:
-              file.metadata?.creationDateFromFileSystem ?? false,
         )
         .listen(
           (progress) {
@@ -226,7 +203,41 @@ class VideoEncodeCubit extends BaseCubit<VideoEncodeState> {
     _encodeSub?.cancel();
     _cancelled = false;
     _queue = [];
+    _outputPaths = const {};
     emitNormal(const VideoEncodeState());
+  }
+
+  EncodeSettings _effectiveSettingsFor(VideoFile file) {
+    final rawSettings = file.overrideSettings ?? _globalSettings;
+    // When user keeps TZ on "Auto", fall back to the source's auto-detected
+    // offset so filename / overlay timestamps reflect the recording's local
+    // wall-clock instead of the encode machine's TZ.
+    return rawSettings.sourceTimezoneOffset == null
+        ? rawSettings.copyWith(
+            sourceTimezoneOffset: file.metadata?.timezoneOffset,
+          )
+        : rawSettings;
+  }
+
+  Map<String, String> _planOutputPaths(List<VideoFile> files) {
+    final reservedPaths = <String>{};
+    final result = <String, String>{};
+    for (final file in files) {
+      final desiredPath = OutputPathResolver.resolvePath(
+        inputPath: file.path,
+        encodeSettings: _effectiveSettingsFor(file),
+        directorySettings: file.outputDirectoryOverride ?? _outputDirectory,
+        creationDate: file.metadata?.creationDate,
+        creationDateFromFileSystem:
+            file.metadata?.creationDateFromFileSystem ?? false,
+        detectedTimezoneOffset: file.metadata?.timezoneOffset,
+      );
+      result[file.path] = OutputPathResolver.reserveAvailablePath(
+        desiredPath,
+        reservedPaths: reservedPaths,
+      );
+    }
+    return result;
   }
 
   @override

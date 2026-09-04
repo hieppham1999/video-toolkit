@@ -9,7 +9,6 @@ import 'package:video_toolkit/features/fonts_loader/data/models/font_info.dart';
 import 'package:video_toolkit/features/fonts_loader/presentation/cubit/font_cubit.dart';
 import 'package:video_toolkit/features/fonts_loader/presentation/cubit/font_state.dart';
 import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_cubit.dart';
-import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 import 'package:video_toolkit/app/base/bloc_state_builder.dart';
 
 import 'macos/macos_settings_renderer.dart';
@@ -33,7 +32,6 @@ class _SettingsPageState extends State<SettingsPage> {
   late AppLanguage _language;
   late AppThemeMode _themeMode;
   String? _defaultFontPath;
-  late OutputDirectorySettings _outputDirectory;
 
   @override
   void initState() {
@@ -43,7 +41,6 @@ class _SettingsPageState extends State<SettingsPage> {
     _language = s.language;
     _themeMode = s.themeMode;
     _defaultFontPath = s.defaultFontPath;
-    _outputDirectory = s.outputDirectory;
   }
 
   void _save() {
@@ -53,9 +50,6 @@ class _SettingsPageState extends State<SettingsPage> {
     if (_themeMode != s.themeMode) _settingCubit.setThemeMode(_themeMode);
     if (_defaultFontPath != s.defaultFontPath) {
       _settingCubit.setDefaultFont(_defaultFontPath);
-    }
-    if (_outputDirectory != s.outputDirectory) {
-      _settingCubit.setOutputDirectory(_outputDirectory);
     }
     Navigator.of(context).pop();
   }
@@ -71,13 +65,10 @@ class _SettingsPageState extends State<SettingsPage> {
           themeMode: _themeMode,
           defaultFontPath: _defaultFontPath,
           fonts: _filteredFonts(fontState.fonts),
-          outputDirectory: _outputDirectory,
           onAccentChanged: (v) => setState(() => _accent = v),
           onLanguageChanged: (v) => setState(() => _language = v),
           onThemeModeChanged: (v) => setState(() => _themeMode = v),
           onDefaultFontChanged: (v) => setState(() => _defaultFontPath = v),
-          onOutputDirectoryChanged: (v) =>
-              setState(() => _outputDirectory = v),
           onClose: _save,
         );
         return Platform.isWindows

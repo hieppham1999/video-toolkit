@@ -63,7 +63,7 @@ void main() {
     );
 
     await tester.tap(find.text('open'));
-    await tester.pump();
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
 
@@ -90,7 +90,7 @@ void main() {
     );
 
     await tester.tap(find.text('open'));
-    await tester.pump();
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Execute now'));
     await tester.pumpAndSettle();
 

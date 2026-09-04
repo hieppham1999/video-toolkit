@@ -6,6 +6,7 @@ import 'package:video_toolkit/core/utils/app_logger.dart';
 import 'package:video_toolkit/features/video_encoding/data/datasources/user_settings_datasource.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_preset.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 import 'package:video_toolkit/features/video_metadata/data/repositories/video_metadata_repository.dart';
 import 'package:video_toolkit/features/video_metadata/data/models/video_metadata.dart';
 import 'package:video_toolkit/app/base/base_cubit.dart';
@@ -137,6 +138,22 @@ class VideoImportCubit extends BaseCubit<VideoImportState> {
               overrideSettings: settings,
               appliedPresetId: settings == null ? null : presetId,
             );
+          }
+          return f;
+        }).toList(),
+      ),
+    );
+  }
+
+  void updateFileOutputDirectory(
+    String path,
+    OutputDirectorySettings? settings,
+  ) {
+    emitNormal(
+      currentData.copyWith(
+        files: currentData.files.map((f) {
+          if (f.path == path) {
+            return f.copyWith(outputDirectoryOverride: settings);
           }
           return f;
         }).toList(),

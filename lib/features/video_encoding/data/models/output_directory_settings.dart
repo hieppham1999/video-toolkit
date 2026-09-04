@@ -17,3 +17,15 @@ abstract class OutputDirectorySettings with _$OutputDirectorySettings {
   factory OutputDirectorySettings.fromJson(Map<String, dynamic> json) =>
       _$OutputDirectorySettingsFromJson(json);
 }
+
+extension OutputDirectorySettingsValidation on OutputDirectorySettings {
+  bool get isValid {
+    if (mode == OutputDirectoryMode.custom) {
+      return customPath != null && customPath!.trim().isNotEmpty;
+    }
+    if (subfolderEnabled) {
+      return subfolderName.replaceAll(RegExp(r'[\\/]+'), '_').trim().isNotEmpty;
+    }
+    return true;
+  }
+}

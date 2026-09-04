@@ -1148,6 +1148,30 @@ abstract class AppLocalizations {
   /// **'Output directory'**
   String get outputDirectory;
 
+  /// No description provided for @output.
+  ///
+  /// In en, this message translates to:
+  /// **'Output'**
+  String get output;
+
+  /// No description provided for @setOutputDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Set output directory'**
+  String get setOutputDirectory;
+
+  /// No description provided for @useGlobalOutputDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Use global output directory'**
+  String get useGlobalOutputDirectory;
+
+  /// No description provided for @perFileOutputOverrideTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'This file uses its own output directory'**
+  String get perFileOutputOverrideTooltip;
+
   /// No description provided for @outputDirSameAsSource.
   ///
   /// In en, this message translates to:
@@ -1189,6 +1213,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No folder selected'**
   String get outputDirCustomNotSet;
+
+  /// No description provided for @outputDirCustomRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a custom output directory before saving.'**
+  String get outputDirCustomRequired;
+
+  /// No description provided for @outputDirSubfolderRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a sub-folder name before saving.'**
+  String get outputDirSubfolderRequired;
 
   /// No description provided for @settingsTabGeneral.
   ///

@@ -9,7 +9,7 @@ import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/core/utils/file_reveal.dart';
 import 'package:video_toolkit/core/utils/file_size_formatter.dart';
-import 'package:video_toolkit/core/utils/filename_template.dart';
+import 'package:video_toolkit/features/app_settings/presentation/widgets/app_output_directory_dialog.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/settings_preset.dart';
@@ -39,6 +39,7 @@ class AppVideoTableSection extends StatefulWidget {
     required this.onRemove,
     required this.onRemoveAll,
     required this.onOpenFileSettings,
+    required this.onUpdateFileOutputDirectory,
   });
 
   final List<VideoFile> files;
@@ -52,6 +53,8 @@ class AppVideoTableSection extends StatefulWidget {
   final ValueChanged<String> onRemove;
   final VoidCallback onRemoveAll;
   final ValueChanged<VideoFile> onOpenFileSettings;
+  final void Function(String path, OutputDirectorySettings? settings)
+  onUpdateFileOutputDirectory;
 
   @override
   State<AppVideoTableSection> createState() => _AppVideoTableSectionState();
@@ -60,7 +63,7 @@ class AppVideoTableSection extends StatefulWidget {
 class _AppVideoTableSectionState extends State<AppVideoTableSection> {
   static const _minColWidth = 40.0;
   static const _gapWidth = 8.0;
-  static const _actionWidth = 72.0;
+  static const _actionWidth = 104.0;
   static const _statusWidth = 140.0;
   static const _sizeColWidth = 80.0;
   static const _outputSizeColWidth = 80.0;
@@ -301,24 +304,20 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     final Color? bgColor = isSelected ? palette.selectedBg : null;
 
     final effectiveSettings = file.overrideSettings ?? widget.globalSettings;
-    final baseName = p.basenameWithoutExtension(file.path);
-    final outName = FilenameTemplate.apply(
-      effectiveSettings.outputNameTemplate,
-      originalName: baseName,
+    final effectiveOutputDirectory =
+        file.outputDirectoryOverride ?? widget.outputDirectory;
+    final desiredOutputPath = OutputPathResolver.resolvePath(
+      inputPath: file.path,
+      encodeSettings: effectiveSettings,
+      directorySettings: effectiveOutputDirectory,
       creationDate: file.metadata?.creationDate,
       creationDateFromFileSystem:
           file.metadata?.creationDateFromFileSystem ?? false,
-      sourceTimezoneOffset:
-          effectiveSettings.sourceTimezoneOffset ??
-          file.metadata?.timezoneOffset,
+      detectedTimezoneOffset: file.metadata?.timezoneOffset,
     );
-    final outputDir = OutputPathResolver.resolveDir(
-      inputPath: file.path,
-      settings: widget.outputDirectory,
-    );
-    final outputFileName =
-        '$outName.${effectiveSettings.outputExtension.value}';
-    final outputPath = p.join(outputDir, outputFileName);
+    final outputPath =
+        widget.encodeState.outputPaths[file.path] ?? desiredOutputPath;
+    final outputDir = p.dirname(outputPath);
     final hasOverride = file.overrideSettings != null;
 
     final isCompleted = rowStatus == _RowStatus.completed;
@@ -448,7 +447,9 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  if (!showStatus) _settingsButton(palette, hasOverride, file),
+                  if (!isEncoding) _settingsButton(palette, hasOverride, file),
+                  if (!isEncoding)
+                    _outputButton(palette, file, effectiveSettings),
                   _removeButton(palette, file),
                 ],
               ),
@@ -602,6 +603,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     final color = hasOverride ? palette.accent : palette.subtleText;
     final Widget button = Platform.isWindows
         ? fluent.IconButton(
+            key: ValueKey('video-settings-${file.path}'),
             icon: fluent.Icon(
               fluent.FluentIcons.settings,
               size: 12,
@@ -610,6 +612,7 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
             onPressed: () => widget.onOpenFileSettings(file),
           )
         : MacosIconButton(
+            key: ValueKey('video-settings-${file.path}'),
             icon: MacosIcon(
               CupertinoIcons.slider_horizontal_3,
               size: 12,
@@ -625,14 +628,67 @@ class _AppVideoTableSectionState extends State<AppVideoTableSection> {
     );
   }
 
+  Widget _outputButton(
+    _Palette palette,
+    VideoFile file,
+    EncodeSettings effectiveSettings,
+  ) {
+    final hasOverride = file.outputDirectoryOverride != null;
+    final color = hasOverride ? palette.accent : palette.subtleText;
+    final Widget button = Platform.isWindows
+        ? fluent.IconButton(
+            key: ValueKey('video-output-${file.path}'),
+            icon: fluent.Icon(
+              fluent.FluentIcons.folder_open,
+              size: 12,
+              color: color,
+            ),
+            onPressed: () => _openFileOutputDirectory(file, effectiveSettings),
+          )
+        : MacosIconButton(
+            key: ValueKey('video-output-${file.path}'),
+            icon: MacosIcon(CupertinoIcons.folder, size: 12, color: color),
+            onPressed: () => _openFileOutputDirectory(file, effectiveSettings),
+          );
+    return Tooltip(
+      message: hasOverride
+          ? Languages.translate.perFileOutputOverrideTooltip
+          : Languages.translate.setOutputDirectory,
+      waitDuration: const Duration(milliseconds: 400),
+      child: button,
+    );
+  }
+
+  void _openFileOutputDirectory(
+    VideoFile file,
+    EncodeSettings effectiveSettings,
+  ) {
+    showAppOutputDirectoryDialog(
+      context: context,
+      globalSettings: widget.outputDirectory,
+      initialOverride: file.outputDirectoryOverride,
+      isPerFile: true,
+      sampleInputPath: file.path,
+      sampleEncodeSettings: effectiveSettings,
+      sampleCreationDate: file.metadata?.creationDate,
+      sampleCreationDateFromFileSystem:
+          file.metadata?.creationDateFromFileSystem ?? false,
+      sampleTimezoneOffset: file.metadata?.timezoneOffset,
+      onSave: (settings) =>
+          widget.onUpdateFileOutputDirectory(file.path, settings),
+    );
+  }
+
   Widget _removeButton(_Palette palette, VideoFile file) {
     if (Platform.isWindows) {
       return fluent.IconButton(
+        key: ValueKey('video-remove-${file.path}'),
         icon: const fluent.Icon(fluent.FluentIcons.chrome_close, size: 12),
         onPressed: () => widget.onRemove(file.path),
       );
     }
     return MacosIconButton(
+      key: ValueKey('video-remove-${file.path}'),
       icon: MacosIcon(
         CupertinoIcons.xmark,
         size: 12,

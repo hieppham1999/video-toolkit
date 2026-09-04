@@ -27,8 +27,6 @@ class _MacosSettingsRendererState extends State<MacosSettingsRenderer> {
         return GeneralTab(data: widget.data);
       case AppSettingsTab.appearance:
         return AppearanceTab(data: widget.data);
-      case AppSettingsTab.fileHandling:
-        return FileHandlingTab(data: widget.data);
       case AppSettingsTab.about:
         return const AboutTab();
     }
@@ -74,10 +72,7 @@ class _MacosSettingsRendererState extends State<MacosSettingsRenderer> {
                   ],
                 ),
               ),
-              Container(
-                height: 1,
-                color: AppColors.divider(theme.brightness),
-              ),
+              Container(height: 1, color: AppColors.divider(theme.brightness)),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Align(

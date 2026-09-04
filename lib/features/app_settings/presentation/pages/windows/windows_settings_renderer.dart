@@ -26,8 +26,6 @@ class _WindowsSettingsRendererState extends State<WindowsSettingsRenderer> {
         return GeneralTab(data: widget.data);
       case AppSettingsTab.appearance:
         return AppearanceTab(data: widget.data);
-      case AppSettingsTab.fileHandling:
-        return FileHandlingTab(data: widget.data);
       case AppSettingsTab.about:
         return const AboutTab();
     }

@@ -17,6 +17,7 @@ import 'package:video_toolkit/widgets/app_success_dialog.dart';
 import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_cubit.dart';
 import 'package:video_toolkit/features/app_settings/presentation/cubit/app_setting_state.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/output_directory_settings.dart';
 import 'package:video_toolkit/features/video_encoding/data/datasources/encode_failure_log_writer.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_cubit.dart';
 import 'package:video_toolkit/features/video_encoding/presentation/cubit/preset_state.dart';
@@ -108,12 +109,32 @@ class _HomePageState extends State<HomePage> {
     _importCubit.updateEncodeSettings(settings);
   }
 
+  void _onSaveOutputDirectory(OutputDirectorySettings settings) {
+    if (_encodeCubit.currentData.status == EncodeStatus.encoding) return;
+    unawaited(_appSettingCubit.setOutputDirectory(settings));
+    _resetEncodeAfterOutputChange();
+  }
+
   void _onUpdateFileSettings(
     String path,
     EncodeSettings? settings,
     String? presetId,
   ) {
     _importCubit.updateFileSettings(path, settings, presetId);
+  }
+
+  void _onUpdateFileOutputDirectory(
+    String path,
+    OutputDirectorySettings? settings,
+  ) {
+    if (_encodeCubit.currentData.status == EncodeStatus.encoding) return;
+    _importCubit.updateFileOutputDirectory(path, settings);
+    _resetEncodeAfterOutputChange();
+  }
+
+  void _resetEncodeAfterOutputChange() {
+    _lastFailureLogPath = null;
+    _encodeCubit.reset();
   }
 
   void _onStart() {
@@ -223,7 +244,10 @@ class _HomePageState extends State<HomePage> {
                         onPickFiles: _pickFiles,
                         onSelectVideo: _onSelectVideo,
                         onSaveEncodeSettings: _onSaveEncodeSettings,
+                        onSaveOutputDirectory: _onSaveOutputDirectory,
                         onUpdateFileSettings: _onUpdateFileSettings,
+                        onUpdateFileOutputDirectory:
+                            _onUpdateFileOutputDirectory,
                         onFilesDropped: _onFilesDropped,
                         onDragStateChanged: _onDragStateChanged,
                         onRemoveFile: _onRemoveFile,

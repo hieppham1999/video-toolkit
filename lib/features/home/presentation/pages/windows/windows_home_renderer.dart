@@ -19,6 +19,7 @@ import 'package:video_toolkit/widgets/app_toolbar_button.dart';
 import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/features/cli_tools/presentation/cli_tools_launcher.dart';
 import 'package:video_toolkit/features/app_settings/presentation/pages/settings_page.dart';
+import 'package:video_toolkit/features/app_settings/presentation/widgets/app_output_directory_dialog.dart';
 import 'package:video_toolkit/features/home/presentation/widgets/app_video_table_section.dart';
 import 'package:video_toolkit/features/encode_settings/presentation/pages/windows_encode_settings_dialog.dart';
 
@@ -59,6 +60,16 @@ class WindowsHomeRenderer extends StatelessWidget {
                 subLabel: _presetSubLabel(),
                 tooltip: l10n.encodeSettings,
                 onTap: () => _openEncodeSettings(context),
+              ),
+              AppToolbarButton(
+                key: const Key('global-output-directory-button'),
+                macosIcon: FluentIcons.folder_open,
+                fluentIcon: FluentIcons.folder_open,
+                label: l10n.output,
+                tooltip: l10n.setOutputDirectory,
+                onTap: data.isEncoding
+                    ? null
+                    : () => _openOutputDirectory(context),
               ),
               AppToolbarButton(
                 macosIcon: FluentIcons.play,
@@ -141,6 +152,8 @@ class WindowsHomeRenderer extends StatelessWidget {
                         data.encodeSettings,
                         data.onUpdateFileSettings,
                       ),
+                      onUpdateFileOutputDirectory:
+                          data.onUpdateFileOutputDirectory,
                     ),
                   ),
                   AppOverallProgressBar(
@@ -176,6 +189,24 @@ class WindowsHomeRenderer extends StatelessWidget {
 
   void _openSettings(BuildContext context) {
     showDialog<void>(context: context, builder: (_) => const SettingsPage());
+  }
+
+  void _openOutputDirectory(BuildContext context) {
+    final sampleFile = data.selectedFile ?? data.files.firstOrNull;
+    showAppOutputDirectoryDialog(
+      context: context,
+      globalSettings: data.outputDirectory,
+      isPerFile: false,
+      sampleInputPath: sampleFile?.path ?? '/path/to/video.mp4',
+      sampleEncodeSettings: sampleFile?.overrideSettings ?? data.encodeSettings,
+      sampleCreationDate: sampleFile?.metadata?.creationDate,
+      sampleCreationDateFromFileSystem:
+          sampleFile?.metadata?.creationDateFromFileSystem ?? false,
+      sampleTimezoneOffset: sampleFile?.metadata?.timezoneOffset,
+      onSave: (settings) {
+        if (settings != null) data.onSaveOutputDirectory(settings);
+      },
+    );
   }
 
   void _openEncodeSettings(BuildContext context) {

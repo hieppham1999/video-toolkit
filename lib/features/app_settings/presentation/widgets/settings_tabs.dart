@@ -12,12 +12,15 @@ import 'package:video_toolkit/core/theme/app_theme_mode.dart';
 import 'package:video_toolkit/widgets/app_accent_swatch.dart';
 
 import '../pages/settings_view_data.dart';
-import 'output_directory_section.dart';
 
 // ---------- Section ----------
 
 class AppSettingsSection extends StatelessWidget {
-  const AppSettingsSection({super.key, required this.title, required this.child});
+  const AppSettingsSection({
+    super.key,
+    required this.title,
+    required this.child,
+  });
 
   final String title;
   final Widget child;
@@ -94,23 +97,6 @@ class AppearanceTab extends StatelessWidget {
           child: AppAccentRow(data: data),
         ),
       ],
-    );
-  }
-}
-
-class FileHandlingTab extends StatelessWidget {
-  const FileHandlingTab({super.key, required this.data});
-  final SettingsViewData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = Languages.translate;
-    return AppSettingsSection(
-      title: l10n.outputDirectory,
-      child: AppOutputDirectorySection(
-        value: data.outputDirectory,
-        onChanged: data.onOutputDirectoryChanged,
-      ),
     );
   }
 }

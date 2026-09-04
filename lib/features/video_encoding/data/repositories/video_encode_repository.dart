@@ -6,10 +6,9 @@ abstract class VideoEncodeRepository {
 
   Stream<EncodeProgress> encode({
     required String inputPath,
+    required String outputPath,
     required EncodeSettings settings,
     required Duration totalDuration,
-    String? outputDir,
     DateTime? creationDate,
-    bool creationDateFromFileSystem = false,
   });
 }

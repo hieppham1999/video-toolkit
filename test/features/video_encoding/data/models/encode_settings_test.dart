@@ -2,6 +2,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 
 void main() {
+  test(
+    'does not overwrite final outputs but allows the two-pass null sink',
+    () {
+      const settings = EncodeSettings();
+
+      final normal = settings.buildArgs('input.mp4', 'output.mp4');
+      final passOne = settings.buildArgs('input.mp4', 'output.mp4', pass: 1);
+
+      expect(normal, contains('-n'));
+      expect(normal, isNot(contains('-y')));
+      expect(passOne, contains('-y'));
+      expect(passOne, isNot(contains('-n')));
+    },
+  );
+
   test('defaults timestamp subtitle to disabled for old settings JSON', () {
     final settings = EncodeSettings.fromJson(const {
       'codec': 'h264',

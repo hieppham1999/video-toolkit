@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:video_toolkit/core/utils/app_logger.dart';
-import 'package:video_toolkit/core/utils/filename_template.dart';
 import 'package:video_toolkit/features/fonts_loader/data/font_resolver.dart';
 import 'package:video_toolkit/features/video_encoding/data/datasources/ffmpeg_datasource.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_progress.dart';
@@ -25,29 +24,14 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
   @override
   Stream<EncodeProgress> encode({
     required String inputPath,
+    required String outputPath,
     required EncodeSettings settings,
     required Duration totalDuration,
-    String? outputDir,
     DateTime? creationDate,
-    bool creationDateFromFileSystem = false,
   }) {
     final controller = StreamController<EncodeProgress>();
     () async {
       try {
-        final dir = outputDir ?? p.dirname(inputPath);
-        final baseName = p.basenameWithoutExtension(inputPath);
-        final outName = FilenameTemplate.apply(
-          settings.outputNameTemplate,
-          originalName: baseName,
-          creationDate: creationDate,
-          creationDateFromFileSystem: creationDateFromFileSystem,
-          sourceTimezoneOffset: settings.sourceTimezoneOffset,
-        );
-        final outputPath = p.join(
-          dir,
-          '$outName.${settings.outputExtension.value}',
-        );
-
         String? timestampSubtitlePath;
         try {
           final timestampSubtitleEnabled =

@@ -551,6 +551,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get outputDirectory => 'Output directory';
 
   @override
+  String get output => 'Output';
+
+  @override
+  String get setOutputDirectory => 'Set output directory';
+
+  @override
+  String get useGlobalOutputDirectory => 'Use global output directory';
+
+  @override
+  String get perFileOutputOverrideTooltip =>
+      'This file uses its own output directory';
+
+  @override
   String get outputDirSameAsSource => 'Same as source file';
 
   @override
@@ -570,6 +583,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get outputDirCustomNotSet => 'No folder selected';
+
+  @override
+  String get outputDirCustomRequired =>
+      'Choose a custom output directory before saving.';
+
+  @override
+  String get outputDirSubfolderRequired =>
+      'Enter a sub-folder name before saving.';
 
   @override
   String get settingsTabGeneral => 'General';

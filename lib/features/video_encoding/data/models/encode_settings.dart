@@ -385,7 +385,7 @@ abstract class EncodeSettings with _$EncodeSettings {
         '-metadata:s:v:0',
         'rotate=${rotation.degrees}',
       ],
-      '-y',
+      pass == 1 ? '-y' : '-n',
       pass == 1 ? nullSink : outputPath,
     ];
   }

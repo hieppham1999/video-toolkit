@@ -20,6 +20,10 @@ abstract class VideoEncodeState with _$VideoEncodeState {
     @Default(0) int totalFiles,
     @Default(0) int completedCount,
     @Default([]) List<EncodeFailure> failures,
+
+    /// Concrete output paths reserved for the current batch, keyed by input
+    /// path. These remain stable for the lifetime of the batch.
+    @Default({}) Map<String, String> outputPaths,
   }) = _VideoEncodeState;
 
   /// Paths of files that failed to encode (convenience accessor).
