@@ -614,6 +614,12 @@ abstract class AppLocalizations {
   /// **'Audio'**
   String get tabAudio;
 
+  /// No description provided for @tabCommandPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Command'**
+  String get tabCommandPreview;
+
   /// No description provided for @embedTimestampSubtitle.
   ///
   /// In en, this message translates to:
@@ -871,6 +877,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Normalize loudness (EBU R128)'**
   String get normalizeAudio;
+
+  /// No description provided for @estimatedOutputSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated output size'**
+  String get estimatedOutputSize;
+
+  /// No description provided for @outputSizeUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable for constant-quality encoding or when duration is unknown'**
+  String get outputSizeUnavailable;
+
+  /// No description provided for @estimatedMegabytes.
+  ///
+  /// In en, this message translates to:
+  /// **'Approximately {size} MB'**
+  String estimatedMegabytes(String size);
+
+  /// No description provided for @ffmpegCommandPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'FFmpeg command preview'**
+  String get ffmpegCommandPreview;
+
+  /// No description provided for @copyCommand.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy command'**
+  String get copyCommand;
+
+  /// No description provided for @commandPreviewHardwareNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto/hardware mode is resolved at runtime; this preview shows the compatible software encoder.'**
+  String get commandPreviewHardwareNote;
+
+  /// No description provided for @outputSizeEstimateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Size is an estimate based on one audio track; passthrough and multiple tracks may change the final size.'**
+  String get outputSizeEstimateNote;
 
   /// No description provided for @outputName.
   ///

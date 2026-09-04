@@ -290,6 +290,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get tabAudio => 'Âm thanh';
 
   @override
+  String get tabCommandPreview => 'Câu lệnh';
+
+  @override
   String get embedTimestampSubtitle => 'Nhúng timestamp subtitle';
 
   @override
@@ -421,6 +424,32 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get normalizeAudio => 'Chuẩn hóa âm lượng (EBU R128)';
+
+  @override
+  String get estimatedOutputSize => 'Dung lượng output ước tính';
+
+  @override
+  String get outputSizeUnavailable =>
+      'Không thể ước tính với encode chất lượng cố định hoặc khi chưa biết thời lượng';
+
+  @override
+  String estimatedMegabytes(String size) {
+    return 'Khoảng $size MB';
+  }
+
+  @override
+  String get ffmpegCommandPreview => 'Xem trước lệnh FFmpeg';
+
+  @override
+  String get copyCommand => 'Sao chép lệnh';
+
+  @override
+  String get commandPreviewHardwareNote =>
+      'Chế độ tự động/phần cứng được xác định lúc chạy; bản xem trước dùng encoder phần mềm tương thích.';
+
+  @override
+  String get outputSizeEstimateNote =>
+      'Dung lượng chỉ là ước tính theo một audio track; passthrough và nhiều track có thể làm thay đổi kết quả.';
 
   @override
   String get outputName => 'Mẫu tên file';

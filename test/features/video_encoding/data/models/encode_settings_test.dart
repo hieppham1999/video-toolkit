@@ -267,4 +267,24 @@ void main() {
     expect(args, contains('-an'));
     expect(args, isNot(contains('-c:a')));
   });
+
+  test('estimates output size only for bitrate-driven modes', () {
+    const duration = Duration(minutes: 10);
+    const average = EncodeSettings(
+      qualityMode: QualityMode.avgBitrate,
+      avgBitrateKbps: 4000,
+      audioCodec: AudioCodec.aac,
+      audioBitrate: AudioBitrate.k128,
+    );
+
+    expect(average.estimatedOutputSizeMb(duration), closeTo(315.9, 0.1));
+    expect(
+      const EncodeSettings(
+        qualityMode: QualityMode.targetSize,
+        targetSizeMb: 250,
+      ).estimatedOutputSizeMb(duration),
+      250,
+    );
+    expect(const EncodeSettings().estimatedOutputSizeMb(duration), isNull);
+  });
 }

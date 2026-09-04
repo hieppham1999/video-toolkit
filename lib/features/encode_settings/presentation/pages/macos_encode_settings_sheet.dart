@@ -22,6 +22,7 @@ import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs
 import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/sizing_tab.dart';
 import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/subtitle_tab.dart';
 import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/video_codec_tab.dart';
+import 'package:video_toolkit/features/encode_settings/presentation/widgets/tabs/command_preview_tab.dart';
 import 'package:video_toolkit/app/base/app_state.dart';
 
 class MacosEncodeSettingsSheet extends StatefulWidget {
@@ -32,6 +33,8 @@ class MacosEncodeSettingsSheet extends StatefulWidget {
     required this.onCancel,
     this.onReset,
     this.sampleFileName = 'video',
+    this.sampleInputPath = 'video.mp4',
+    this.sampleDuration,
     this.sampleCreationDate,
     this.sampleCreationDateFromFileSystem = false,
     this.sampleTimezoneOffset,
@@ -45,6 +48,8 @@ class MacosEncodeSettingsSheet extends StatefulWidget {
   final VoidCallback onCancel;
   final VoidCallback? onReset;
   final String sampleFileName;
+  final String sampleInputPath;
+  final Duration? sampleDuration;
   final DateTime? sampleCreationDate;
   final bool sampleCreationDateFromFileSystem;
   final String? sampleTimezoneOffset;
@@ -252,6 +257,7 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
       l10n.tabFilter,
       l10n.tabSubtitle,
       l10n.tabAudio,
+      l10n.tabCommandPreview,
     ];
     final presetState = getIt<PresetCubit>().state;
     final presets = presetState is NormalState<PresetState>
@@ -360,6 +366,12 @@ class _MacosEncodeSettingsSheetState extends State<MacosEncodeSettingsSheet> {
                         4 => FilterTab(controller: _c),
                         5 => SubtitleTab(controller: _c),
                         6 => AudioTab(controller: _c),
+                        7 => CommandPreviewTab(
+                          controller: _c,
+                          sampleInputPath: widget.sampleInputPath,
+                          sampleDuration: widget.sampleDuration,
+                          sampleCreationDate: widget.sampleCreationDate,
+                        ),
                         _ => const SizedBox.shrink(),
                       },
                     ),

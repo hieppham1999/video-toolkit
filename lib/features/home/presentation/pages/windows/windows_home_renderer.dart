@@ -213,10 +213,17 @@ class WindowsHomeRenderer extends StatelessWidget {
   }
 
   void _openEncodeSettings(BuildContext context) {
+    final sampleFile = data.selectedFile ?? data.files.firstOrNull;
     showDialog<void>(
       context: context,
       builder: (_) => WindowsEncodeSettingsDialog(
         settings: data.encodeSettings,
+        sampleFileName: sampleFile == null
+            ? 'video'
+            : p.basenameWithoutExtension(sampleFile.path),
+        sampleInputPath: sampleFile?.path ?? 'video.mp4',
+        sampleDuration: sampleFile?.metadata?.duration,
+        sampleCreationDate: sampleFile?.metadata?.creationDate,
         onSave: (settings, _) {
           data.onSaveEncodeSettings(settings);
           Navigator.of(context).pop();
@@ -246,6 +253,8 @@ class WindowsHomeRenderer extends StatelessWidget {
         settings: effective,
         isPerFile: true,
         sampleFileName: p.basenameWithoutExtension(file.path),
+        sampleInputPath: file.path,
+        sampleDuration: file.metadata?.duration,
         sampleCreationDate: file.metadata?.creationDate,
         sampleCreationDateFromFileSystem:
             file.metadata?.creationDateFromFileSystem ?? false,

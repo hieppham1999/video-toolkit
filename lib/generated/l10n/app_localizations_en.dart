@@ -292,6 +292,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabAudio => 'Audio';
 
   @override
+  String get tabCommandPreview => 'Command';
+
+  @override
   String get embedTimestampSubtitle => 'Embed timestamp subtitle';
 
   @override
@@ -423,6 +426,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get normalizeAudio => 'Normalize loudness (EBU R128)';
+
+  @override
+  String get estimatedOutputSize => 'Estimated output size';
+
+  @override
+  String get outputSizeUnavailable =>
+      'Unavailable for constant-quality encoding or when duration is unknown';
+
+  @override
+  String estimatedMegabytes(String size) {
+    return 'Approximately $size MB';
+  }
+
+  @override
+  String get ffmpegCommandPreview => 'FFmpeg command preview';
+
+  @override
+  String get copyCommand => 'Copy command';
+
+  @override
+  String get commandPreviewHardwareNote =>
+      'Auto/hardware mode is resolved at runtime; this preview shows the compatible software encoder.';
+
+  @override
+  String get outputSizeEstimateNote =>
+      'Size is an estimate based on one audio track; passthrough and multiple tracks may change the final size.';
 
   @override
   String get outputName => 'Name template';

@@ -519,6 +519,29 @@ abstract class EncodeSettings with _$EncodeSettings {
     return (totalKbps - audioKbps).floor();
   }
 
+  /// Best-effort output size estimate for bitrate-driven modes.
+  ///
+  /// CRF has no predictable bitrate and therefore returns null. The estimate
+  /// assumes one audio track because stream-level bitrate metadata is not yet
+  /// available to the settings model.
+  double? estimatedOutputSizeMb(Duration? duration) {
+    if (duration == null || duration <= Duration.zero) return null;
+    if (qualityMode == QualityMode.targetSize) return targetSizeMb.toDouble();
+    if (qualityMode == QualityMode.crf) return null;
+    final effectiveAudioCodec =
+        audioCodec == AudioCodec.passthrough && requiresAudioEncoding
+        ? AudioCodec.aac
+        : audioCodec;
+    final audioKbps = switch (effectiveAudioCodec) {
+      AudioCodec.none => 0,
+      AudioCodec.passthrough => 192,
+      _ => audioBitrate.kbps,
+    };
+    final durationSeconds =
+        duration.inMilliseconds / Duration.millisecondsPerSecond;
+    return (avgBitrateKbps + audioKbps) * durationSeconds / 8000 / 0.98;
+  }
+
   List<String> _speedArgs(String encoder) {
     if (encoder != codec.value) return const [];
     return switch (codec) {
