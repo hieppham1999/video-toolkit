@@ -7,18 +7,22 @@ A professional desktop video processing application for **macOS** and **Windows*
 ## Features
 
 ### Video Encoding & Transcoding
-- **Codecs**: H.264 (libx264), H.265/HEVC (libx265), VP9 (libvpx-vp9)
-- **Quality modes**: Constant Rate Factor (CRF) or Average Bitrate
+- **Codecs**: H.264, H.265/HEVC, VP9, AV1, and ProRes
+- **Encoder modes**: software, probed hardware acceleration, or automatic fallback
+- **Quality modes**: Constant Rate Factor (CRF), average bitrate, or target file size
 - **Two-pass encoding** with optional turbo first pass
-- **Output formats**: MP4, MOV, AVI, MKV, MTS
+- **Output formats**: MP4, MOV, AVI, MKV, MTS, and WebM
 - **Web-optimized** MP4 output (faststart flag)
 - Smart Apple device support — auto-applies `hvc1` tag for HEVC in MP4/MOV
+- Copyable FFmpeg command preview and bitrate-based output-size estimate
 
 ### Filters & Transformations
 - **Deinterlacing**: Yadif and Bwdif (frame and field modes)
 - **Rotation**: 0°, 90° CW, 180°, 90° CCW (pixel-based or metadata-only)
 - **Flipping**: Horizontal and vertical
 - **Resolution scaling** and aspect ratio cropping
+- Output frame rate, codec profile/level, and 8/10-bit pixel formats
+- HDR-to-SDR tone mapping with Hable, Reinhard, or Mobius
 
 ### Text Overlays & Watermarking
 - Burn timestamps with timezone-aware date/time expressions
@@ -26,14 +30,18 @@ A professional desktop video processing application for **macOS** and **Windows*
 - Multiple overlays per video
 - Bundled fonts + system font selection
 
-### Audio
-- **Codecs**: AAC, MP3, AC3, passthrough (stream copy)
+### Audio & Streams
+- **Codecs**: AAC, MP3, AC3, Opus, passthrough (stream copy), or no audio
 - **Bitrates**: 64k – 320k
+- Mono, stereo, 5.1, sample-rate conversion, gain, and EBU R128 normalization
+- Preserve all source audio tracks, chapters, metadata, and MKV subtitle tracks
 
 ### Batch Processing
 - Drag-and-drop multi-file import
 - Encode multiple videos with real-time progress tracking per file
+- Duration-weighted batch progress and ETA, skip/retry/reorder controls, and queue restore
 - Template-based output filenames (source name, date, custom text)
+- Preflight validation and atomic temporary outputs verified with ffprobe
 
 ### Metadata & Preview
 - Frame preview generation
@@ -77,6 +85,9 @@ A professional desktop video processing application for **macOS** and **Windows*
 | CLI integration | Bundled `ffmpeg`, `ffprobe`, `exiftool` binaries (macOS & Windows) |
 
 Architecture follows **feature-based clean architecture** with Cubit state management and platform-specific UI renderers (`MacosHomeRenderer` / `WindowsHomeRenderer`) driven by a single shared `HomePage` logic layer.
+
+Planned encoding improvements and intentionally deferred work are tracked in
+[docs/encoding-roadmap.md](docs/encoding-roadmap.md).
 
 ---
 
