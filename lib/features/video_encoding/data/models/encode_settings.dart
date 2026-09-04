@@ -170,6 +170,11 @@ abstract class EncodeSettings with _$EncodeSettings {
     @Default(VideoEncoder.h264) VideoEncoder codec,
     @Default(EncoderMode.software) EncoderMode encoderMode,
     @Default(EncodePreset.veryfast) EncodePreset preset,
+    @Default(VideoProfile.auto) VideoProfile videoProfile,
+    @Default(VideoLevel.auto) VideoLevel videoLevel,
+    @Default(PixelFormat.auto) PixelFormat pixelFormat,
+    double? frameRate,
+    @Default(ToneMapMode.off) ToneMapMode toneMapMode,
     @Default(23) int crf,
     @Default(OutputExtension.mp4) OutputExtension outputExtension,
 
@@ -288,6 +293,11 @@ abstract class EncodeSettings with _$EncodeSettings {
       filters.insert(prependedCount, deinterlace.filter);
     }
 
+    if (toneMapMode != ToneMapMode.off) {
+      final insertionIndex = filters.length - overlayFilters.length;
+      filters.insertAll(insertionIndex, toneMapMode.filters);
+    }
+
     return filters.isEmpty ? null : filters.join(',');
   }
 
@@ -340,6 +350,15 @@ abstract class EncodeSettings with _$EncodeSettings {
       ],
       '-c:v', encoder,
       ..._speedArgs(encoder),
+      if (videoProfile.value != null && codec != VideoEncoder.prores) ...[
+        '-profile:v',
+        videoProfile.value!,
+      ],
+      if (videoLevel.value != null &&
+          (codec == VideoEncoder.h264 || codec == VideoEncoder.h265)) ...[
+        '-level:v',
+        videoLevel.value!,
+      ],
       if (codec == VideoEncoder.prores) ...[
         '-profile:v',
         '3',
@@ -358,6 +377,8 @@ abstract class EncodeSettings with _$EncodeSettings {
       if (codecParamsFlag == null && extraParams.trim().isNotEmpty)
         ...extraParams.trim().split(RegExp(r'\s+')),
       if (filterChain != null) ...['-vf', filterChain],
+      if (frameRate != null) ...['-r', _formatFrameRate(frameRate!)],
+      if (pixelFormat.value != null) ...['-pix_fmt', pixelFormat.value!],
       if (pass != 1 &&
           (includeTimestampSubtitle ||
               (preserveSourceSubtitles &&
@@ -425,6 +446,25 @@ abstract class EncodeSettings with _$EncodeSettings {
       VideoEncoder.prores => null,
     };
   }
+
+  String _formatFrameRate(double value) => value == value.roundToDouble()
+      ? value.toInt().toString()
+      : value.toString();
+
+  bool get isVideoProfileSupported => switch (codec) {
+    VideoEncoder.h264 =>
+      videoProfile == VideoProfile.auto ||
+          videoProfile == VideoProfile.baseline ||
+          videoProfile == VideoProfile.main ||
+          videoProfile == VideoProfile.high,
+    VideoEncoder.h265 =>
+      videoProfile == VideoProfile.auto ||
+          videoProfile == VideoProfile.main ||
+          videoProfile == VideoProfile.main10,
+    VideoEncoder.vp9 ||
+    VideoEncoder.av1 ||
+    VideoEncoder.prores => videoProfile == VideoProfile.auto,
+  };
 
   List<String> _qualityArgs(String encoder, int? resolvedVideoBitrateKbps) {
     if (encoder != codec.value || qualityMode != QualityMode.crf) {
@@ -509,6 +549,64 @@ enum VideoEncoder {
 }
 
 enum EncoderMode { software, auto, hardware }
+
+enum VideoProfile {
+  auto(null),
+  baseline('baseline'),
+  main('main'),
+  high('high'),
+  main10('main10');
+
+  const VideoProfile(this.value);
+
+  final String? value;
+}
+
+enum VideoLevel {
+  auto(null),
+  l3_1('3.1'),
+  l4_0('4.0'),
+  l4_1('4.1'),
+  l5_0('5.0'),
+  l5_1('5.1');
+
+  const VideoLevel(this.value);
+
+  final String? value;
+}
+
+enum PixelFormat {
+  auto(null),
+  yuv420p('yuv420p'),
+  yuv420p10le('yuv420p10le'),
+  yuv422p10le('yuv422p10le');
+
+  const PixelFormat(this.value);
+
+  final String? value;
+}
+
+enum ToneMapMode {
+  off(''),
+  hable('hable'),
+  reinhard('reinhard'),
+  mobius('mobius');
+
+  const ToneMapMode(this.value);
+
+  final String value;
+
+  List<String> get filters => this == ToneMapMode.off
+      ? const []
+      : [
+          'zscale=t=linear:npl=100',
+          'format=gbrpf32le',
+          'zscale=p=bt709',
+          'tonemap=tonemap=$value:desat=0',
+          'zscale=t=bt709:m=bt709:r=tv',
+          'format=yuv420p',
+        ];
+}
 
 enum EncodePreset {
   veryfast('veryfast'),

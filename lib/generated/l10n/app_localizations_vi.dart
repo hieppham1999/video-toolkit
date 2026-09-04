@@ -185,6 +185,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Dung lượng mục tiêu quá nhỏ so với thời lượng video và bitrate âm thanh.';
 
   @override
+  String get preflightInvalidFrameRate =>
+      'Tốc độ khung hình output phải lớn hơn 0 và không quá 240 fps.';
+
+  @override
+  String get preflightIncompatibleVideoProfile =>
+      'Profile video đã chọn không được codec này hỗ trợ.';
+
+  @override
   String get preflightInvalidCrf => 'CRF phải nằm trong khoảng từ 0 đến 63.';
 
   @override
@@ -207,6 +215,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get frameRate => 'Tốc độ khung hình';
+
+  @override
+  String get outputFrameRate => 'Tốc độ khung hình output';
+
+  @override
+  String get keepSourceValue => 'Giữ nguyên nguồn';
 
   @override
   String get aspectRatio => 'Tỷ lệ khung hình';
@@ -355,6 +369,24 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get encoderModeHardware => 'Phần cứng (tốc độ)';
+
+  @override
+  String get videoProfile => 'Profile';
+
+  @override
+  String get videoLevel => 'Level';
+
+  @override
+  String get pixelFormat => 'Định dạng pixel';
+
+  @override
+  String get hdrToneMapping => 'HDR sang SDR';
+
+  @override
+  String get automatic => 'Tự động';
+
+  @override
+  String get off => 'Tắt';
 
   @override
   String get preserveAllAudioTracks => 'Giữ tất cả track âm thanh nguồn';

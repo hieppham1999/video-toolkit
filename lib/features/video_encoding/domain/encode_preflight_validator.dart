@@ -104,6 +104,15 @@ class EncodePreflightValidator {
         return l10n.preflightTargetSizeTooSmall;
       }
     }
+    if (settings.frameRate != null &&
+        (!settings.frameRate!.isFinite ||
+            settings.frameRate! <= 0 ||
+            settings.frameRate! > 240)) {
+      return l10n.preflightInvalidFrameRate;
+    }
+    if (!settings.isVideoProfileSupported) {
+      return l10n.preflightIncompatibleVideoProfile;
+    }
     final resolution = settings.resolution;
     if (resolution != null) {
       final parts = resolution.split(':');

@@ -28,6 +28,11 @@ void main() {
     expect(settings.targetSizeMb, 100);
     expect(settings.preserveAllAudioTracks, isTrue);
     expect(settings.preserveSourceSubtitles, isFalse);
+    expect(settings.videoProfile, VideoProfile.auto);
+    expect(settings.videoLevel, VideoLevel.auto);
+    expect(settings.pixelFormat, PixelFormat.auto);
+    expect(settings.frameRate, isNull);
+    expect(settings.toneMapMode, ToneMapMode.off);
   });
 
   test('derives target-size bitrate and forwards the resolved value', () {
@@ -200,4 +205,28 @@ void main() {
     expect(args, containsAllInOrder(['-map', '0:a:0?']));
     expect(args, isNot(contains('0:a?')));
   });
+
+  test(
+    'builds frame rate, profile, level, pixel format, and tone map args',
+    () {
+      const settings = EncodeSettings(
+        codec: VideoEncoder.h265,
+        videoProfile: VideoProfile.main10,
+        videoLevel: VideoLevel.l5_1,
+        pixelFormat: PixelFormat.yuv420p10le,
+        frameRate: 29.97,
+        toneMapMode: ToneMapMode.hable,
+      );
+
+      final args = settings.buildArgs('input.mov', 'output.mp4');
+      final filter = args[args.indexOf('-vf') + 1];
+
+      expect(args, containsAllInOrder(['-profile:v', 'main10']));
+      expect(args, containsAllInOrder(['-level:v', '5.1']));
+      expect(args, containsAllInOrder(['-r', '29.97']));
+      expect(args, containsAllInOrder(['-pix_fmt', 'yuv420p10le']));
+      expect(filter, contains('tonemap=tonemap=hable'));
+      expect(filter, endsWith('format=yuv420p'));
+    },
+  );
 }

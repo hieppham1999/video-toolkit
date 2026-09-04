@@ -416,6 +416,18 @@ abstract class AppLocalizations {
   /// **'The target size is too small for this video\'s duration and audio bitrate.'**
   String get preflightTargetSizeTooSmall;
 
+  /// No description provided for @preflightInvalidFrameRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Output frame rate must be greater than 0 and no more than 240 fps.'**
+  String get preflightInvalidFrameRate;
+
+  /// No description provided for @preflightIncompatibleVideoProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected video profile is not supported by this codec.'**
+  String get preflightIncompatibleVideoProfile;
+
   /// No description provided for @preflightInvalidCrf.
   ///
   /// In en, this message translates to:
@@ -457,6 +469,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Frame Rate'**
   String get frameRate;
+
+  /// No description provided for @outputFrameRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Output frame rate'**
+  String get outputFrameRate;
+
+  /// No description provided for @keepSourceValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep source'**
+  String get keepSourceValue;
 
   /// No description provided for @aspectRatio.
   ///
@@ -745,6 +769,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hardware (speed)'**
   String get encoderModeHardware;
+
+  /// No description provided for @videoProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get videoProfile;
+
+  /// No description provided for @videoLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level'**
+  String get videoLevel;
+
+  /// No description provided for @pixelFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Pixel format'**
+  String get pixelFormat;
+
+  /// No description provided for @hdrToneMapping.
+  ///
+  /// In en, this message translates to:
+  /// **'HDR to SDR'**
+  String get hdrToneMapping;
+
+  /// No description provided for @automatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get automatic;
+
+  /// No description provided for @off.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get off;
 
   /// No description provided for @preserveAllAudioTracks.
   ///

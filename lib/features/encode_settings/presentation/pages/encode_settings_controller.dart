@@ -78,6 +78,11 @@ class EncodeSettingsController extends ChangeNotifier {
   late VideoEncoder codec;
   late EncoderMode encoderMode;
   late EncodePreset preset;
+  late VideoProfile videoProfile;
+  late VideoLevel videoLevel;
+  late PixelFormat pixelFormat;
+  String frameRate = '';
+  late ToneMapMode toneMapMode;
   late int crf;
   late OutputExtension outputExtension;
   late AudioCodec audioCodec;
@@ -127,10 +132,37 @@ class EncodeSettingsController extends ChangeNotifier {
   bool get supportsTwoPass =>
       codec != VideoEncoder.prores && encoderMode == EncoderMode.software;
 
+  bool get supportsProfileLevel =>
+      codec == VideoEncoder.h264 || codec == VideoEncoder.h265;
+
+  List<VideoProfile> get availableVideoProfiles => switch (codec) {
+    VideoEncoder.h264 => const [
+      VideoProfile.auto,
+      VideoProfile.baseline,
+      VideoProfile.main,
+      VideoProfile.high,
+    ],
+    VideoEncoder.h265 => const [
+      VideoProfile.auto,
+      VideoProfile.main,
+      VideoProfile.main10,
+    ],
+    VideoEncoder.vp9 ||
+    VideoEncoder.av1 ||
+    VideoEncoder.prores => const [VideoProfile.auto],
+  };
+
   void _loadFromSettings(EncodeSettings s) {
     codec = s.codec;
     encoderMode = s.encoderMode;
     preset = s.preset;
+    videoProfile = s.isVideoProfileSupported
+        ? s.videoProfile
+        : VideoProfile.auto;
+    videoLevel = supportsProfileLevel ? s.videoLevel : VideoLevel.auto;
+    pixelFormat = s.pixelFormat;
+    frameRate = s.frameRate?.toString() ?? '';
+    toneMapMode = s.toneMapMode;
     crf = s.crf;
     outputExtension = s.outputExtension;
     audioCodec = s.audioCodec;
@@ -184,6 +216,11 @@ class EncodeSettingsController extends ChangeNotifier {
       codec: codec,
       encoderMode: encoderMode,
       preset: preset,
+      videoProfile: videoProfile,
+      videoLevel: videoLevel,
+      pixelFormat: pixelFormat,
+      frameRate: double.tryParse(frameRate),
+      toneMapMode: toneMapMode,
       crf: crf,
       outputExtension: outputExtension,
       resolution: resolution,
@@ -220,6 +257,10 @@ class EncodeSettingsController extends ChangeNotifier {
 
   void setCodec(VideoEncoder v) {
     codec = v;
+    if (!availableVideoProfiles.contains(videoProfile)) {
+      videoProfile = VideoProfile.auto;
+    }
+    if (!supportsProfileLevel) videoLevel = VideoLevel.auto;
     if (!supportsHardwareEncoder) encoderMode = EncoderMode.software;
     if (!supportsTwoPass) {
       twoPass = false;
@@ -242,6 +283,31 @@ class EncodeSettingsController extends ChangeNotifier {
 
   void setPreset(EncodePreset v) {
     preset = v;
+    notifyListeners();
+  }
+
+  void setVideoProfile(VideoProfile v) {
+    videoProfile = availableVideoProfiles.contains(v) ? v : VideoProfile.auto;
+    notifyListeners();
+  }
+
+  void setVideoLevel(VideoLevel v) {
+    videoLevel = supportsProfileLevel ? v : VideoLevel.auto;
+    notifyListeners();
+  }
+
+  void setPixelFormat(PixelFormat v) {
+    pixelFormat = v;
+    notifyListeners();
+  }
+
+  void setFrameRate(String v) {
+    frameRate = v;
+    notifyListeners();
+  }
+
+  void setToneMapMode(ToneMapMode v) {
+    toneMapMode = v;
     notifyListeners();
   }
 

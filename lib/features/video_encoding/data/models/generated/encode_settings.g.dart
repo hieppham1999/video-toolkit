@@ -68,6 +68,19 @@ _EncodeSettings _$EncodeSettingsFromJson(
   preset:
       $enumDecodeNullable(_$EncodePresetEnumMap, json['preset']) ??
       EncodePreset.veryfast,
+  videoProfile:
+      $enumDecodeNullable(_$VideoProfileEnumMap, json['videoProfile']) ??
+      VideoProfile.auto,
+  videoLevel:
+      $enumDecodeNullable(_$VideoLevelEnumMap, json['videoLevel']) ??
+      VideoLevel.auto,
+  pixelFormat:
+      $enumDecodeNullable(_$PixelFormatEnumMap, json['pixelFormat']) ??
+      PixelFormat.auto,
+  frameRate: (json['frameRate'] as num?)?.toDouble(),
+  toneMapMode:
+      $enumDecodeNullable(_$ToneMapModeEnumMap, json['toneMapMode']) ??
+      ToneMapMode.off,
   crf: (json['crf'] as num?)?.toInt() ?? 23,
   outputExtension:
       $enumDecodeNullable(_$OutputExtensionEnumMap, json['outputExtension']) ??
@@ -115,6 +128,11 @@ Map<String, dynamic> _$EncodeSettingsToJson(_EncodeSettings instance) =>
       'codec': _$VideoEncoderEnumMap[instance.codec]!,
       'encoderMode': _$EncoderModeEnumMap[instance.encoderMode]!,
       'preset': _$EncodePresetEnumMap[instance.preset]!,
+      'videoProfile': _$VideoProfileEnumMap[instance.videoProfile]!,
+      'videoLevel': _$VideoLevelEnumMap[instance.videoLevel]!,
+      'pixelFormat': _$PixelFormatEnumMap[instance.pixelFormat]!,
+      'frameRate': instance.frameRate,
+      'toneMapMode': _$ToneMapModeEnumMap[instance.toneMapMode]!,
       'crf': instance.crf,
       'outputExtension': _$OutputExtensionEnumMap[instance.outputExtension]!,
       'resolution': instance.resolution,
@@ -164,6 +182,37 @@ const _$EncodePresetEnumMap = {
   EncodePreset.slow: 'slow',
   EncodePreset.slower: 'slower',
   EncodePreset.veryslow: 'veryslow',
+};
+
+const _$VideoProfileEnumMap = {
+  VideoProfile.auto: 'auto',
+  VideoProfile.baseline: 'baseline',
+  VideoProfile.main: 'main',
+  VideoProfile.high: 'high',
+  VideoProfile.main10: 'main10',
+};
+
+const _$VideoLevelEnumMap = {
+  VideoLevel.auto: 'auto',
+  VideoLevel.l3_1: 'l3_1',
+  VideoLevel.l4_0: 'l4_0',
+  VideoLevel.l4_1: 'l4_1',
+  VideoLevel.l5_0: 'l5_0',
+  VideoLevel.l5_1: 'l5_1',
+};
+
+const _$PixelFormatEnumMap = {
+  PixelFormat.auto: 'auto',
+  PixelFormat.yuv420p: 'yuv420p',
+  PixelFormat.yuv420p10le: 'yuv420p10le',
+  PixelFormat.yuv422p10le: 'yuv422p10le',
+};
+
+const _$ToneMapModeEnumMap = {
+  ToneMapMode.off: 'off',
+  ToneMapMode.hable: 'hable',
+  ToneMapMode.reinhard: 'reinhard',
+  ToneMapMode.mobius: 'mobius',
 };
 
 const _$OutputExtensionEnumMap = {

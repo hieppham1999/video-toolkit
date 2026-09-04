@@ -10,6 +10,7 @@ import 'package:video_toolkit/core/theme/app_colors.dart';
 import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/widgets/app_checkbox.dart';
 import 'package:video_toolkit/widgets/app_dropdown.dart';
+import 'package:video_toolkit/widgets/app_field.dart';
 import 'package:video_toolkit/widgets/app_preset_chip.dart';
 import 'package:video_toolkit/widgets/app_twin_field.dart';
 import 'package:video_toolkit/features/encode_settings/presentation/pages/encode_settings_controller.dart';
@@ -59,7 +60,14 @@ class SizingTab extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           _ResolutionLegendRow(onSwap: c.swapResolution),
-          const SizedBox(height: 4),
+          const SizedBox(height: 12),
+          AppField(
+            label: l10n.outputFrameRate,
+            value: c.frameRate,
+            hint: l10n.keepSourceValue,
+            onChanged: c.setFrameRate,
+          ),
+          const SizedBox(height: 12),
           AppTwinField(
             label: l10n.aspectRatio,
             separator: ':',
@@ -167,10 +175,7 @@ class SizingTab extends StatelessWidget {
   Widget _labelRow(String label, String value, _SizingStyles styles) {
     return Row(
       children: [
-        SizedBox(
-          width: 100,
-          child: Text(label, style: styles.subtleBody),
-        ),
+        SizedBox(width: 100, child: Text(label, style: styles.subtleBody)),
         const SizedBox(width: 8),
         Text(value, style: styles.monoBody),
       ],
@@ -265,8 +270,7 @@ _SizingStyles _resolveStyles(BuildContext context) {
     final theme = fluent.FluentTheme.of(context);
     final body = theme.typography.body ?? const TextStyle();
     return _SizingStyles(
-      subtleBody:
-          body.copyWith(color: theme.resources.textFillColorSecondary),
+      subtleBody: body.copyWith(color: theme.resources.textFillColorSecondary),
       monoBody: body.copyWith(fontFamily: 'monospace'),
     );
   }

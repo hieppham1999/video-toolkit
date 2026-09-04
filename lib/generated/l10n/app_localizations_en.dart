@@ -186,6 +186,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'The target size is too small for this video\'s duration and audio bitrate.';
 
   @override
+  String get preflightInvalidFrameRate =>
+      'Output frame rate must be greater than 0 and no more than 240 fps.';
+
+  @override
+  String get preflightIncompatibleVideoProfile =>
+      'The selected video profile is not supported by this codec.';
+
+  @override
   String get preflightInvalidCrf => 'CRF must be between 0 and 63.';
 
   @override
@@ -208,6 +216,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get frameRate => 'Frame Rate';
+
+  @override
+  String get outputFrameRate => 'Output frame rate';
+
+  @override
+  String get keepSourceValue => 'Keep source';
 
   @override
   String get aspectRatio => 'Aspect Ratio';
@@ -357,6 +371,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get encoderModeHardware => 'Hardware (speed)';
+
+  @override
+  String get videoProfile => 'Profile';
+
+  @override
+  String get videoLevel => 'Level';
+
+  @override
+  String get pixelFormat => 'Pixel format';
+
+  @override
+  String get hdrToneMapping => 'HDR to SDR';
+
+  @override
+  String get automatic => 'Auto';
+
+  @override
+  String get off => 'Off';
 
   @override
   String get preserveAllAudioTracks => 'Preserve all source audio tracks';
