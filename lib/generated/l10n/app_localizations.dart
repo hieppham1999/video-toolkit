@@ -647,14 +647,68 @@ abstract class AppLocalizations {
   /// No description provided for @preserveSourceSubtitlesDescription.
   ///
   /// In en, this message translates to:
-  /// **'Copy all source subtitle tracks without re-encoding'**
+  /// **'Keep all existing subtitle tracks alongside the new timestamp track. MKV copies the original tracks; MP4/MOV convert text subtitles and may change their formatting. Unsupported tracks cause the encode to fail rather than being dropped.'**
   String get preserveSourceSubtitlesDescription;
 
-  /// No description provided for @sourceSubtitlesMkvOnly.
+  /// No description provided for @sourceSubtitlesUnsupportedContainer.
   ///
   /// In en, this message translates to:
-  /// **'Source subtitle passthrough is available for MKV output only'**
-  String get sourceSubtitlesMkvOnly;
+  /// **'Keeping source subtitle tracks is supported for MP4, MOV and MKV only'**
+  String get sourceSubtitlesUnsupportedContainer;
+
+  /// No description provided for @sourceSubtitlesMovWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'MOV may lose the forced subtitle flag. Use MP4 or MKV if this flag needs to be preserved.'**
+  String get sourceSubtitlesMovWarning;
+
+  /// No description provided for @subtitleTracks.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle tracks ({count})'**
+  String subtitleTracks(int count);
+
+  /// No description provided for @subtitleTrackName.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle {number}'**
+  String subtitleTrackName(int number);
+
+  /// No description provided for @noSubtitleTracks.
+  ///
+  /// In en, this message translates to:
+  /// **'No subtitle tracks'**
+  String get noSubtitleTracks;
+
+  /// No description provided for @subtitleTracksUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle information is not available yet'**
+  String get subtitleTracksUnavailable;
+
+  /// No description provided for @subtitleLanguageUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown language'**
+  String get subtitleLanguageUnknown;
+
+  /// No description provided for @subtitleCodecUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown codec'**
+  String get subtitleCodecUnknown;
+
+  /// No description provided for @subtitleDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get subtitleDefault;
+
+  /// No description provided for @subtitleForced.
+  ///
+  /// In en, this message translates to:
+  /// **'Forced'**
+  String get subtitleForced;
 
   /// No description provided for @quality.
   ///

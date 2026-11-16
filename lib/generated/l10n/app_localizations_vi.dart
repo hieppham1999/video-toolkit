@@ -308,11 +308,43 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get preserveSourceSubtitlesDescription =>
-      'Sao chép toàn bộ track subtitle nguồn mà không encode lại';
+      'Giữ toàn bộ track subtitle có sẵn cùng track timestamp mới. MKV sao chép nguyên các track; MP4/MOV chuyển đổi subtitle dạng chữ và có thể thay đổi định dạng chữ. Track không được hỗ trợ sẽ khiến tác vụ báo lỗi thay vì bị bỏ qua.';
 
   @override
-  String get sourceSubtitlesMkvOnly =>
-      'Chỉ có thể giữ nguyên subtitle nguồn khi output là MKV';
+  String get sourceSubtitlesUnsupportedContainer =>
+      'Chỉ hỗ trợ giữ subtitle nguồn với đầu ra MP4, MOV và MKV';
+
+  @override
+  String get sourceSubtitlesMovWarning =>
+      'MOV có thể làm mất cờ subtitle bắt buộc (forced). Chọn MP4 hoặc MKV nếu cần giữ cờ này.';
+
+  @override
+  String subtitleTracks(int count) {
+    return 'Các track subtitle ($count)';
+  }
+
+  @override
+  String subtitleTrackName(int number) {
+    return 'Subtitle $number';
+  }
+
+  @override
+  String get noSubtitleTracks => 'Không có track subtitle';
+
+  @override
+  String get subtitleTracksUnavailable => 'Chưa có thông tin subtitle';
+
+  @override
+  String get subtitleLanguageUnknown => 'Chưa rõ ngôn ngữ';
+
+  @override
+  String get subtitleCodecUnknown => 'Chưa rõ codec';
+
+  @override
+  String get subtitleDefault => 'Mặc định';
+
+  @override
+  String get subtitleForced => 'Bắt buộc';
 
   @override
   String get quality => 'Chất lượng';

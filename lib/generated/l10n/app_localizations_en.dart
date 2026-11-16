@@ -310,11 +310,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get preserveSourceSubtitlesDescription =>
-      'Copy all source subtitle tracks without re-encoding';
+      'Keep all existing subtitle tracks alongside the new timestamp track. MKV copies the original tracks; MP4/MOV convert text subtitles and may change their formatting. Unsupported tracks cause the encode to fail rather than being dropped.';
 
   @override
-  String get sourceSubtitlesMkvOnly =>
-      'Source subtitle passthrough is available for MKV output only';
+  String get sourceSubtitlesUnsupportedContainer =>
+      'Keeping source subtitle tracks is supported for MP4, MOV and MKV only';
+
+  @override
+  String get sourceSubtitlesMovWarning =>
+      'MOV may lose the forced subtitle flag. Use MP4 or MKV if this flag needs to be preserved.';
+
+  @override
+  String subtitleTracks(int count) {
+    return 'Subtitle tracks ($count)';
+  }
+
+  @override
+  String subtitleTrackName(int number) {
+    return 'Subtitle $number';
+  }
+
+  @override
+  String get noSubtitleTracks => 'No subtitle tracks';
+
+  @override
+  String get subtitleTracksUnavailable =>
+      'Subtitle information is not available yet';
+
+  @override
+  String get subtitleLanguageUnknown => 'Unknown language';
+
+  @override
+  String get subtitleCodecUnknown => 'Unknown codec';
+
+  @override
+  String get subtitleDefault => 'Default';
+
+  @override
+  String get subtitleForced => 'Forced';
 
   @override
   String get quality => 'Quality';

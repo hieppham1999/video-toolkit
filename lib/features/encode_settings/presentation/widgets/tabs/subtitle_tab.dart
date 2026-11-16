@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:video_toolkit/app/languages.dart';
 import 'package:video_toolkit/features/encode_settings/presentation/pages/encode_settings_controller.dart';
+import 'package:video_toolkit/features/video_encoding/data/models/encode_settings.dart';
 import 'package:video_toolkit/widgets/app_checkbox.dart';
 
 class SubtitleTab extends StatelessWidget {
@@ -12,7 +13,7 @@ class SubtitleTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = Languages.translate;
     final supported = controller.supportsTimestampSubtitle;
-    final sourceSupported = controller.supportsSourceSubtitlePassthrough;
+    final sourceSupported = controller.supportsSourceSubtitles;
     final textStyle = DefaultTextStyle.of(context).style;
 
     return SingleChildScrollView(
@@ -43,9 +44,14 @@ class SubtitleTab extends StatelessWidget {
           Text(
             sourceSupported
                 ? l10n.preserveSourceSubtitlesDescription
-                : l10n.sourceSubtitlesMkvOnly,
+                : l10n.sourceSubtitlesUnsupportedContainer,
             style: textStyle,
           ),
+          if (controller.preserveSourceSubtitles &&
+              controller.outputExtension == OutputExtension.mov) ...[
+            const SizedBox(height: 10),
+            Text(l10n.sourceSubtitlesMovWarning, style: textStyle),
+          ],
         ],
       ),
     );

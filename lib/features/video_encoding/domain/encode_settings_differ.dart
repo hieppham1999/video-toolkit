@@ -41,6 +41,12 @@ class EncodeSettingsDiffer {
     );
     _scalar(
       out,
+      'Preserve source subtitles',
+      a.preserveSourceSubtitles,
+      b.preserveSourceSubtitles,
+    );
+    _scalar(
+      out,
       'Filename template',
       a.outputNameTemplate,
       b.outputNameTemplate,

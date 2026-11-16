@@ -37,4 +37,19 @@ void main() {
 
     expect(command, contains('<calculated>k'));
   });
+
+  test('preview combines source tracks and timestamp with separate codecs', () {
+    final command = buildFfmpegCommandPreview(
+      settings: const EncodeSettings(
+        outputExtension: OutputExtension.mkv,
+        preserveSourceSubtitles: true,
+        embedTimestampSubtitle: true,
+      ),
+      inputPath: 'input.mkv',
+      outputPath: 'output.mkv',
+    );
+    expect(command, contains('0:s?'));
+    expect(command, contains('-c:s copy -c:s:0 subrip'));
+    expect(command, contains('-disposition:s:0 0'));
+  });
 }

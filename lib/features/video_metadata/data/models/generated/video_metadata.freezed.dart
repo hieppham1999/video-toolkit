@@ -12,9 +12,282 @@ part of '../video_metadata.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
+mixin _$SubtitleTrack {
+
+ int get index; String? get codec; String? get title; String? get language; bool get isDefault; bool get isForced;
+/// Create a copy of SubtitleTrack
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SubtitleTrackCopyWith<SubtitleTrack> get copyWith => _$SubtitleTrackCopyWithImpl<SubtitleTrack>(this as SubtitleTrack, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubtitleTrack&&(identical(other.index, index) || other.index == index)&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.title, title) || other.title == title)&&(identical(other.language, language) || other.language == language)&&(identical(other.isDefault, isDefault) || other.isDefault == isDefault)&&(identical(other.isForced, isForced) || other.isForced == isForced));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,index,codec,title,language,isDefault,isForced);
+
+@override
+String toString() {
+  return 'SubtitleTrack(index: $index, codec: $codec, title: $title, language: $language, isDefault: $isDefault, isForced: $isForced)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SubtitleTrackCopyWith<$Res>  {
+  factory $SubtitleTrackCopyWith(SubtitleTrack value, $Res Function(SubtitleTrack) _then) = _$SubtitleTrackCopyWithImpl;
+@useResult
+$Res call({
+ int index, String? codec, String? title, String? language, bool isDefault, bool isForced
+});
+
+
+
+
+}
+/// @nodoc
+class _$SubtitleTrackCopyWithImpl<$Res>
+    implements $SubtitleTrackCopyWith<$Res> {
+  _$SubtitleTrackCopyWithImpl(this._self, this._then);
+
+  final SubtitleTrack _self;
+  final $Res Function(SubtitleTrack) _then;
+
+/// Create a copy of SubtitleTrack
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? index = null,Object? codec = freezed,Object? title = freezed,Object? language = freezed,Object? isDefault = null,Object? isForced = null,}) {
+  return _then(_self.copyWith(
+index: null == index ? _self.index : index // ignore: cast_nullable_to_non_nullable
+as int,codec: freezed == codec ? _self.codec : codec // ignore: cast_nullable_to_non_nullable
+as String?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String?,language: freezed == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
+as String?,isDefault: null == isDefault ? _self.isDefault : isDefault // ignore: cast_nullable_to_non_nullable
+as bool,isForced: null == isForced ? _self.isForced : isForced // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [SubtitleTrack].
+extension SubtitleTrackPatterns on SubtitleTrack {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SubtitleTrack value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SubtitleTrack() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SubtitleTrack value)  $default,){
+final _that = this;
+switch (_that) {
+case _SubtitleTrack():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SubtitleTrack value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SubtitleTrack() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int index,  String? codec,  String? title,  String? language,  bool isDefault,  bool isForced)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SubtitleTrack() when $default != null:
+return $default(_that.index,_that.codec,_that.title,_that.language,_that.isDefault,_that.isForced);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int index,  String? codec,  String? title,  String? language,  bool isDefault,  bool isForced)  $default,) {final _that = this;
+switch (_that) {
+case _SubtitleTrack():
+return $default(_that.index,_that.codec,_that.title,_that.language,_that.isDefault,_that.isForced);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int index,  String? codec,  String? title,  String? language,  bool isDefault,  bool isForced)?  $default,) {final _that = this;
+switch (_that) {
+case _SubtitleTrack() when $default != null:
+return $default(_that.index,_that.codec,_that.title,_that.language,_that.isDefault,_that.isForced);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _SubtitleTrack implements SubtitleTrack {
+  const _SubtitleTrack({required this.index, this.codec, this.title, this.language, this.isDefault = false, this.isForced = false});
+
+
+@override final  int index;
+@override final  String? codec;
+@override final  String? title;
+@override final  String? language;
+@override@JsonKey() final  bool isDefault;
+@override@JsonKey() final  bool isForced;
+
+/// Create a copy of SubtitleTrack
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SubtitleTrackCopyWith<_SubtitleTrack> get copyWith => __$SubtitleTrackCopyWithImpl<_SubtitleTrack>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubtitleTrack&&(identical(other.index, index) || other.index == index)&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.title, title) || other.title == title)&&(identical(other.language, language) || other.language == language)&&(identical(other.isDefault, isDefault) || other.isDefault == isDefault)&&(identical(other.isForced, isForced) || other.isForced == isForced));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,index,codec,title,language,isDefault,isForced);
+
+@override
+String toString() {
+  return 'SubtitleTrack(index: $index, codec: $codec, title: $title, language: $language, isDefault: $isDefault, isForced: $isForced)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SubtitleTrackCopyWith<$Res> implements $SubtitleTrackCopyWith<$Res> {
+  factory _$SubtitleTrackCopyWith(_SubtitleTrack value, $Res Function(_SubtitleTrack) _then) = __$SubtitleTrackCopyWithImpl;
+@override @useResult
+$Res call({
+ int index, String? codec, String? title, String? language, bool isDefault, bool isForced
+});
+
+
+
+
+}
+/// @nodoc
+class __$SubtitleTrackCopyWithImpl<$Res>
+    implements _$SubtitleTrackCopyWith<$Res> {
+  __$SubtitleTrackCopyWithImpl(this._self, this._then);
+
+  final _SubtitleTrack _self;
+  final $Res Function(_SubtitleTrack) _then;
+
+/// Create a copy of SubtitleTrack
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? index = null,Object? codec = freezed,Object? title = freezed,Object? language = freezed,Object? isDefault = null,Object? isForced = null,}) {
+  return _then(_SubtitleTrack(
+index: null == index ? _self.index : index // ignore: cast_nullable_to_non_nullable
+as int,codec: freezed == codec ? _self.codec : codec // ignore: cast_nullable_to_non_nullable
+as String?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String?,language: freezed == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
+as String?,isDefault: null == isDefault ? _self.isDefault : isDefault // ignore: cast_nullable_to_non_nullable
+as bool,isForced: null == isForced ? _self.isForced : isForced // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$VideoMetadata {
 
- Duration? get duration; int? get width; int? get height; String? get videoCodec; String? get audioCodec; int? get bitrate; double? get frameRate; DateTime? get creationDate; bool get creationDateFromFileSystem; String? get timezoneOffset; double? get gpsLatitude; double? get gpsLongitude; String? get cameraModel; Map<String, String> get rawExif;
+ Duration? get duration; int? get width; int? get height; String? get videoCodec; String? get audioCodec; int? get bitrate; double? get frameRate; DateTime? get creationDate; bool get creationDateFromFileSystem; String? get timezoneOffset; double? get gpsLatitude; double? get gpsLongitude; String? get cameraModel;/// Null until ffprobe successfully reads the streams; empty means none.
+ List<SubtitleTrack>? get subtitleTracks; Map<String, String> get rawExif;
 /// Create a copy of VideoMetadata
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +298,16 @@ $VideoMetadataCopyWith<VideoMetadata> get copyWith => _$VideoMetadataCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoMetadata&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.frameRate, frameRate) || other.frameRate == frameRate)&&(identical(other.creationDate, creationDate) || other.creationDate == creationDate)&&(identical(other.creationDateFromFileSystem, creationDateFromFileSystem) || other.creationDateFromFileSystem == creationDateFromFileSystem)&&(identical(other.timezoneOffset, timezoneOffset) || other.timezoneOffset == timezoneOffset)&&(identical(other.gpsLatitude, gpsLatitude) || other.gpsLatitude == gpsLatitude)&&(identical(other.gpsLongitude, gpsLongitude) || other.gpsLongitude == gpsLongitude)&&(identical(other.cameraModel, cameraModel) || other.cameraModel == cameraModel)&&const DeepCollectionEquality().equals(other.rawExif, rawExif));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoMetadata&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.frameRate, frameRate) || other.frameRate == frameRate)&&(identical(other.creationDate, creationDate) || other.creationDate == creationDate)&&(identical(other.creationDateFromFileSystem, creationDateFromFileSystem) || other.creationDateFromFileSystem == creationDateFromFileSystem)&&(identical(other.timezoneOffset, timezoneOffset) || other.timezoneOffset == timezoneOffset)&&(identical(other.gpsLatitude, gpsLatitude) || other.gpsLatitude == gpsLatitude)&&(identical(other.gpsLongitude, gpsLongitude) || other.gpsLongitude == gpsLongitude)&&(identical(other.cameraModel, cameraModel) || other.cameraModel == cameraModel)&&const DeepCollectionEquality().equals(other.subtitleTracks, subtitleTracks)&&const DeepCollectionEquality().equals(other.rawExif, rawExif));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,duration,width,height,videoCodec,audioCodec,bitrate,frameRate,creationDate,creationDateFromFileSystem,timezoneOffset,gpsLatitude,gpsLongitude,cameraModel,const DeepCollectionEquality().hash(rawExif));
+int get hashCode => Object.hash(runtimeType,duration,width,height,videoCodec,audioCodec,bitrate,frameRate,creationDate,creationDateFromFileSystem,timezoneOffset,gpsLatitude,gpsLongitude,cameraModel,const DeepCollectionEquality().hash(subtitleTracks),const DeepCollectionEquality().hash(rawExif));
 
 @override
 String toString() {
-  return 'VideoMetadata(duration: $duration, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitrate: $bitrate, frameRate: $frameRate, creationDate: $creationDate, creationDateFromFileSystem: $creationDateFromFileSystem, timezoneOffset: $timezoneOffset, gpsLatitude: $gpsLatitude, gpsLongitude: $gpsLongitude, cameraModel: $cameraModel, rawExif: $rawExif)';
+  return 'VideoMetadata(duration: $duration, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitrate: $bitrate, frameRate: $frameRate, creationDate: $creationDate, creationDateFromFileSystem: $creationDateFromFileSystem, timezoneOffset: $timezoneOffset, gpsLatitude: $gpsLatitude, gpsLongitude: $gpsLongitude, cameraModel: $cameraModel, subtitleTracks: $subtitleTracks, rawExif: $rawExif)';
 }
 
 
@@ -45,7 +318,7 @@ abstract mixin class $VideoMetadataCopyWith<$Res>  {
   factory $VideoMetadataCopyWith(VideoMetadata value, $Res Function(VideoMetadata) _then) = _$VideoMetadataCopyWithImpl;
 @useResult
 $Res call({
- Duration? duration, int? width, int? height, String? videoCodec, String? audioCodec, int? bitrate, double? frameRate, DateTime? creationDate, bool creationDateFromFileSystem, String? timezoneOffset, double? gpsLatitude, double? gpsLongitude, String? cameraModel, Map<String, String> rawExif
+ Duration? duration, int? width, int? height, String? videoCodec, String? audioCodec, int? bitrate, double? frameRate, DateTime? creationDate, bool creationDateFromFileSystem, String? timezoneOffset, double? gpsLatitude, double? gpsLongitude, String? cameraModel, List<SubtitleTrack>? subtitleTracks, Map<String, String> rawExif
 });
 
 
@@ -62,7 +335,7 @@ class _$VideoMetadataCopyWithImpl<$Res>
 
 /// Create a copy of VideoMetadata
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? duration = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitrate = freezed,Object? frameRate = freezed,Object? creationDate = freezed,Object? creationDateFromFileSystem = null,Object? timezoneOffset = freezed,Object? gpsLatitude = freezed,Object? gpsLongitude = freezed,Object? cameraModel = freezed,Object? rawExif = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? duration = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitrate = freezed,Object? frameRate = freezed,Object? creationDate = freezed,Object? creationDateFromFileSystem = null,Object? timezoneOffset = freezed,Object? gpsLatitude = freezed,Object? gpsLongitude = freezed,Object? cameraModel = freezed,Object? subtitleTracks = freezed,Object? rawExif = null,}) {
   return _then(_self.copyWith(
 duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration?,width: freezed == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
@@ -77,7 +350,8 @@ as bool,timezoneOffset: freezed == timezoneOffset ? _self.timezoneOffset : timez
 as String?,gpsLatitude: freezed == gpsLatitude ? _self.gpsLatitude : gpsLatitude // ignore: cast_nullable_to_non_nullable
 as double?,gpsLongitude: freezed == gpsLongitude ? _self.gpsLongitude : gpsLongitude // ignore: cast_nullable_to_non_nullable
 as double?,cameraModel: freezed == cameraModel ? _self.cameraModel : cameraModel // ignore: cast_nullable_to_non_nullable
-as String?,rawExif: null == rawExif ? _self.rawExif : rawExif // ignore: cast_nullable_to_non_nullable
+as String?,subtitleTracks: freezed == subtitleTracks ? _self.subtitleTracks : subtitleTracks // ignore: cast_nullable_to_non_nullable
+as List<SubtitleTrack>?,rawExif: null == rawExif ? _self.rawExif : rawExif // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
@@ -163,10 +437,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  bool creationDateFromFileSystem,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  Map<String, String> rawExif)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  bool creationDateFromFileSystem,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  List<SubtitleTrack>? subtitleTracks,  Map<String, String> rawExif)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VideoMetadata() when $default != null:
-return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.creationDateFromFileSystem,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.rawExif);case _:
+return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.creationDateFromFileSystem,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.subtitleTracks,_that.rawExif);case _:
   return orElse();
 
 }
@@ -184,10 +458,10 @@ return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.a
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  bool creationDateFromFileSystem,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  Map<String, String> rawExif)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  bool creationDateFromFileSystem,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  List<SubtitleTrack>? subtitleTracks,  Map<String, String> rawExif)  $default,) {final _that = this;
 switch (_that) {
 case _VideoMetadata():
-return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.creationDateFromFileSystem,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.rawExif);case _:
+return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.creationDateFromFileSystem,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.subtitleTracks,_that.rawExif);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +478,10 @@ return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.a
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  bool creationDateFromFileSystem,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  Map<String, String> rawExif)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Duration? duration,  int? width,  int? height,  String? videoCodec,  String? audioCodec,  int? bitrate,  double? frameRate,  DateTime? creationDate,  bool creationDateFromFileSystem,  String? timezoneOffset,  double? gpsLatitude,  double? gpsLongitude,  String? cameraModel,  List<SubtitleTrack>? subtitleTracks,  Map<String, String> rawExif)?  $default,) {final _that = this;
 switch (_that) {
 case _VideoMetadata() when $default != null:
-return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.creationDateFromFileSystem,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.rawExif);case _:
+return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitrate,_that.frameRate,_that.creationDate,_that.creationDateFromFileSystem,_that.timezoneOffset,_that.gpsLatitude,_that.gpsLongitude,_that.cameraModel,_that.subtitleTracks,_that.rawExif);case _:
   return null;
 
 }
@@ -219,7 +493,7 @@ return $default(_that.duration,_that.width,_that.height,_that.videoCodec,_that.a
 
 
 class _VideoMetadata implements VideoMetadata {
-  const _VideoMetadata({this.duration, this.width, this.height, this.videoCodec, this.audioCodec, this.bitrate, this.frameRate, this.creationDate, this.creationDateFromFileSystem = false, this.timezoneOffset, this.gpsLatitude, this.gpsLongitude, this.cameraModel, final  Map<String, String> rawExif = const {}}): _rawExif = rawExif;
+  const _VideoMetadata({this.duration, this.width, this.height, this.videoCodec, this.audioCodec, this.bitrate, this.frameRate, this.creationDate, this.creationDateFromFileSystem = false, this.timezoneOffset, this.gpsLatitude, this.gpsLongitude, this.cameraModel, final  List<SubtitleTrack>? subtitleTracks, final  Map<String, String> rawExif = const {}}): _subtitleTracks = subtitleTracks,_rawExif = rawExif;
   
 
 @override final  Duration? duration;
@@ -235,6 +509,17 @@ class _VideoMetadata implements VideoMetadata {
 @override final  double? gpsLatitude;
 @override final  double? gpsLongitude;
 @override final  String? cameraModel;
+/// Null until ffprobe successfully reads the streams; empty means none.
+ final  List<SubtitleTrack>? _subtitleTracks;
+/// Null until ffprobe successfully reads the streams; empty means none.
+@override List<SubtitleTrack>? get subtitleTracks {
+  final value = _subtitleTracks;
+  if (value == null) return null;
+  if (_subtitleTracks is EqualUnmodifiableListView) return _subtitleTracks;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
  final  Map<String, String> _rawExif;
 @override@JsonKey() Map<String, String> get rawExif {
   if (_rawExif is EqualUnmodifiableMapView) return _rawExif;
@@ -253,16 +538,16 @@ _$VideoMetadataCopyWith<_VideoMetadata> get copyWith => __$VideoMetadataCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoMetadata&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.frameRate, frameRate) || other.frameRate == frameRate)&&(identical(other.creationDate, creationDate) || other.creationDate == creationDate)&&(identical(other.creationDateFromFileSystem, creationDateFromFileSystem) || other.creationDateFromFileSystem == creationDateFromFileSystem)&&(identical(other.timezoneOffset, timezoneOffset) || other.timezoneOffset == timezoneOffset)&&(identical(other.gpsLatitude, gpsLatitude) || other.gpsLatitude == gpsLatitude)&&(identical(other.gpsLongitude, gpsLongitude) || other.gpsLongitude == gpsLongitude)&&(identical(other.cameraModel, cameraModel) || other.cameraModel == cameraModel)&&const DeepCollectionEquality().equals(other._rawExif, _rawExif));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoMetadata&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.frameRate, frameRate) || other.frameRate == frameRate)&&(identical(other.creationDate, creationDate) || other.creationDate == creationDate)&&(identical(other.creationDateFromFileSystem, creationDateFromFileSystem) || other.creationDateFromFileSystem == creationDateFromFileSystem)&&(identical(other.timezoneOffset, timezoneOffset) || other.timezoneOffset == timezoneOffset)&&(identical(other.gpsLatitude, gpsLatitude) || other.gpsLatitude == gpsLatitude)&&(identical(other.gpsLongitude, gpsLongitude) || other.gpsLongitude == gpsLongitude)&&(identical(other.cameraModel, cameraModel) || other.cameraModel == cameraModel)&&const DeepCollectionEquality().equals(other._subtitleTracks, _subtitleTracks)&&const DeepCollectionEquality().equals(other._rawExif, _rawExif));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,duration,width,height,videoCodec,audioCodec,bitrate,frameRate,creationDate,creationDateFromFileSystem,timezoneOffset,gpsLatitude,gpsLongitude,cameraModel,const DeepCollectionEquality().hash(_rawExif));
+int get hashCode => Object.hash(runtimeType,duration,width,height,videoCodec,audioCodec,bitrate,frameRate,creationDate,creationDateFromFileSystem,timezoneOffset,gpsLatitude,gpsLongitude,cameraModel,const DeepCollectionEquality().hash(_subtitleTracks),const DeepCollectionEquality().hash(_rawExif));
 
 @override
 String toString() {
-  return 'VideoMetadata(duration: $duration, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitrate: $bitrate, frameRate: $frameRate, creationDate: $creationDate, creationDateFromFileSystem: $creationDateFromFileSystem, timezoneOffset: $timezoneOffset, gpsLatitude: $gpsLatitude, gpsLongitude: $gpsLongitude, cameraModel: $cameraModel, rawExif: $rawExif)';
+  return 'VideoMetadata(duration: $duration, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitrate: $bitrate, frameRate: $frameRate, creationDate: $creationDate, creationDateFromFileSystem: $creationDateFromFileSystem, timezoneOffset: $timezoneOffset, gpsLatitude: $gpsLatitude, gpsLongitude: $gpsLongitude, cameraModel: $cameraModel, subtitleTracks: $subtitleTracks, rawExif: $rawExif)';
 }
 
 
@@ -273,7 +558,7 @@ abstract mixin class _$VideoMetadataCopyWith<$Res> implements $VideoMetadataCopy
   factory _$VideoMetadataCopyWith(_VideoMetadata value, $Res Function(_VideoMetadata) _then) = __$VideoMetadataCopyWithImpl;
 @override @useResult
 $Res call({
- Duration? duration, int? width, int? height, String? videoCodec, String? audioCodec, int? bitrate, double? frameRate, DateTime? creationDate, bool creationDateFromFileSystem, String? timezoneOffset, double? gpsLatitude, double? gpsLongitude, String? cameraModel, Map<String, String> rawExif
+ Duration? duration, int? width, int? height, String? videoCodec, String? audioCodec, int? bitrate, double? frameRate, DateTime? creationDate, bool creationDateFromFileSystem, String? timezoneOffset, double? gpsLatitude, double? gpsLongitude, String? cameraModel, List<SubtitleTrack>? subtitleTracks, Map<String, String> rawExif
 });
 
 
@@ -290,7 +575,7 @@ class __$VideoMetadataCopyWithImpl<$Res>
 
 /// Create a copy of VideoMetadata
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? duration = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitrate = freezed,Object? frameRate = freezed,Object? creationDate = freezed,Object? creationDateFromFileSystem = null,Object? timezoneOffset = freezed,Object? gpsLatitude = freezed,Object? gpsLongitude = freezed,Object? cameraModel = freezed,Object? rawExif = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? duration = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitrate = freezed,Object? frameRate = freezed,Object? creationDate = freezed,Object? creationDateFromFileSystem = null,Object? timezoneOffset = freezed,Object? gpsLatitude = freezed,Object? gpsLongitude = freezed,Object? cameraModel = freezed,Object? subtitleTracks = freezed,Object? rawExif = null,}) {
   return _then(_VideoMetadata(
 duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration?,width: freezed == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
@@ -305,7 +590,8 @@ as bool,timezoneOffset: freezed == timezoneOffset ? _self.timezoneOffset : timez
 as String?,gpsLatitude: freezed == gpsLatitude ? _self.gpsLatitude : gpsLatitude // ignore: cast_nullable_to_non_nullable
 as double?,gpsLongitude: freezed == gpsLongitude ? _self.gpsLongitude : gpsLongitude // ignore: cast_nullable_to_non_nullable
 as double?,cameraModel: freezed == cameraModel ? _self.cameraModel : cameraModel // ignore: cast_nullable_to_non_nullable
-as String?,rawExif: null == rawExif ? _self._rawExif : rawExif // ignore: cast_nullable_to_non_nullable
+as String?,subtitleTracks: freezed == subtitleTracks ? _self._subtitleTracks : subtitleTracks // ignore: cast_nullable_to_non_nullable
+as List<SubtitleTrack>?,rawExif: null == rawExif ? _self._rawExif : rawExif // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }

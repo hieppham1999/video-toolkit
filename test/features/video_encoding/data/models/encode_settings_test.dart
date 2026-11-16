@@ -158,10 +158,8 @@ void main() {
       timestampSubtitlePath: 'timestamp.srt',
     );
 
-    expect(
-      passOne,
-      containsAllInOrder(['-i', 'timestamp.srt', '-map', '0:v:0']),
-    );
+    expect(passOne, isNot(contains('timestamp.srt')));
+    expect(passOne, containsAllInOrder(['-map', '0:v:0']));
     expect(passOne, isNot(contains('1:0')));
     expect(passOne, isNot(contains('-c:s')));
     expect(passTwo, containsAllInOrder(['-map', '1:0', '-c:s', 'subrip']));
@@ -200,6 +198,100 @@ void main() {
     expect(args, containsAllInOrder(['-map_metadata', '0']));
     expect(args, containsAllInOrder(['-map_chapters', '0']));
   });
+
+  for (final extension in [
+    OutputExtension.mp4,
+    OutputExtension.mov,
+    OutputExtension.mkv,
+  ]) {
+    for (final preserve in [false, true]) {
+      for (final timestamp in [false, true]) {
+        test(
+          '$extension subtitles: preserve=$preserve timestamp=$timestamp',
+          () {
+            final settings = EncodeSettings(
+              outputExtension: extension,
+              preserveSourceSubtitles: preserve,
+              embedTimestampSubtitle: timestamp,
+            );
+            final args = settings.buildArgs(
+              'input.mkv',
+              'output.${extension.value}',
+              timestampSubtitlePath: 'timestamp.srt',
+            );
+            expect(args.contains('0:s?'), preserve);
+            expect(args.contains('timestamp.srt'), timestamp);
+            expect(args.contains('-c:s'), preserve || timestamp);
+            if (preserve || timestamp) {
+              expect(
+                args[args.indexOf('-c:s') + 1],
+                preserve && extension == OutputExtension.mkv
+                    ? 'copy'
+                    : settings.timestampSubtitleCodec,
+              );
+            }
+            if (timestamp) {
+              expect(
+                args,
+                containsAllInOrder([
+                  '-map',
+                  '1:0',
+                  '-c:s:0',
+                  settings.timestampSubtitleCodec!,
+                  '-metadata:s:s:0',
+                  'title=timestamp',
+                ]),
+              );
+              if (preserve) {
+                expect(args.indexOf('1:0'), lessThan(args.indexOf('0:s?')));
+                expect(args, containsAllInOrder(['-disposition:s:0', '0']));
+              }
+            }
+            final passOne = settings.buildArgs(
+              'input.mkv',
+              'output.${extension.value}',
+              pass: 1,
+              timestampSubtitlePath: 'timestamp.srt',
+            );
+            expect(passOne, isNot(contains('timestamp.srt')));
+            expect(passOne, isNot(contains('0:s?')));
+            expect(passOne, isNot(contains('-c:s')));
+            final passTwo = settings.buildArgs(
+              'input.mkv',
+              'output.${extension.value}',
+              pass: 2,
+              timestampSubtitlePath: 'timestamp.srt',
+            );
+            expect(passTwo.contains('0:s?'), preserve);
+            expect(passTwo.contains('1:0'), timestamp);
+          },
+        );
+      }
+    }
+  }
+
+  test(
+    'unsupported containers omit source subtitles even for saved settings',
+    () {
+      for (final extension in [
+        OutputExtension.avi,
+        OutputExtension.mts,
+        OutputExtension.webm,
+      ]) {
+        final settings = EncodeSettings(
+          outputExtension: extension,
+          preserveSourceSubtitles: true,
+        );
+        expect(settings.supportsSourceSubtitles, isFalse);
+        final args = settings.buildArgs(
+          'input.mkv',
+          'output.${extension.value}',
+        );
+        expect(args, isNot(contains('0:s?')));
+        expect(args, isNot(contains('-c:s')));
+      }
+    },
+  );
 
   test('can limit audio mapping to the first source track', () {
     const settings = EncodeSettings(preserveAllAudioTracks: false);

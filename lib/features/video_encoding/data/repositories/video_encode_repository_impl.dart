@@ -44,6 +44,8 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
     );
     () async {
       final temporaryOutputPath = _temporaryOutputPath(outputPath);
+      Object? failure;
+      StackTrace? failureStackTrace;
       try {
         String? timestampSubtitlePath;
         try {
@@ -169,13 +171,16 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
               resolvedVideoEncoder: videoEncoder,
               resolvedVideoBitrateKbps: targetVideoBitrateKbps,
             );
-            await controller.addStream(
-              _ffmpeg.encode(
-                inputPath: inputPath,
-                args: args,
-                totalDuration: totalDuration,
-              ),
-            );
+            // Handle encoder errors here rather than forwarding them before
+            // the temporary video and subtitle have finished cleaning up.
+            await for (final progress in _ffmpeg.encode(
+              inputPath: inputPath,
+              args: args,
+              totalDuration: totalDuration,
+            )) {
+              if (cancelled || controller.isClosed) return;
+              controller.add(progress);
+            }
           }
 
           if (cancelled) return;
@@ -195,11 +200,13 @@ class VideoEncodeRepositoryImpl implements VideoEncodeRepository {
           }
         }
       } catch (e, st) {
-        if (!cancelled && !controller.isClosed) {
-          controller.addError(e, st);
-        }
+        failure = e;
+        failureStackTrace = st;
       } finally {
         await _deleteIfExists(temporaryOutputPath);
+        if (failure != null && !cancelled && !controller.isClosed) {
+          controller.addError(failure, failureStackTrace);
+        }
         await controller.close();
       }
     }();

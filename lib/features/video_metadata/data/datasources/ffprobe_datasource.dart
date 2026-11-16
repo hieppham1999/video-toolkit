@@ -23,16 +23,24 @@ class FfprobeDatasource {
     // on large files; 1MB / 1s is more than enough for MP4/MOV container headers
     // and gives accurate codec/resolution/fps/duration.
     final args = [
-      '-v', 'quiet',
-      '-probesize', '1000000',
-      '-analyzeduration', '1000000',
-      '-print_format', 'json',
+      '-v',
+      'quiet',
+      '-probesize',
+      '1000000',
+      '-analyzeduration',
+      '1000000',
+      '-print_format',
+      'json',
       '-show_format',
       '-show_streams',
       filePath,
     ];
     appLogger.i('ffprobe command: $_executable ${args.join(' ')}');
-    final result = await _runner.run(_executable, args, timeout: const Duration(seconds: 15));
+    final result = await _runner.run(
+      _executable,
+      args,
+      timeout: const Duration(seconds: 15),
+    );
 
     if (!result.isSuccess) {
       appLogger.w('ffprobe failed for $filePath: ${result.stderr}');
@@ -46,13 +54,15 @@ class FfprobeDatasource {
       final streams = data['streams'] as List? ?? [];
       final format = data['format'] as Map<String, dynamic>? ?? {};
 
-      final videoStream = streams.cast<Map<String, dynamic>>().where(
-        (s) => s['codec_type'] == 'video',
-      ).firstOrNull;
+      final videoStream = streams
+          .cast<Map<String, dynamic>>()
+          .where((s) => s['codec_type'] == 'video')
+          .firstOrNull;
 
-      final audioStream = streams.cast<Map<String, dynamic>>().where(
-        (s) => s['codec_type'] == 'audio',
-      ).firstOrNull;
+      final audioStream = streams
+          .cast<Map<String, dynamic>>()
+          .where((s) => s['codec_type'] == 'audio')
+          .firstOrNull;
 
       final metadata = VideoMetadata(
         duration: _parseDuration(format['duration']),
@@ -60,6 +70,22 @@ class FfprobeDatasource {
         height: videoStream?['height'] as int?,
         videoCodec: videoStream?['codec_name'] as String?,
         audioCodec: audioStream?['codec_name'] as String?,
+        subtitleTracks: streams
+            .cast<Map<String, dynamic>>()
+            .where((stream) => stream['codec_type'] == 'subtitle')
+            .map((stream) {
+              final tags = stream['tags'] as Map? ?? const {};
+              final disposition = stream['disposition'] as Map? ?? const {};
+              return SubtitleTrack(
+                index: stream['index'] as int,
+                codec: stream['codec_name'] as String?,
+                title: (tags['title'] ?? tags['handler_name']) as String?,
+                language: tags['language'] as String?,
+                isDefault: disposition['default'] == 1,
+                isForced: disposition['forced'] == 1,
+              );
+            })
+            .toList(),
         bitrate: int.tryParse(format['bit_rate']?.toString() ?? ''),
         creationDate: _parseCreationDate(videoStream, format),
         frameRate: _parseFrameRate(videoStream?['r_frame_rate']),
@@ -86,11 +112,13 @@ class FfprobeDatasource {
     Map<String, dynamic>? videoStream,
     Map<String, dynamic> format,
   ) {
-    const candidateKeys = ['creation_time', 'date', 'DATE', 'com.apple.quicktime.creationdate'];
-    final tagSources = [
-      videoStream?['tags'] as Map?,
-      format['tags'] as Map?,
+    const candidateKeys = [
+      'creation_time',
+      'date',
+      'DATE',
+      'com.apple.quicktime.creationdate',
     ];
+    final tagSources = [videoStream?['tags'] as Map?, format['tags'] as Map?];
 
     for (final tags in tagSources) {
       if (tags == null) continue;

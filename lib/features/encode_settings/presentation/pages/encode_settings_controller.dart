@@ -127,8 +127,7 @@ class EncodeSettingsController extends ChangeNotifier {
       outputExtension == OutputExtension.mov ||
       outputExtension == OutputExtension.mkv;
 
-  bool get supportsSourceSubtitlePassthrough =>
-      outputExtension == OutputExtension.mkv;
+  bool get supportsSourceSubtitles => supportsTimestampSubtitle;
 
   bool get supportsHardwareEncoder =>
       codec == VideoEncoder.h264 || codec == VideoEncoder.h265;
@@ -180,7 +179,7 @@ class EncodeSettingsController extends ChangeNotifier {
     embedTimestampSubtitle =
         s.embedTimestampSubtitle && s.supportsTimestampSubtitle;
     preserveSourceSubtitles =
-        s.preserveSourceSubtitles && s.supportsSourceSubtitlePassthrough;
+        s.preserveSourceSubtitles && s.supportsSourceSubtitles;
     outputNameTemplate = s.outputNameTemplate;
     deinterlace = s.deinterlace;
     qualityMode = s.qualityMode;
@@ -331,7 +330,7 @@ class EncodeSettingsController extends ChangeNotifier {
   void setOutputExtension(OutputExtension v) {
     outputExtension = v;
     if (!supportsTimestampSubtitle) embedTimestampSubtitle = false;
-    if (!supportsSourceSubtitlePassthrough) preserveSourceSubtitles = false;
+    if (!supportsSourceSubtitles) preserveSourceSubtitles = false;
     notifyListeners();
   }
 
@@ -394,7 +393,7 @@ class EncodeSettingsController extends ChangeNotifier {
   }
 
   void setPreserveSourceSubtitles(bool v) {
-    if (!supportsSourceSubtitlePassthrough) return;
+    if (!supportsSourceSubtitles) return;
     preserveSourceSubtitles = v;
     notifyListeners();
   }

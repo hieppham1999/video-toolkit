@@ -14,6 +14,7 @@ import 'package:video_toolkit/features/home/presentation/cubit/preview_state.dar
 import 'package:video_toolkit/widgets/app_metadata_row.dart';
 import 'package:video_toolkit/features/home/presentation/widgets/app_overall_progress_bar.dart';
 import 'package:video_toolkit/features/home/presentation/widgets/app_preview_panel.dart';
+import 'package:video_toolkit/features/home/presentation/widgets/app_subtitle_track_list.dart';
 import 'package:video_toolkit/widgets/app_resizable_divider.dart';
 import 'package:video_toolkit/app/base/bloc_state_builder.dart';
 import 'package:video_toolkit/widgets/app_toolbar_button.dart';
@@ -437,81 +438,88 @@ class _PreviewSection extends StatelessWidget {
           children: [
             // Left: metadata info
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    selectedFile!.name,
-                    style: titleStyle,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    selectedFile!.path,
-                    style: labelStyle,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                  const SizedBox(height: 16),
-                  if (metadata == null)
-                    Text(l10n.metadataNotAvailable, style: labelStyle)
-                  else ...[
-                    AppMetadataRow(
-                      label: l10n.resolution,
-                      value: metadata.width != null && metadata.height != null
-                          ? '${metadata.width}x${metadata.height}'
-                          : '-',
-                      labelStyle: labelStyle,
-                      valueStyle: valueStyle,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      selectedFile!.name,
+                      style: titleStyle,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
-                    AppMetadataRow(
-                      label: l10n.codec,
-                      value: metadata.videoCodec ?? '-',
-                      labelStyle: labelStyle,
-                      valueStyle: valueStyle,
+                    const SizedBox(height: 4),
+                    Text(
+                      selectedFile!.path,
+                      style: labelStyle,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
-                    const SizedBox(height: 6),
-                    AppMetadataRow(
-                      label: l10n.bitrate,
-                      value: BitrateFormatter.format(metadata.bitrate),
-                      labelStyle: labelStyle,
-                      valueStyle: valueStyle,
-                    ),
-                    const SizedBox(height: 6),
-                    AppMetadataRow(
-                      label: l10n.aspectRatio,
-                      value:
-                          computeAspectRatio(metadata.width, metadata.height) ??
-                          '-',
-                      labelStyle: labelStyle,
-                      valueStyle: valueStyle,
-                    ),
-                    const SizedBox(height: 6),
-                    AppMetadataRow(
-                      label: l10n.frameRate,
-                      value: metadata.frameRate != null
-                          ? '${metadata.frameRate!.toStringAsFixed(2)} fps'
-                          : '-',
-                      labelStyle: labelStyle,
-                      valueStyle: valueStyle,
-                    ),
-                    const SizedBox(height: 6),
-                    AppMetadataRow(
-                      label: l10n.duration,
-                      value: DateFormatter.formatDuration(metadata.duration),
-                      labelStyle: labelStyle,
-                      valueStyle: valueStyle,
-                    ),
-                    const SizedBox(height: 6),
-                    AppMetadataRow(
-                      label: l10n.dateTaken,
-                      value: DateFormatter.format(metadata.creationDate),
-                      labelStyle: labelStyle,
-                      valueStyle: valueStyle,
-                    ),
+                    const SizedBox(height: 16),
+                    if (metadata == null)
+                      Text(l10n.metadataNotAvailable, style: labelStyle)
+                    else ...[
+                      AppMetadataRow(
+                        label: l10n.resolution,
+                        value: metadata.width != null && metadata.height != null
+                            ? '${metadata.width}x${metadata.height}'
+                            : '-',
+                        labelStyle: labelStyle,
+                        valueStyle: valueStyle,
+                      ),
+                      const SizedBox(height: 6),
+                      AppMetadataRow(
+                        label: l10n.codec,
+                        value: metadata.videoCodec ?? '-',
+                        labelStyle: labelStyle,
+                        valueStyle: valueStyle,
+                      ),
+                      const SizedBox(height: 6),
+                      AppMetadataRow(
+                        label: l10n.bitrate,
+                        value: BitrateFormatter.format(metadata.bitrate),
+                        labelStyle: labelStyle,
+                        valueStyle: valueStyle,
+                      ),
+                      const SizedBox(height: 6),
+                      AppMetadataRow(
+                        label: l10n.aspectRatio,
+                        value:
+                            computeAspectRatio(
+                              metadata.width,
+                              metadata.height,
+                            ) ??
+                            '-',
+                        labelStyle: labelStyle,
+                        valueStyle: valueStyle,
+                      ),
+                      const SizedBox(height: 6),
+                      AppMetadataRow(
+                        label: l10n.frameRate,
+                        value: metadata.frameRate != null
+                            ? '${metadata.frameRate!.toStringAsFixed(2)} fps'
+                            : '-',
+                        labelStyle: labelStyle,
+                        valueStyle: valueStyle,
+                      ),
+                      const SizedBox(height: 6),
+                      AppMetadataRow(
+                        label: l10n.duration,
+                        value: DateFormatter.formatDuration(metadata.duration),
+                        labelStyle: labelStyle,
+                        valueStyle: valueStyle,
+                      ),
+                      const SizedBox(height: 6),
+                      AppMetadataRow(
+                        label: l10n.dateTaken,
+                        value: DateFormatter.format(metadata.creationDate),
+                        labelStyle: labelStyle,
+                        valueStyle: valueStyle,
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    AppSubtitleTrackList(tracks: metadata?.subtitleTracks),
                   ],
-                ],
+                ),
               ),
             ),
             // Right: live/static preview frame.

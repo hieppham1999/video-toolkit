@@ -230,8 +230,7 @@ abstract class EncodeSettings with _$EncodeSettings {
 
   bool get supportsTimestampSubtitle => timestampSubtitleCodec != null;
 
-  bool get supportsSourceSubtitlePassthrough =>
-      outputExtension == OutputExtension.mkv;
+  bool get supportsSourceSubtitles => supportsTimestampSubtitle;
 
   String? get timestampSubtitleCodec => switch (outputExtension) {
     OutputExtension.mp4 || OutputExtension.mov => 'mov_text',
@@ -328,9 +327,12 @@ abstract class EncodeSettings with _$EncodeSettings {
     final mergedParams = _mergedCodecParams(pass: pass);
     final subtitleCodec = timestampSubtitleCodec;
     final includeTimestampSubtitle =
+        pass != 1 &&
         embedTimestampSubtitle &&
         timestampSubtitlePath != null &&
         subtitleCodec != null;
+    final includeSourceSubtitles =
+        pass != 1 && preserveSourceSubtitles && supportsSourceSubtitles;
     final audioFilters = <String>[
       if (normalizeAudio) 'loudnorm=I=-16:LRA=11:TP=-1.5',
       if (audioGainDb != 0) 'volume=${_formatNumber(audioGainDb)}dB',
@@ -355,10 +357,7 @@ abstract class EncodeSettings with _$EncodeSettings {
         '-map',
         preserveAllAudioTracks ? '0:a?' : '0:a:0?',
         if (includeTimestampSubtitle) ...['-map', '1:0'],
-        if (preserveSourceSubtitles && supportsSourceSubtitlePassthrough) ...[
-          '-map',
-          '0:s?',
-        ],
+        if (includeSourceSubtitles) ...['-map', '0:s?'],
       ],
       '-c:v', encoder,
       ..._speedArgs(encoder),
@@ -391,18 +390,20 @@ abstract class EncodeSettings with _$EncodeSettings {
       if (filterChain != null) ...['-vf', filterChain],
       if (frameRate != null) ...['-r', _formatFrameRate(frameRate!)],
       if (pixelFormat.value != null) ...['-pix_fmt', pixelFormat.value!],
-      if (pass != 1 &&
-          (includeTimestampSubtitle ||
-              (preserveSourceSubtitles &&
-                  supportsSourceSubtitlePassthrough))) ...[
+      if (includeTimestampSubtitle || includeSourceSubtitles) ...[
         '-c:s',
-        preserveSourceSubtitles && supportsSourceSubtitlePassthrough
+        includeSourceSubtitles && outputExtension == OutputExtension.mkv
             ? 'copy'
             : _requireSubtitleValue(subtitleCodec),
       ],
-      if (includeTimestampSubtitle && pass != 1) ...[
+      if (includeTimestampSubtitle) ...[
+        '-c:s:0',
+        _requireSubtitleValue(subtitleCodec),
         '-metadata:s:s:0',
         'title=timestamp',
+        '-metadata:s:s:0',
+        'handler_name=timestamp',
+        if (includeSourceSubtitles) ...['-disposition:s:0', '0'],
       ],
       if (pass == 1 || effectiveAudioCodec == AudioCodec.none) ...[
         '-an',
